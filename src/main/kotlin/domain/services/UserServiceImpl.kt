@@ -18,6 +18,7 @@ class UserServiceImpl:UserService{
             newUser.gender,
             newUser.name,
             newUser.phone,
+            newUser.admin,
             Calendar.getInstance().time,
             Calendar.getInstance().time
         )

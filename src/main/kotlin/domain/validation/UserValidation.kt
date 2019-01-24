@@ -7,6 +7,7 @@ class UserValidation{
     fun validate(userDTO:UserDTO){
         val validations = mutableListOf<Validation<*>>()
 
+        validations.add(Validation("birthDate",userDTO.birthDate).validBirthDate())
         validations.add(Validation("gender",userDTO.gender).validGender())
 
         val errorsMap = hashMapOf<String, MutableList<String>>()

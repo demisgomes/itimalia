@@ -8,4 +8,5 @@ data class NewUser(
     val birthDate:Date?,
     val gender:Gender?,
     val name: String,
-    val phone: String)
+    val phone: String,
+    val admin:Boolean)

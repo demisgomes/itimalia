@@ -10,5 +10,6 @@ data class UserDTO(
     val gender:Gender?,
     val name: String,
     val phone: String,
+    val admin: Boolean,
     val creationDate: Date,
     val modificationDate: Date)
