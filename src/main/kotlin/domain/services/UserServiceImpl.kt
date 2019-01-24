@@ -3,10 +3,7 @@ package domain.services
 import domain.entities.NewUser
 import domain.entities.UserDTO
 import domain.validation.UserValidation
-import domain.validation.Validation
-import domain.validation.validGender
 import java.util.*
-import javax.xml.bind.ValidationException
 
 class UserServiceImpl:UserService{
 
@@ -25,9 +22,8 @@ class UserServiceImpl:UserService{
             Calendar.getInstance().time
         )
 
-        val userValidation=UserValidation()
 
-        userValidation.validate(newUserDTO)
+        UserValidation().validate(newUserDTO)
 
         return newUserDTO
     }

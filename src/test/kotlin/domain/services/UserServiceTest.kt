@@ -67,7 +67,7 @@ class UserServiceTest{
             "81823183183"
         )
 
-        val userDTO=userServiceImpl.add(newUser)
+        userServiceImpl.add(newUser)
     }
 
     @Test(expected = ValidationException::class)
@@ -81,7 +81,7 @@ class UserServiceTest{
             "81823183183"
         )
 
-        val userDTO=userServiceImpl.add(newUser)
+        userServiceImpl.add(newUser)
     }
 }
 
