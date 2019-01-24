@@ -1,5 +1,6 @@
 package application.web
 
+import commons.koin.serviceModule
 import commons.koin.validationModule
 import io.javalin.Javalin
 import org.koin.standalone.StandAloneContext
@@ -9,7 +10,8 @@ fun main(args: Array<String>) {
 
     StandAloneContext.startKoin(
         listOf(
-            validationModule
+            validationModule,
+            serviceModule
         )
     )
 

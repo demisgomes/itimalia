@@ -3,7 +3,7 @@ package domain.entities
 import java.util.*
 
 data class UserDTO(
-    val id: Int,
+    var id: Int?,
     val email: String,
     val password:String,
     val birthDate: Date?,

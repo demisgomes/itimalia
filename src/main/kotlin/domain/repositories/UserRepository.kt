@@ -1,0 +1,10 @@
+package domain.repositories
+
+import domain.entities.NewUser
+import domain.entities.UserDTO
+
+interface UserRepository{
+    fun add(userDTO: UserDTO): UserDTO
+    fun update(id: Int,userDTO: UserDTO) : UserDTO
+    fun get(id:Int):UserDTO
+}

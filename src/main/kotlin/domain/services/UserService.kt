@@ -5,4 +5,6 @@ import domain.entities.UserDTO
 
 interface UserService{
     fun add(newUser: NewUser) : UserDTO
+    fun update(id: Int, userDTO: UserDTO) : UserDTO
+    fun get(id:Int):UserDTO
 }
