@@ -5,7 +5,10 @@ import domain.entities.UserDTO
 import domain.exceptions.UserNotFoundException
 
 class UserRepositoryImpl:UserRepository{
-    var userList:HashMap<Int, UserDTO> = HashMap()
+    companion object {
+        var userList:HashMap<Int, UserDTO> = HashMap()
+    }
+
 
     override fun add(userDTO: UserDTO): UserDTO {
         val id:Int=userList.size+1

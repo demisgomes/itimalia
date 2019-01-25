@@ -6,7 +6,7 @@ import domain.repositories.UserRepositoryImpl
 import domain.validation.UserValidation
 import java.util.*
 
-class UserServiceImpl:UserService{
+class UserServiceImpl(private val userRepositoryImpl: UserRepositoryImpl):UserService{
     override fun add(newUser: NewUser): UserDTO {
         val newUserDTO=UserDTO(
             null,
@@ -17,13 +17,12 @@ class UserServiceImpl:UserService{
             newUser.name,
             newUser.phone,
             newUser.admin,
-            Calendar.getInstance().time,
-            Calendar.getInstance().time
+            null,
+            null
         )
-        UserValidation().validate(newUserDTO)
-        UserRepositoryImpl().add(newUserDTO)
 
-        return newUserDTO
+        UserValidation().validate(newUserDTO)
+        return userRepositoryImpl.add(newUserDTO)
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
@@ -37,16 +36,15 @@ class UserServiceImpl:UserService{
             userDTO.phone,
             userDTO.admin,
             userDTO.creationDate,
-            Calendar.getInstance().time
+            null
         )
         UserValidation().validate(newUserDTO)
 
-        UserRepositoryImpl().update(id, newUserDTO)
-        return newUserDTO
+        return userRepositoryImpl.update(id, newUserDTO)
     }
 
     override fun get(id: Int): UserDTO {
-        return UserRepositoryImpl().get(id)
+        return userRepositoryImpl.get(id)
     }
 
 

@@ -7,5 +7,5 @@ import org.koin.dsl.module.module
 
 val serviceModule = module{
     single{ UserRepositoryImpl() }
-    single{ UserServiceImpl() }
+    single{ UserServiceImpl(get()) }
 }

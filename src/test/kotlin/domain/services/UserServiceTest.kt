@@ -3,8 +3,8 @@ package domain.services
 import domain.entities.Gender
 import domain.entities.NewUser
 import domain.entities.UserDTO
+import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
-import domain.repositories.UserRepository
 import domain.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -18,19 +18,34 @@ import kotlin.test.assertEquals
 
 class UserServiceTest{
 
-    lateinit var userRepositoryImplMock: UserRepositoryImpl
+    private lateinit var userRepositoryImplMock: UserRepositoryImpl
+    private lateinit var newUserDTO: UserDTO
+    private lateinit var date:Date
 
     @Before
     fun setup() {
+        val formatter:DateFormat= SimpleDateFormat("dd/mm/yyyy")
+        date=formatter.parse("01/01/1990")
+        newUserDTO = UserDTO(
+            null,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            false,
+            null,
+            null
+        )
+
         userRepositoryImplMock= mockk(relaxed = true)
+
     }
 
 
     @Test
     fun `when a valid user without admin permissions request a sign up, register it`(){
-
-        val formatter:DateFormat= SimpleDateFormat("dd/mm/yyyy") as DateFormat
-        val date=formatter.parse("01/01/1990")
         val user = NewUser(
             "newUser@domain.com",
             "password",
@@ -41,7 +56,6 @@ class UserServiceTest{
             false
         )
 
-
         val expectedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
@@ -51,31 +65,20 @@ class UserServiceTest{
             "New User",
             "81823183183",
             false,
-            date!!,
+            date,
             Calendar.getInstance().time
         )
 
-        every { userRepositoryImplMock.add(expectedUserDTO)  }.returns(expectedUserDTO)
+        every { userRepositoryImplMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
 
-        val userDTO=UserServiceImpl().add(user)
+        val userDTO=UserServiceImpl(userRepositoryImplMock).add(user)
 
-        assertEquals(expectedUserDTO.id,userDTO.id)
-        assertEquals(expectedUserDTO.email,userDTO.email)
-        assertEquals(expectedUserDTO.password,userDTO.password)
-        assertEquals(expectedUserDTO.birthDate,userDTO.birthDate)
-        assertEquals(expectedUserDTO.gender,userDTO.gender)
-        assertEquals(expectedUserDTO.name,userDTO.name)
-        assertEquals(expectedUserDTO.phone,userDTO.phone)
-        assertEquals(expectedUserDTO.admin, userDTO.admin)
-        //assertEquals(userDTO.creationDate.time,expectedUserDTO.creationDate.time)
-        //assertEquals(userDTO.modificationDate.time,expectedUserDTO.modificationDate.time)
+        assertEquals(expectedUserDTO,userDTO)
     }
 
     @Test
     fun `when a valid user with admin permissions request a sign up, register it`(){
-        val formatter:DateFormat=SimpleDateFormat("dd/mm/yyyy")
-        val date=formatter.parse("01/01/1990")
         val user = NewUser(
             "newUser@domain.com",
             "password",
@@ -86,7 +89,7 @@ class UserServiceTest{
             true
         )
 
-        val expectedUserDTO: UserDTO = UserDTO(
+        val expectedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
             "password",
@@ -99,51 +102,18 @@ class UserServiceTest{
             Calendar.getInstance().time
         )
 
-        val userDTO=UserServiceImpl().add(user)
+        val adminUserDTO=newUserDTO
+        adminUserDTO.admin=true
 
-        assertEquals(expectedUserDTO.id,userDTO.id)
-        assertEquals(expectedUserDTO.email,userDTO.email)
-        assertEquals(expectedUserDTO.password,userDTO.password)
-        assertEquals(expectedUserDTO.birthDate,userDTO.birthDate)
-        assertEquals(expectedUserDTO.gender,userDTO.gender)
-        assertEquals(expectedUserDTO.name,userDTO.name)
-        assertEquals(expectedUserDTO.phone,userDTO.phone)
-        assertEquals(expectedUserDTO.admin, userDTO.admin)
-        assertEquals(userDTO.creationDate.time,expectedUserDTO.creationDate.time)
-        assertEquals(userDTO.modificationDate.time,expectedUserDTO.modificationDate.time)
+        every { userRepositoryImplMock.add(adminUserDTO)  }.returns(expectedUserDTO)
+        val userDTO=UserServiceImpl(userRepositoryImplMock).add(user)
+
+        assertEquals(expectedUserDTO,userDTO)
     }
 
     @Test
     fun `when a valid user will be sucessfully modified modify it`(){
 
-        //mock this part
-//        val formatter:DateFormat=SimpleDateFormat("dd/mm/yyyy")
-//        val date=formatter.parse("01/01/1990")
-//        val user = NewUser(
-//            "newUser@domain.com",
-//            "password",
-//            date,
-//            Gender.MASC,
-//            "New User",
-//            "81823183183",
-//            true
-//        )
-//
-//
-//        val newUserDTO=userServiceImpl.add(user)
-//
-//
-//        //the main method starts here
-//        val userModified= NewUser("newUser@domain.com",
-//            "password",
-//            date,
-//            Gender.FEM,
-//            "New User",
-//            "81823183183",
-//            true)
-
-        val formatter:DateFormat=SimpleDateFormat("dd/mm/yyyy")
-        val date=formatter.parse("01/01/1990")
         val expectedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
@@ -154,22 +124,19 @@ class UserServiceTest{
             "81823183183",
             true,
             date,
-            Calendar.getInstance().time
+            null
         )
 
-        every { userRepositoryImplMock.update(1,expectedUserDTO) }.returns(expectedUserDTO)
-        val userDTO=UserServiceImpl().update(1,expectedUserDTO)
+        val updatedUserDTO=newUserDTO
+        updatedUserDTO.admin=true
+        updatedUserDTO.id=1
+        updatedUserDTO.creationDate=date
 
-        assertEquals(expectedUserDTO.id,userDTO.id)
-        assertEquals(expectedUserDTO.email,userDTO.email)
-        assertEquals(expectedUserDTO.password,userDTO.password)
-        assertEquals(expectedUserDTO.birthDate,userDTO.birthDate)
-        assertEquals(expectedUserDTO.gender,userDTO.gender)
-        assertEquals(expectedUserDTO.name,userDTO.name)
-        assertEquals(expectedUserDTO.phone,userDTO.phone)
-        assertEquals(expectedUserDTO.admin, userDTO.admin)
-        assertEquals(userDTO.creationDate.time,expectedUserDTO.creationDate.time)
-        //assertEquals(userDTO.modificationDate.time,expectedUserDTO.modificationDate.time)
+        every { userRepositoryImplMock.update(1,updatedUserDTO) }.returns(expectedUserDTO)
+
+        val userDTO=UserServiceImpl(userRepositoryImplMock).update(1,updatedUserDTO)
+
+        assertEquals(expectedUserDTO,userDTO)
     }
 
     @Test(expected = ValidationException::class)
@@ -183,7 +150,7 @@ class UserServiceTest{
             "81823183183",
             false
         )
-        UserServiceImpl().add(newUser)
+        UserServiceImpl(userRepositoryImplMock).add(newUser)
     }
 
     @Test(expected = ValidationException::class)
@@ -198,9 +165,38 @@ class UserServiceTest{
             false
         )
 
-        UserServiceImpl().add(newUser)
+        UserServiceImpl(userRepositoryImplMock).add(newUser)
     }
 
+    @Test
+    fun `when a user with valid id was requested, return it`(){
+        val expectedUserDTO = UserDTO(
+            56415,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            false,
+            date,
+            Calendar.getInstance().time
+        )
+
+        every { userRepositoryImplMock.get(56415)  }.returns(expectedUserDTO)
+
+
+        assertEquals(expectedUserDTO, UserServiceImpl(userRepositoryImplMock).get(56415))
+    }
+
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when a user with invalid id was requested, throws UserNotFoundException`(){
+        val userException=UserNotFoundException("User not found")
+        every { userRepositoryImplMock.get(844)  }.throws(userException)
+
+        UserServiceImpl(userRepositoryImplMock).get(844)
+    }
 
 }
 
