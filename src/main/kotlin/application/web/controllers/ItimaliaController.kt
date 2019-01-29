@@ -11,7 +11,7 @@ class ItimaliaController(private val userService: UserService){
 
     fun findUser(context:Context){
         try{
-            val id:Int=context.pathParam(":id").toInt()
+            val id:Int=context.pathParam("id").toInt()
             val user=userService.get(id)
             context.json(user).status(HttpStatus.OK_200)
         }

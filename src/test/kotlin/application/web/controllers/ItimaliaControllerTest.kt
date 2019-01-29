@@ -43,6 +43,8 @@ class ItimaliaControllerTest{
     fun `when request a user with a valid id, return it`(){
         every{ userServiceMock.get(1)}.returns(returnedUser)
 
+        every { contextMock.pathParam("id") }.returns("1")
+
         ItimaliaController(userServiceMock).findUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
@@ -53,8 +55,11 @@ class ItimaliaControllerTest{
         val userNotFoundException=UserNotFoundException("User Not Found")
         every{ userServiceMock.get(1)}.throws(userNotFoundException)
 
+        every { contextMock.pathParam("id") }.returns("1")
+
         ItimaliaController(userServiceMock).findUser(contextMock)
 
         verify { contextMock.json(userNotFoundException.userResponseMessage()).status(HttpStatus.NOT_FOUND_404) }
     }
+
 }
