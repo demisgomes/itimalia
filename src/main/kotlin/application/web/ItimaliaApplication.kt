@@ -11,7 +11,7 @@ import org.koin.standalone.StandAloneContext
 import org.koin.standalone.inject
 
 class ItimaliaApplication : KoinComponent {
-    val routeConfig: RouteConfig by inject()
+    private val routeConfig: RouteConfig by inject()
 
     fun startServer() {
         val app = Javalin.create().start(7000)

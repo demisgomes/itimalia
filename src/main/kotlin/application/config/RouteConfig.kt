@@ -15,6 +15,7 @@ class RouteConfig(private val userController: UserController){
                 ApiBuilder.path(":id"){
                     ApiBuilder.get(userController::findUser)
                     ApiBuilder.put(userController::updateUser)
+                    ApiBuilder.delete(userController::deleteUser)
                 }
             }
 
