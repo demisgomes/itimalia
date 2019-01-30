@@ -192,7 +192,7 @@ class UserServiceTest{
 
     @Test(expected = UserNotFoundException::class)
     fun `when a user with invalid id was requested, throws UserNotFoundException`(){
-        val userException=UserNotFoundException("User not found")
+        val userException=UserNotFoundException()
         every { userRepositoryImplMock.get(844)  }.throws(userException)
 
         UserServiceImpl(userRepositoryImplMock).get(844)

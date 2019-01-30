@@ -7,4 +7,5 @@ interface UserService{
     fun add(newUser: NewUser) : UserDTO
     fun update(id: Int, userDTO: UserDTO) : UserDTO
     fun get(id:Int):UserDTO
+    fun delete(id:Int):UserDTO
 }

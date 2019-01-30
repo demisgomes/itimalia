@@ -9,17 +9,13 @@ import domain.services.UserService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
 
-class ItimaliaController(private val userService: UserService){
+class UserController(private val userService: UserService){
 
     fun findUser(context:Context){
         try{
             val id:Int=context.pathParam("id").toInt()
             val user=userService.get(id)
             context.json(user).status(HttpStatus.OK_200)
-        }
-        catch (exception: ValidationException){
-            context.json(exception.createErrorResponse()).status(exception.httpStatus())
-            return
         }
         catch (exception: UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
@@ -32,11 +28,10 @@ class ItimaliaController(private val userService: UserService){
         try{
             val newUser=context.body<NewUser>()
             val addedUser=userService.add(newUser)
-            context.json(addedUser).status(HttpStatus.OK_200)
+            context.json(addedUser).status(HttpStatus.CREATED_201)
         }
         catch (exception: ValidationException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
-            return
         }
     }
 
@@ -51,6 +46,20 @@ class ItimaliaController(private val userService: UserService){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
         catch (exception:UnmodifiedUserException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:UserNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+    }
+
+    fun deleteUser(context: Context){
+        try{
+            val id:Int=context.pathParam("id").toInt()
+            val deletedUser=userService.delete(id)
+            context.json(deletedUser).status(HttpStatus.OK_200)
+        }
+        catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }

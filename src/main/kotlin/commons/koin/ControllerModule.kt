@@ -1,8 +1,8 @@
 package commons.koin
 
-import application.web.controllers.ItimaliaController
+import application.web.controllers.UserController
 import org.koin.dsl.module.module
 
 val controllerModule= module {
-    single { ItimaliaController(get()) }
+    single { UserController(get()) }
 }

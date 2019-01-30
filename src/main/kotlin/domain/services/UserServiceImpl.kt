@@ -2,11 +2,10 @@ package domain.services
 
 import domain.entities.NewUser
 import domain.entities.UserDTO
-import domain.repositories.UserRepositoryImpl
+import domain.repositories.UserRepository
 import domain.validation.UserValidation
-import java.util.*
 
-class UserServiceImpl(private val userRepositoryImpl: UserRepositoryImpl):UserService{
+class UserServiceImpl(private val userRepository: UserRepository):UserService{
     override fun add(newUser: NewUser): UserDTO {
         val newUserDTO=UserDTO(
             null,
@@ -22,7 +21,7 @@ class UserServiceImpl(private val userRepositoryImpl: UserRepositoryImpl):UserSe
         )
 
         UserValidation().validate(newUserDTO)
-        return userRepositoryImpl.add(newUserDTO)
+        return userRepository.add(newUserDTO)
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
@@ -40,11 +39,15 @@ class UserServiceImpl(private val userRepositoryImpl: UserRepositoryImpl):UserSe
         )
         UserValidation().validate(newUserDTO)
 
-        return userRepositoryImpl.update(id, newUserDTO)
+        return userRepository.update(id, newUserDTO)
+    }
+
+    override fun delete(id:Int):UserDTO{
+        return userRepository.delete(id)
     }
 
     override fun get(id: Int): UserDTO {
-        return userRepositoryImpl.get(id)
+        return userRepository.get(id)
     }
 
 

@@ -26,12 +26,18 @@ class UserRepositoryImpl:UserRepository{
         return userDTO
     }
 
+    override fun delete(id: Int): UserDTO {
+        val originalUser=get(id)
+        userList.remove(id)
+        return originalUser
+    }
+
     override fun get(id: Int): UserDTO {
         if(userList.containsKey(id)){
             return userList[id]!!
         }
         else{
-            throw UserNotFoundException("User Not Found")
+            throw UserNotFoundException()
         }
     }
 

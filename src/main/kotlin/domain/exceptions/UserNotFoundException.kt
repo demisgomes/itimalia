@@ -2,7 +2,7 @@ package domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class UserNotFoundException(message: String) : ApiException(message) {
+class UserNotFoundException : ApiException("User not found") {
     override fun httpStatus(): Int {
         return HttpStatus.NOT_FOUND_404
     }
@@ -12,7 +12,7 @@ class UserNotFoundException(message: String) : ApiException(message) {
     }
 
     override fun userResponseMessage(): String {
-        return "User not found"
+        return message!!
     }
 
 }
