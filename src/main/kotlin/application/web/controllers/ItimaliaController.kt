@@ -1,6 +1,8 @@
 package application.web.controllers
 
 import domain.entities.NewUser
+import domain.entities.UserDTO
+import domain.exceptions.UnmodifiedUserException
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
 import domain.services.UserService
@@ -16,19 +18,40 @@ class ItimaliaController(private val userService: UserService){
             context.json(user).status(HttpStatus.OK_200)
         }
         catch (exception: ValidationException){
-            context.json(exception.userResponseMessage()).status(exception.httpStatus())
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
             return
         }
         catch (exception: UserNotFoundException){
-            context.json(exception.userResponseMessage()).status(exception.httpStatus())
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
             return
         }
 
     }
 
     fun addUser(context: Context){
-        val newUser=context.body<NewUser>()
-        val addedUser=userService.add(newUser)
-        context.json(addedUser).status(HttpStatus.OK_200)
+        try{
+            val newUser=context.body<NewUser>()
+            val addedUser=userService.add(newUser)
+            context.json(addedUser).status(HttpStatus.OK_200)
+        }
+        catch (exception: ValidationException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+            return
+        }
+    }
+
+    fun updateUser(context: Context){
+        try{
+            val id:Int=context.pathParam("id").toInt()
+            val modifiedUser=context.body<UserDTO>()
+            val returnedUser=userService.update(id,modifiedUser)
+            context.json(returnedUser).status(HttpStatus.OK_200)
+        }
+        catch (exception: ValidationException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:UnmodifiedUserException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
     }
 }

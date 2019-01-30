@@ -14,6 +14,7 @@ class RouteConfig(private val itimaliaController: ItimaliaController){
                 ApiBuilder.post(itimaliaController::addUser)
                 ApiBuilder.path(":id"){
                     ApiBuilder.get(itimaliaController::findUser)
+                    ApiBuilder.put(itimaliaController::updateUser)
                 }
             }
 

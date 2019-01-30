@@ -1,7 +1,7 @@
 package domain.repositories
 
-import domain.entities.NewUser
 import domain.entities.UserDTO
+import domain.exceptions.UnmodifiedUserException
 import domain.exceptions.UserNotFoundException
 
 class UserRepositoryImpl:UserRepository{
@@ -18,6 +18,10 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
+        val originalUser=get(id)
+        if(originalUser == userDTO){
+            throw UnmodifiedUserException()
+        }
         userList[id]=userDTO
         return userDTO
     }
