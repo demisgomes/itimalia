@@ -44,7 +44,7 @@ dependencies {
 
     //deploy into heroku
     // https://mvnrepository.com/artifact/com.heroku.sdk/heroku-maven-plugin
-    compile group: 'com.heroku.sdk', name: 'heroku-maven-plugin', version: '2.0.6'
+    //compile group: 'com.heroku.sdk', name: 'heroku-maven-plugin', version: '2.0.6'
 
 }
 

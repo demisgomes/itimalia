@@ -3,8 +3,17 @@ package domain.repositories
 import domain.entities.UserDTO
 import domain.exceptions.UnmodifiedUserException
 import domain.exceptions.UserNotFoundException
+import java.lang.IndexOutOfBoundsException
 
 class UserRepositoryImpl:UserRepository{
+    override fun findByCredentials(email: String, password: String): UserDTO {
+        return userList.values.filter {
+                it.email==email &&
+                it.password == password
+            }.get(0)
+
+    }
+
     companion object {
         var userList:HashMap<Int, UserDTO> = HashMap()
     }

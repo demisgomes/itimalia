@@ -2,18 +2,16 @@ package domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class InvalidGenderException:ApiException("Invalid gender. Choose male, female, or undefined"){
-
+class InvalidCredentialsException:ApiException(message = "Invalid user and/or password") {
     override fun httpStatus(): Int {
-        return HttpStatus.UNPROCESSABLE_ENTITY_422
+        return HttpStatus.UNAUTHORIZED_401
     }
 
     override fun apiError(): ApiError {
-        return ApiError.INVALID_GENDER_ERROR
+        return ApiError.INVALID_CREDENTIALS_ERROR
     }
 
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }

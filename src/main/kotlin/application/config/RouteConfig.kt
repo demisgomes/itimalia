@@ -18,6 +18,9 @@ class RouteConfig(private val userController: UserController){
                     ApiBuilder.delete(userController::deleteUser)
                 }
             }
+            ApiBuilder.path("login"){
+                ApiBuilder.post(userController::loginUser)
+            }
 
         }
     }

@@ -8,4 +8,5 @@ interface UserRepository{
     fun update(id: Int,userDTO: UserDTO) : UserDTO
     fun get(id:Int):UserDTO
     fun delete(id:Int):UserDTO
+    fun findByCredentials(email:String,password:String):UserDTO
 }

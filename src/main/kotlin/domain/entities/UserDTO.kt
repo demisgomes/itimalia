@@ -4,7 +4,7 @@ import java.util.*
 
 data class UserDTO(
     var id: Int?,
-    val email: String,
+    var email: String,
     val password:String,
     val birthDate: Date?,
     val gender:Gender?,

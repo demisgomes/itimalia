@@ -1,10 +1,10 @@
 package application.web.controllers
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import domain.entities.NewUser
 import domain.entities.UserDTO
-import domain.exceptions.UnmodifiedUserException
-import domain.exceptions.UserNotFoundException
-import domain.exceptions.ValidationException
+import domain.entities.UserLogin
+import domain.exceptions.*
 import domain.services.UserService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
@@ -33,6 +33,10 @@ class UserController(private val userService: UserService){
         catch (exception: ValidationException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
+        catch (exception:InvalidFormatException){
+            val invalidGenderException=InvalidGenderException()
+            context.json(invalidGenderException.createErrorResponse()).status(invalidGenderException.httpStatus())
+        }
     }
 
     fun updateUser(context: Context){
@@ -60,6 +64,20 @@ class UserController(private val userService: UserService){
             context.json(deletedUser).status(HttpStatus.OK_200)
         }
         catch (exception:UserNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+    }
+
+    fun loginUser(context: Context){
+        try{
+            val newUserLogin=context.body<UserLogin>()
+            val userLogged=userService.login(newUserLogin)
+            context.json(userLogged).status(HttpStatus.OK_200)
+        }
+        catch (exception:ValidationException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:InvalidCredentialsException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }

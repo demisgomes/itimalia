@@ -1,8 +1,11 @@
 package application.web.controllers
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import domain.entities.Gender
 import domain.entities.NewUser
 import domain.entities.UserDTO
+import domain.entities.UserLogin
+import domain.exceptions.InvalidGenderException
 import domain.exceptions.UnmodifiedUserException
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
@@ -21,7 +24,10 @@ class UserControllerTest{
     lateinit var userServiceMock: UserService
     lateinit var contextMock: Context
     lateinit var returnedUser:UserDTO
+    lateinit var returnedAdminUser:UserDTO
     lateinit var newUser:NewUser
+    lateinit var newAdminUser:NewUser
+    lateinit var newLoginUser: UserLogin
 
     @Before
     fun setup(){
@@ -42,6 +48,18 @@ class UserControllerTest{
             null,
             null)
 
+        returnedAdminUser= UserDTO(
+            null,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            true,
+            null,
+            null)
+
         newUser = NewUser(
             "newUser@domain.com",
             "password",
@@ -50,6 +68,21 @@ class UserControllerTest{
             "New User",
             "81823183183",
             false
+        )
+
+        newAdminUser = NewUser(
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            true
+        )
+
+        newLoginUser = UserLogin(
+            "newUser@domain.com",
+            "password"
         )
     }
 
@@ -183,5 +216,41 @@ class UserControllerTest{
 
         verify { contextMock.json(userNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
     }
+//    @Test
+//    fun `when a user has a invalid gender, should return bad request with status 400`(){
+//        val invalidGenderException=InvalidGenderException()
+//        val invalidFormatException=InvalidFormatException.from(contextMock.body<NewUser>())
+//
+//        every { contextMock.body<NewUser>() }.throws(InvalidFormatException())
+//
+//        UserController(userServiceMock).addUser(contextMock)
+//
+//        verify { contextMock.json(invalidGenderException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
+//    }
+
+    @Test
+    fun `when add a valid user with admin permissions should return the user with status 201`(){
+
+        every{ userServiceMock.add(newAdminUser)}.returns(returnedAdminUser)
+
+        every { contextMock.body<NewUser>() }.returns(newAdminUser)
+
+        UserController(userServiceMock).addUser(contextMock)
+
+        verify { contextMock.json(returnedAdminUser).status(HttpStatus.CREATED_201) }
+    }
+
+    @Test
+    fun `when a user with valid credentials log in, should return the logged user with status 200`(){
+        every { userServiceMock.login(newLoginUser) }.returns(returnedUser)
+
+        every { contextMock.body<UserLogin>() }.returns(newLoginUser)
+
+        UserController(userServiceMock).loginUser(contextMock)
+
+        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+
+    }
+
 
 }

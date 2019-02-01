@@ -2,10 +2,22 @@ package domain.services
 
 import domain.entities.NewUser
 import domain.entities.UserDTO
+import domain.entities.UserLogin
+import domain.exceptions.InvalidCredentialsException
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
+import java.lang.IndexOutOfBoundsException
 
 class UserServiceImpl(private val userRepository: UserRepository):UserService{
+    override fun login(newUserLogin: UserLogin): UserDTO {
+        try{
+            return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
+        }
+        catch (exception:IndexOutOfBoundsException){
+            throw InvalidCredentialsException()
+        }
+    }
+
     override fun add(newUser: NewUser): UserDTO {
         val newUserDTO=UserDTO(
             null,
