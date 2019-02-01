@@ -55,5 +55,4 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
-task stage(dependsOn: ['build', 'clean', 'deployHeroku'])
-build.mustRunAfter clean
+task stage(dependsOn: ['build deployHeroku'])
