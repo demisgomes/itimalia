@@ -14,7 +14,7 @@ class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
 
     fun startServer() {
-        val app = Javalin.create().start(7000)
+        val app = Javalin.create().start(getHerokuAssignedPort())
 
         StandAloneContext.startKoin(
             listOf(
@@ -35,5 +35,12 @@ fun main(args: Array<String>) {
     catch (exception:Exception){
         exception.printStackTrace()
     }
+}
+
+private fun getHerokuAssignedPort(): Int {
+    val processBuilder = ProcessBuilder()
+    return if (processBuilder.environment()["PORT"] != null) {
+        Integer.parseInt(processBuilder.environment()["PORT"])
+    } else 7000
 }
 
