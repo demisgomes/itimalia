@@ -1,6 +1,5 @@
 package domain.repositories
 
-import domain.entities.NewUser
 import domain.entities.UserDTO
 
 interface UserRepository{
