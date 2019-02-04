@@ -5,10 +5,7 @@ import domain.entities.Gender
 import domain.entities.NewUser
 import domain.entities.UserDTO
 import domain.entities.UserLogin
-import domain.exceptions.InvalidGenderException
-import domain.exceptions.UnmodifiedUserException
-import domain.exceptions.UserNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.services.UserService
 import io.javalin.Context
 import io.mockk.every
@@ -251,6 +248,19 @@ class UserControllerTest{
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
     }
+    @Test
+    fun `when a user with non matching credentials log in, should return unauthorized with status 401`(){
+        val invalidCredentialsException=InvalidCredentialsException()
+        every { userServiceMock.login(newLoginUser) }.throws(invalidCredentialsException)
+
+        every { contextMock.body<UserLogin>() }.returns(newLoginUser)
+
+        UserController(userServiceMock).loginUser(contextMock)
+
+        verify { contextMock.json(invalidCredentialsException.createErrorResponse()).status(HttpStatus.UNAUTHORIZED_401) }
+
+    }
+
 
 
 }
