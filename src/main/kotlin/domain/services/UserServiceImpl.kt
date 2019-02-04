@@ -4,6 +4,7 @@ import domain.entities.NewUser
 import domain.entities.UserDTO
 import domain.entities.UserLogin
 import domain.exceptions.InvalidCredentialsException
+import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
 import java.lang.IndexOutOfBoundsException
@@ -27,11 +28,13 @@ class UserServiceImpl(private val userRepository: UserRepository):UserService{
             newUser.gender,
             newUser.name,
             newUser.phone,
-            newUser.admin,
+            newUser.role,
+            null,
             null,
             null
         )
 
+        newUserDTO.token=JWTUtils.sign(newUserDTO,60)
         UserValidation().validate(newUserDTO)
         return userRepository.add(newUserDTO)
     }
@@ -45,8 +48,9 @@ class UserServiceImpl(private val userRepository: UserRepository):UserService{
             userDTO.gender,
             userDTO.name,
             userDTO.phone,
-            userDTO.admin,
+            userDTO.role,
             userDTO.creationDate,
+            null,
             null
         )
         UserValidation().validate(newUserDTO)

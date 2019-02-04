@@ -1,10 +1,7 @@
 package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import domain.entities.Gender
-import domain.entities.NewUser
-import domain.entities.UserDTO
-import domain.entities.UserLogin
+import domain.entities.*
 import domain.exceptions.*
 import domain.services.UserService
 import io.javalin.Context
@@ -41,7 +38,8 @@ class UserControllerTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false,
+            Roles.USER,
+            null,
             null,
             null)
 
@@ -53,7 +51,8 @@ class UserControllerTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            true,
+            Roles.ADMIN,
+            null,
             null,
             null)
 
@@ -64,7 +63,7 @@ class UserControllerTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false
+            Roles.USER
         )
 
         newAdminUser = NewUser(
@@ -74,7 +73,7 @@ class UserControllerTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            true
+            Roles.ADMIN
         )
 
         newLoginUser = UserLogin(

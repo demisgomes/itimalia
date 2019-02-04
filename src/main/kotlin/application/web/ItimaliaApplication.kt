@@ -5,6 +5,8 @@ import commons.koin.configModule
 import commons.koin.controllerModule
 import commons.koin.serviceModule
 import commons.koin.validationModule
+import domain.entities.Roles
+import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.StandAloneContext
@@ -14,7 +16,14 @@ class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
 
     fun startServer() {
-        val app = Javalin.create().start(getHerokuAssignedPort())
+
+        val rolesMapping= mutableMapOf("user" to Roles.USER,"admin" to Roles.ADMIN)
+
+
+        val app = Javalin
+            .create()
+            .accessManager(JWTAccessManager("role", rolesMapping, Roles.ANYONE))
+            .start(getHerokuAssignedPort())
 
         StandAloneContext.startKoin(
             listOf(

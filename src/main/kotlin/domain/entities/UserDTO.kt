@@ -10,6 +10,7 @@ data class UserDTO(
     val gender:Gender?,
     val name: String,
     val phone: String,
-    var admin: Boolean,
+    var role: Roles,
     var creationDate: Date?,
-    var modificationDate: Date?)
+    var modificationDate: Date?,
+    var token:String?)

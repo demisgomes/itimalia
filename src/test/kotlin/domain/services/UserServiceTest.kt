@@ -2,6 +2,7 @@ package domain.services
 
 import domain.entities.Gender
 import domain.entities.NewUser
+import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
@@ -34,7 +35,8 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false,
+            Roles.USER,
+            null,
             null,
             null
         )
@@ -53,7 +55,7 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false
+            Roles.USER
         )
 
         val expectedUserDTO = UserDTO(
@@ -64,9 +66,10 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false,
+            Roles.USER,
             date,
-            Calendar.getInstance().time
+            Calendar.getInstance().time,
+            null
         )
 
         every { userRepositoryImplMock.add(newUserDTO)  }.returns(expectedUserDTO)
@@ -86,7 +89,7 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            true
+            Roles.ADMIN
         )
 
         val expectedUserDTO = UserDTO(
@@ -97,13 +100,14 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            true,
+            Roles.ADMIN,
             Calendar.getInstance().time,
-            Calendar.getInstance().time
+            Calendar.getInstance().time,
+            null
         )
 
         val adminUserDTO=newUserDTO
-        adminUserDTO.admin=true
+        adminUserDTO.role=Roles.ADMIN
 
         every { userRepositoryImplMock.add(adminUserDTO)  }.returns(expectedUserDTO)
         val userDTO=UserServiceImpl(userRepositoryImplMock).add(user)
@@ -122,13 +126,14 @@ class UserServiceTest{
             Gender.FEM,
             "New User",
             "81823183183",
-            true,
+            Roles.ADMIN,
             date,
+            null,
             null
         )
 
         val updatedUserDTO=newUserDTO
-        updatedUserDTO.admin=true
+        updatedUserDTO.role=Roles.ADMIN
         updatedUserDTO.id=1
         updatedUserDTO.creationDate=date
 
@@ -148,7 +153,7 @@ class UserServiceTest{
             null,
             "New User",
             "81823183183",
-            false
+            Roles.USER
         )
         UserServiceImpl(userRepositoryImplMock).add(newUser)
     }
@@ -162,7 +167,7 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false
+            Roles.USER
         )
 
         UserServiceImpl(userRepositoryImplMock).add(newUser)
@@ -178,9 +183,10 @@ class UserServiceTest{
             Gender.MASC,
             "New User",
             "81823183183",
-            false,
+            Roles.USER,
             date,
-            Calendar.getInstance().time
+            Calendar.getInstance().time,
+            null
         )
 
         every { userRepositoryImplMock.get(56415)  }.returns(expectedUserDTO)
