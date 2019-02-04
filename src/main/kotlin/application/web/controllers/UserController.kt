@@ -73,6 +73,7 @@ class UserController(private val userService: UserService){
             val newUserLogin=context.body<UserLogin>()
             val userLogged=userService.login(newUserLogin)
             context.json(userLogged).status(HttpStatus.OK_200)
+            
         }
         catch (exception:ValidationException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
@@ -81,4 +82,5 @@ class UserController(private val userService: UserService){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }
+
 }
