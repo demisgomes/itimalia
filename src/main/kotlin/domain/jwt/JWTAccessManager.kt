@@ -3,7 +3,12 @@ package domain.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.interfaces.DecodedJWT
+import com.sun.org.apache.xpath.internal.operations.Bool
+import domain.entities.Roles
 import domain.exceptions.InvalidCredentialsException
+import domain.exceptions.InvalidTokenException
+import domain.exceptions.UnauthorizedAdminRoleException
+import domain.exceptions.UnauthorizedUserRoleException
 import io.javalin.Context
 import io.javalin.Handler
 import io.javalin.security.AccessManager
@@ -22,12 +27,9 @@ class JWTAccessManager(
 ) : AccessManager {
 
     private fun extractRole(context: Context): Role {
-
-
         val string = getTokenFromHeader(context)
         if(string== Optional.empty<String>()){
             return defaultRole
-
         }
 
         val decodedJWT=JWT.decode(string.get())
@@ -37,18 +39,42 @@ class JWTAccessManager(
         return Optional.ofNullable(rolesMapping[userLevel]).orElse(defaultRole)
     }
 
-    @Throws(Exception::class)
+    fun verifyDate(context:Context):Boolean {
+        val string = getTokenFromHeader(context)
+        if (string == Optional.empty<String>()) {
+            return false
+        }
+
+        val decodedJWT=JWT.decode(string.get())
+
+        return decodedJWT.expiresAt.after(Date(Calendar.getInstance().timeInMillis))
+    }
+
+    @Throws(UnauthorizedAdminRoleException::class)
     override fun manage(handler: Handler, context: Context, permittedRoles: Set<Role>) {
+
+        //if token has been expired and this handler requires admin or user permissions, return invalid token exception
+        //add and find does not requires token (Roles.ANYONE)
+        if(!verifyDate(context) && !permittedRoles.contains(defaultRole)){
+            context.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
+            return
+        }
+
         val role = extractRole(context)
 
         if (permittedRoles.contains(role)) {
             handler.handle(context)
         } else {
-            context.json(InvalidCredentialsException().createErrorResponse()).status(HttpStatus.UNAUTHORIZED_401)
+            if(permittedRoles.contains(Roles.ADMIN)){
+                context.json(UnauthorizedAdminRoleException().createErrorResponse()).status(UnauthorizedAdminRoleException().httpStatus())
+            }
+            else{
+                context.json(UnauthorizedUserRoleException().createErrorResponse()).status(UnauthorizedUserRoleException().httpStatus())
+            }
         }
     }
 
-    fun getTokenFromHeader(context: Context): Optional<String> {
+    private fun getTokenFromHeader(context: Context): Optional<String> {
         return Optional.ofNullable(context.header("Authorization"))
             .flatMap { header ->
                 val split = header.split(" ")
@@ -57,6 +83,5 @@ class JWTAccessManager(
                 }
                 return@flatMap Optional.of(split[1])
             }
-
     }
 }

@@ -17,11 +17,11 @@ class RouteConfig(private val userController: UserController){
 
         app.routes {
             ApiBuilder.path("users") {
-                ApiBuilder.post(userController::addUser, roles(Roles.ANYONE, Roles.USER))
+                ApiBuilder.post(userController::addUser, roles(Roles.ANYONE))
                 ApiBuilder.path(":id"){
-                    ApiBuilder.get(userController::findUser)
-                    ApiBuilder.put(userController::updateUser)
-                    ApiBuilder.delete(userController::deleteUser, roles(Roles.ADMIN))
+                    ApiBuilder.get(userController::findUser,roles(Roles.ANYONE))
+                    ApiBuilder.put(userController::updateUser,roles(Roles.USER, Roles.ADMIN))
+                    ApiBuilder.delete(userController::deleteUser, roles(Roles.USER, Roles.ADMIN))
 
                 }
             }

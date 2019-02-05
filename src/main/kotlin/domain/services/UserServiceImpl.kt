@@ -53,6 +53,7 @@ class UserServiceImpl(private val userRepository: UserRepository):UserService{
             null,
             null
         )
+        newUserDTO.token=get(id).token
         UserValidation().validate(newUserDTO)
 
         return userRepository.update(id, newUserDTO)
