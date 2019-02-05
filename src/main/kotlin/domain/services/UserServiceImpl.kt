@@ -9,7 +9,7 @@ import domain.repositories.UserRepository
 import domain.validation.UserValidation
 import java.lang.IndexOutOfBoundsException
 
-class UserServiceImpl(private val userRepository: UserRepository):UserService{
+class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun login(newUserLogin: UserLogin): UserDTO {
         try{
             return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
@@ -31,10 +31,9 @@ class UserServiceImpl(private val userRepository: UserRepository):UserService{
             newUser.role,
             null,
             null,
-            null
+            jwtUtils.sign(newUser.email,newUser.role,60)
         )
 
-        newUserDTO.token=JWTUtils.sign(newUserDTO,60)
         UserValidation().validate(newUserDTO)
         return userRepository.add(newUserDTO)
     }
@@ -53,7 +52,7 @@ class UserServiceImpl(private val userRepository: UserRepository):UserService{
             null,
             null
         )
-        newUserDTO.token=get(id).token
+        newUserDTO.token=userRepository.get(id).token
         UserValidation().validate(newUserDTO)
 
         return userRepository.update(id, newUserDTO)

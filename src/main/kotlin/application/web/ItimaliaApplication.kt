@@ -1,10 +1,7 @@
 package application.web
 
 import application.config.RouteConfig
-import commons.koin.configModule
-import commons.koin.controllerModule
-import commons.koin.serviceModule
-import commons.koin.validationModule
+import commons.koin.*
 import domain.entities.Roles
 import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
@@ -30,7 +27,8 @@ class ItimaliaApplication : KoinComponent {
                 validationModule,
                 serviceModule,
                 controllerModule,
-                configModule
+                configModule,
+                JWTModule
             )
         )
         routeConfig.register(app)

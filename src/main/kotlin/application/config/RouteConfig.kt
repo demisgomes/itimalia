@@ -26,7 +26,7 @@ class RouteConfig(private val userController: UserController){
                 }
             }
             ApiBuilder.path("login"){
-                ApiBuilder.post(userController::loginUser)
+                ApiBuilder.post(userController::loginUser, roles(Roles.ANYONE))
             }
 
         }
