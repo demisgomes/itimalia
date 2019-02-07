@@ -30,10 +30,10 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         val userToBeModified=userRepository.get(id)
 
         if(role==Roles.ADMIN) {
-            updateCall(newUserDTO,userToBeModified,id)
+            return updateCall(newUserDTO,userToBeModified,id)
         }
         if(userToBeModified.email == newUserDTO.email && userToBeModified.role==newUserDTO.role){
-            updateCall(newUserDTO,userToBeModified,id)
+            return updateCall(newUserDTO,userToBeModified,id)
         }
         throw UnauthorizedAdminRoleException()
     }
