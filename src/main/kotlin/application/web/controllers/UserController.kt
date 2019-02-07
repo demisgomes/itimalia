@@ -2,14 +2,16 @@ package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import domain.entities.NewUser
+import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.entities.UserLogin
 import domain.exceptions.*
+import domain.jwt.JWTAccessManager
 import domain.services.UserService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
 
-class UserController(private val userService: UserService){
+class UserController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager){
 
     fun findUser(context:Context){
         try{
@@ -43,7 +45,7 @@ class UserController(private val userService: UserService){
         try{
             val id:Int=context.pathParam("id").toInt()
             val modifiedUser=context.body<UserDTO>()
-            val returnedUser=userService.update(id,modifiedUser)
+            val returnedUser=userService.update(id,modifiedUser, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
             context.json(returnedUser).status(HttpStatus.OK_200)
         }
         catch (exception: ValidationException){
@@ -55,13 +57,16 @@ class UserController(private val userService: UserService){
         catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
+        catch (exception:UnauthorizedAdminRoleException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
     }
 
     fun deleteUser(context: Context){
         try{
             val id:Int=context.pathParam("id").toInt()
-            val deletedUser=userService.delete(id)
-            context.json(deletedUser).status(HttpStatus.OK_200)
+            userService.delete(id, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
+            context.status(HttpStatus.NO_CONTENT_204)
         }
         catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
@@ -82,5 +87,10 @@ class UserController(private val userService: UserService){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }
+
+//    private fun updateCallByAdmin(context:Context, id:Int, modifiedUser:UserDTO){
+//        val returnedUser=userService.update(id,modifiedUser, Roles.ADMIN, jwtAccessManager.)
+//        context.json(returnedUser).status(HttpStatus.OK_200)
+//    }
 
 }

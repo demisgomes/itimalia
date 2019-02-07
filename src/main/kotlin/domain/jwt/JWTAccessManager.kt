@@ -26,7 +26,7 @@ class JWTAccessManager(
     private val defaultRole: Role
 ) : AccessManager {
 
-    private fun extractRole(context: Context): Role {
+    fun extractRole(context: Context): Role {
         val string = getTokenFromHeader(context)
         if(string== Optional.empty<String>()){
             return defaultRole
@@ -48,6 +48,17 @@ class JWTAccessManager(
         val decodedJWT=JWT.decode(string.get())
 
         return decodedJWT.expiresAt.after(Date(Calendar.getInstance().timeInMillis))
+    }
+
+    fun extractEmail(context: Context):String{
+        val string = getTokenFromHeader(context)
+        if (string == Optional.empty<String>()) {
+            return ""
+        }
+
+        val decodedJWT=JWT.decode(string.get())
+
+        return decodedJWT.getClaim("email").asString()
     }
 
     @Throws(UnauthorizedAdminRoleException::class)
