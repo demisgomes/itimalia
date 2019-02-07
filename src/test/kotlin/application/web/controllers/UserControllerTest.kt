@@ -213,13 +213,13 @@ class UserControllerTest{
     }
 
     @Test
-    fun `when modify an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
-        val unauthorizedAdminRoleException=UnauthorizedAdminRoleException()
+    fun `when modify an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Different Change User exception with 403`(){
+        val unauthorizedDifferentUserChangeException=UnauthorizedDifferentUserChangeException()
         every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email+"A")}.throws(unauthorizedAdminRoleException)
+        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email+"A")}.throws(unauthorizedDifferentUserChangeException)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -227,7 +227,27 @@ class UserControllerTest{
 
         UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
 
-        verify { contextMock.json(unauthorizedAdminRoleException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+        verify { contextMock.json(unauthorizedDifferentUserChangeException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+
+
+    }
+
+    @Test
+    fun `when modify an existent user with valid token without admin permissions and equal email between modified and modifier and change its role should return Unauthorized Role Change exception with 403`(){
+        val unauthorizedRoleChangeException = UnauthorizedRoleChangeException()
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
+
+        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email+"A")}.throws(unauthorizedRoleChangeException)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+
+        verify { contextMock.json(unauthorizedRoleChangeException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
 
 
     }
@@ -330,13 +350,13 @@ class UserControllerTest{
     }
 
     @Test
-    fun `when delete an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
-        val unauthorizedAdminRoleException=UnauthorizedAdminRoleException()
+    fun `when delete an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Different User Change exception with 403`(){
+        val unauthorizedDifferentUserChangeException=UnauthorizedDifferentUserChangeException()
         every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.delete(1, returnedUser.role, returnedUser.email)}.throws(unauthorizedAdminRoleException)
+        every{ userServiceMock.delete(1, returnedUser.role, returnedUser.email)}.throws(unauthorizedDifferentUserChangeException)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -344,7 +364,7 @@ class UserControllerTest{
 
         UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
 
-        verify { contextMock.json(unauthorizedAdminRoleException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+        verify { contextMock.json(unauthorizedDifferentUserChangeException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
 
 
     }

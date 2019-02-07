@@ -6,6 +6,8 @@ import domain.entities.UserDTO
 import domain.entities.UserLogin
 import domain.exceptions.InvalidCredentialsException
 import domain.exceptions.UnauthorizedAdminRoleException
+import domain.exceptions.UnauthorizedDifferentUserChangeException
+import domain.exceptions.UnauthorizedRoleChangeException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
@@ -14,7 +16,7 @@ import java.lang.IndexOutOfBoundsException
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
-        val newUserDTO=UserDTO(
+        val newUserDTO = UserDTO(
             userDTO.id,
             userDTO.email,
             userDTO.password,
@@ -27,15 +29,19 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             null,
             null
         )
-        val userToBeModified=userRepository.get(id)
+        val userToBeModified = userRepository.get(id)
 
-        if(role==Roles.ADMIN) {
-            return updateCall(newUserDTO,userToBeModified,id)
+        if (role == Roles.ADMIN) {
+            return updateCall(newUserDTO, userToBeModified, id)
         }
-        if(userToBeModified.email == newUserDTO.email && userToBeModified.role==newUserDTO.role){
-            return updateCall(newUserDTO,userToBeModified,id)
+
+        if (userToBeModified.email == newUserDTO.email) {
+            if (userToBeModified.role == newUserDTO.role) {
+                return updateCall(newUserDTO, userToBeModified, id)
+            }
+            throw UnauthorizedRoleChangeException()
         }
-        throw UnauthorizedAdminRoleException()
+        throw UnauthorizedDifferentUserChangeException()
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
@@ -96,7 +102,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         if(userToBeDeleted.email == email){
             return userRepository.delete(id)
         }
-        throw UnauthorizedAdminRoleException()
+        throw UnauthorizedDifferentUserChangeException()
 
     }
 

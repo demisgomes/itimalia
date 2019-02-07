@@ -57,7 +57,10 @@ class UserController(private val userService: UserService, private val jwtAccess
         catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
-        catch (exception:UnauthorizedAdminRoleException){
+        catch (exception:UnauthorizedRoleChangeException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:UnauthorizedDifferentUserChangeException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }
@@ -71,7 +74,7 @@ class UserController(private val userService: UserService, private val jwtAccess
         catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
-        catch (exception:UnauthorizedAdminRoleException){
+        catch (exception:UnauthorizedDifferentUserChangeException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }
