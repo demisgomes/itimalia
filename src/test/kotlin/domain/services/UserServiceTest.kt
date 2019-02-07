@@ -154,7 +154,7 @@ class UserServiceTest{
         every { userRepositoryImplMock.update(1,updatedUserDTO) }.returns(expectedUserDTO)
         every { userRepositoryImplMock.get(1)}.returns(newUserDTO)
 
-        val userDTO=UserServiceImpl(userRepositoryImplMock,jwtUtils).update(1,updatedUserDTO)
+        val userDTO=UserServiceImpl(userRepositoryImplMock,jwtUtils).update(1,updatedUserDTO, updatedUserDTO.role, updatedUserDTO.email)
 
         assertEquals(expectedUserDTO,userDTO)
     }

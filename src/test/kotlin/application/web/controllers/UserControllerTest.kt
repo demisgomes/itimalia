@@ -213,6 +213,88 @@ class UserControllerTest{
     }
 
     @Test
+    fun `when modify an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
+        val unauthorizedAdminRoleException=UnauthorizedAdminRoleException()
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
+
+        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email+"A")}.throws(unauthorizedAdminRoleException)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+
+        verify { contextMock.json(unauthorizedAdminRoleException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+
+
+    }
+
+    @Test
+    fun `when modify an existent user with valid token with admin permissions and different email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
+
+        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+
+        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+
+    @Test
+    fun `when modify an existent user with valid token with admin permissions and equal email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
+
+        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+
+        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+    @Test
+    fun `when modify an existent user with valid token without admin permissions and equal email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
+
+        every{ userServiceMock.update(1, returnedUser, Roles.USER, returnedUser.email)}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+
+        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+
+    @Test
     fun `when delete a user by id and it exists, return 200 with user deleted`(){
         every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
 
@@ -226,7 +308,7 @@ class UserControllerTest{
 
         UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
     }
 
     @Test
@@ -246,6 +328,89 @@ class UserControllerTest{
 
         verify { contextMock.json(userNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
     }
+
+    @Test
+    fun `when delete an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
+        val unauthorizedAdminRoleException=UnauthorizedAdminRoleException()
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
+
+        every{ userServiceMock.delete(1, returnedUser.role, returnedUser.email)}.throws(unauthorizedAdminRoleException)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+
+        verify { contextMock.json(unauthorizedAdminRoleException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+
+
+    }
+
+    @Test
+    fun `when delete an existent user with valid token with admin permissions and different email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
+
+        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+
+        verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+
+    @Test
+    fun `when delete an existent user with valid token with admin permissions and equal email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
+
+        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+
+        verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+    @Test
+    fun `when delete an existent user with valid token without admin permissions and equal email between modified and modifier should return OK with status 200`(){
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
+
+        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
+
+        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+
+        every { contextMock.pathParam("id") }.returns("1")
+
+        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+
+        verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
+
+        //every { jwtAccessManagerMock.manage(contextMock) }
+
+    }
+
+
 //    @Test
 //    fun `when a user has a invalid gender, should return bad request with status 400`(){
 //        val invalidGenderException=InvalidGenderException()
@@ -294,86 +459,6 @@ class UserControllerTest{
 
     }
 
-    @Test
-    fun `when modify an existent user with valid token without admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
-        val unauthorizedAdminRoleException=UnauthorizedAdminRoleException()
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(returnedUser.role)
-
-        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
-
-        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email+"A")}.throws(unauthorizedAdminRoleException)
-
-        every { contextMock.pathParam("id") }.returns("1")
-
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
-
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
-
-        verify { contextMock.json(unauthorizedAdminRoleException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
-
-
-    }
-
-    @Test
-    fun `when modify an existent user with valid token with admin permissions and different email between modified and modifier should return Unauthorized Role exception with 403`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
-
-        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
-
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
-
-        every { contextMock.pathParam("id") }.returns("1")
-
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
-
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
-
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
-
-        //every { jwtAccessManagerMock.manage(contextMock) }
-
-    }
-
-
-    @Test
-    fun `when modify an existent user with valid token with admin permissions and equal email between modified and modifier should return Unauthorized Role exception with 403`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
-
-        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
-
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
-
-        every { contextMock.pathParam("id") }.returns("1")
-
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
-
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
-
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
-
-        //every { jwtAccessManagerMock.manage(contextMock) }
-
-    }
-
-    @Test
-    fun `when modify an existent user with valid token without admin permissions and equal email between modified and modifier should return Unauthorized Role exception with 403`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
-
-        every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
-
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
-
-        every { contextMock.pathParam("id") }.returns("1")
-
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
-
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
-
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
-
-        //every { jwtAccessManagerMock.manage(contextMock) }
-
-    }
 
     @Test
     fun `mocking a relaxed sum`(){
@@ -384,14 +469,14 @@ class UserControllerTest{
         assertEquals("", sumMock.sum(1,2).philo)
     }
 
-    @Test
-    fun `mocking a non-relaxed sum`(){
-        val sumMock=mockk<Sum>()
-
-        every { sumMock.sum(1,2) }.returns(Animal(null,null))
-
-        assertEquals(Animal(null,null), sumMock.sum(1,2))
-    }
+//    @Test
+//    fun `mocking a non-relaxed sum`(){
+//        val sumMock=mockk<Sum>()
+//
+//        every { sumMock.sum(1,2) }.returns(Animal(null,null))
+//
+//        assertEquals(Animal("A1","B2"), sumMock.sum(1,2))
+//    }
 
     @Test
     fun `mocking a spy sum`(){
@@ -399,34 +484,34 @@ class UserControllerTest{
 
         //every { sumMock.sum(1,2) }.returns(0)
 
-        assertEquals(null, sumMock.sum(1,2).name)
+        assertEquals("A1", sumMock.sum(1,2).name)
     }
 
-    @Test
-    fun `mocking a relaxed animal`(){
-        val animalMock=mockk<Animal>(relaxed = true)
+//    @Test
+//    fun `mocking a relaxed animal`(){
+//        val animalMock=mockk<Animal>(relaxed = true)
+//
+//        animalMock.name="cat"
+//        animalMock.philo="chordata"
+//
+//        animalMock.print()
+//        verify { animalMock.changeName() }
+//
+//        assertEquals("", animalMock.print())
+//    }
 
-        animalMock.name="cat"
-        animalMock.philo="chordata"
-
-        animalMock.print()
-        verify { animalMock.changeName() }
-
-        assertEquals("", animalMock.print())
-    }
-
-    @Test
-    fun `mocking an animal`(){
-        val animalMock=mockk<Animal>()
-        animalMock.name="cat"
-        animalMock.philo="chordata"
-
-        animalMock.print()
-        verify { animalMock.changeName() }
-
-
-        //assertEquals(" and ", animalMock.print())
-    }
+//    @Test
+//    fun `mocking an animal`(){
+//        val animalMock=mockk<Animal>()
+//        animalMock.name="cat"
+//        animalMock.philo="chordata"
+//
+//        animalMock.print()
+//        verify { animalMock.changeName() }
+//
+//
+//        //assertEquals(" and ", animalMock.print())
+//    }
 
 }
 

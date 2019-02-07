@@ -71,6 +71,9 @@ class UserController(private val userService: UserService, private val jwtAccess
         catch (exception:UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
+        catch (exception:UnauthorizedAdminRoleException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
     }
 
     fun loginUser(context: Context){

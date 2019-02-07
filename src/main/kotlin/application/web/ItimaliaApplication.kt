@@ -11,16 +11,9 @@ import org.koin.standalone.inject
 
 class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
+    private val jwtAccessManager: JWTAccessManager by inject()
 
     fun startServer() {
-
-        val rolesMapping= mutableMapOf("user" to Roles.USER,"admin" to Roles.ADMIN)
-
-
-        val app = Javalin
-            .create()
-            .accessManager(JWTAccessManager("role", rolesMapping, Roles.ANYONE))
-            .start(getHerokuAssignedPort())
 
         StandAloneContext.startKoin(
             listOf(
@@ -28,9 +21,17 @@ class ItimaliaApplication : KoinComponent {
                 serviceModule,
                 controllerModule,
                 configModule,
-                JWTModule
+                JWTModule,
+                accessManagerModule
             )
         )
+
+        val app = Javalin
+            .create()
+            .accessManager(jwtAccessManager)
+            .start(getHerokuAssignedPort())
+
+        
         routeConfig.register(app)
     }
 }
