@@ -18,13 +18,11 @@ class JWTUtils{
             .withClaim("email", email)
             .withClaim("role",role.toString())
             .withExpiresAt(convertToDate(maxAgeInMinutes)).sign(algorithm)
-
     }
 
     private fun convertToDate(minutes:Int):Date{
         val calendar=Calendar.getInstance()
         return Date(calendar.timeInMillis+minutes*60000)
     }
-
 
 }

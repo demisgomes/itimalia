@@ -63,14 +63,11 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 newUser.role,
                 null,
                 null,
-                jwtUtils.sign(newUser.email,newUser.role,60)
+                jwtUtils.sign(newUser.email,newUser.role,5)
             )
-
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
         }
-
-
 
     }
 
@@ -92,7 +89,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     private fun updateCall(newUserDTO:UserDTO, userToBeModified:UserDTO, id:Int):UserDTO{
-        newUserDTO.token = userToBeModified.token
+        newUserDTO.token = jwtUtils.sign(userToBeModified.email, newUserDTO.role, 5)
         UserValidation().validate(newUserDTO)
         return userRepository.update(id, newUserDTO)
     }
