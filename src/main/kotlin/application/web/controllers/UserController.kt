@@ -39,6 +39,9 @@ class UserController(private val userService: UserService, private val jwtAccess
             val invalidGenderException=InvalidGenderException()
             context.json(invalidGenderException.createErrorResponse()).status(invalidGenderException.httpStatus())
         }
+        catch (exception:EmailAlreadyExistsException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
     }
 
     fun updateUser(context: Context){

@@ -1,15 +1,35 @@
 package domain.repositories
 
 import domain.entities.UserDTO
+import domain.exceptions.EmailAlreadyExistsException
+import domain.exceptions.InvalidCredentialsException
 import domain.exceptions.UnmodifiedUserException
 import domain.exceptions.UserNotFoundException
+import java.lang.IndexOutOfBoundsException
 
 class UserRepositoryImpl:UserRepository{
+    override fun findByEmail(email: String):UserDTO {
+        try{
+            return userList.values.filter {
+                it.email == email
+            }[0]
+        }
+        catch (exception: IndexOutOfBoundsException){
+            throw UserNotFoundException()
+        }
+
+    }
+
     override fun findByCredentials(email: String, password: String): UserDTO {
-        return userList.values.filter {
-            it.email==email &&
-                    it.password == password
-        }[0]
+        try{
+            return userList.values.filter {
+                it.email == email &&
+                        it.password == password
+            }[0]
+        }
+        catch (exception: IndexOutOfBoundsException){
+            throw UserNotFoundException()
+        }
 
     }
 

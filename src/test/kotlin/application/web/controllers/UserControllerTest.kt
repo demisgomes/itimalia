@@ -123,6 +123,18 @@ class UserControllerTest{
     }
 
     @Test
+    fun `when add a valid user with an existent email should return Email Already Exists with status 401`(){
+        val emailAlreadyExistsException=EmailAlreadyExistsException()
+        every{ userServiceMock.add(newUser)}.throws(emailAlreadyExistsException)
+
+        every { contextMock.body<NewUser>() }.returns(newUser)
+
+        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
+
+        verify { contextMock.json(emailAlreadyExistsException.createErrorResponse()).status(HttpStatus.UNAUTHORIZED_401) }
+    }
+
+    @Test
     fun `when add a invalid user with less than 13 years old should return validation error with status 400`(){
         val validationException=ValidationException(hashMapOf("birthDate" to mutableListOf("Only accept users with 13 years old or more")))
 
