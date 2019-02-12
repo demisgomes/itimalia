@@ -32,7 +32,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             return updateCall(newUserDTO, userToBeModified, id)
         }
 
-        if (userToBeModified.email == newUserDTO.email) {
+        if (userToBeModified.email == email) {
             if (userToBeModified.role == newUserDTO.role) {
                 return updateCall(newUserDTO, userToBeModified, id)
             }
@@ -60,10 +60,10 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 newUser.gender,
                 newUser.name,
                 newUser.phone,
-                newUser.role,
+                Roles.USER,
                 null,
                 null,
-                jwtUtils.sign(newUser.email,newUser.role,5)
+                jwtUtils.sign(newUser.email,Roles.USER,5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)

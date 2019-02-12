@@ -1,5 +1,6 @@
 package domain.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.*
 
 data class NewUser(
@@ -8,5 +9,4 @@ data class NewUser(
     val birthDate:Date?,
     val gender:Gender?,
     val name: String,
-    val phone: String,
-    val role:Roles)
+    val phone: String)
