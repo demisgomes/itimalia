@@ -6,12 +6,14 @@ import domain.services.UserService
 import io.javalin.Context
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
 import org.junit.Test
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.*
 
 class AdminControllerTest{
     lateinit var userServiceMock: UserService
@@ -20,12 +22,16 @@ class AdminControllerTest{
     lateinit var newAdminUser: NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
+    lateinit var actualCalendar:Calendar
 
     @Before
     fun setup(){
         userServiceMock = mockk(relaxed=true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock= mockk(relaxed = true)
+
+        mockkStatic(Calendar::class)
+        actualCalendar= Calendar.getInstance()
 
         val formatter: DateFormat = SimpleDateFormat("dd/mm/yyyy")
         val date=formatter.parse("01/01/1990")
@@ -38,8 +44,8 @@ class AdminControllerTest{
             "New User",
             "81823183183",
             Roles.ADMIN,
-            null,
-            null,
+            actualCalendar.time,
+            actualCalendar.time,
             null)
 
         newAdminUser = NewUser(

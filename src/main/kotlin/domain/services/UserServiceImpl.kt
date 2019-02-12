@@ -10,6 +10,7 @@ import domain.repositories.UserRepository
 import domain.validation.UserValidation
 import io.javalin.security.Role
 import java.lang.IndexOutOfBoundsException
+import java.util.*
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
@@ -23,7 +24,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             userDTO.phone,
             userDTO.role,
             userDTO.creationDate,
-            null,
+            Calendar.getInstance().time,
             null
         )
         val userToBeModified = userRepository.get(id)
@@ -61,8 +62,8 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 newUser.name,
                 newUser.phone,
                 Roles.USER,
-                null,
-                null,
+                Calendar.getInstance().time,
+                Calendar.getInstance().time,
                 jwtUtils.sign(newUser.email,Roles.USER,5)
             )
             UserValidation().validate(newUserDTO)

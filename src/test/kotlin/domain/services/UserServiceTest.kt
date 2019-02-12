@@ -11,6 +11,7 @@ import domain.repositories.UserRepository
 import domain.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import org.junit.Before
 import org.junit.Test
 import java.text.DateFormat
@@ -23,13 +24,19 @@ class UserServiceTest{
 
     private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: UserDTO
+    private lateinit var expectedUserDTO:UserDTO
+    private lateinit var expectedModifiedUserDTO:UserDTO
     private lateinit var date:Date
     private lateinit var jwtUtils: JWTUtils
+    private lateinit var actualCalendar: Calendar
 
     @Before
     fun setup() {
         val formatter:DateFormat= SimpleDateFormat("dd/mm/yyyy")
         date=formatter.parse("01/01/1990")
+        mockkStatic(Calendar::class)
+        actualCalendar= Calendar.getInstance()
+
         newUserDTO = UserDTO(
             null,
             "newUser@domain.com",
@@ -39,10 +46,39 @@ class UserServiceTest{
             "New User",
             "81823183183",
             Roles.USER,
-            null,
-            null,
+            actualCalendar.time,
+            actualCalendar.time,
             "token_test"
         )
+        expectedUserDTO = UserDTO(
+            1,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.USER,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
+
+        expectedModifiedUserDTO = UserDTO(
+            1,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.ADMIN,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
+
+
 
         userRepositoryMock= mockk(relaxed = true)
 
@@ -61,30 +97,13 @@ class UserServiceTest{
             "81823183183"
         )
 
-        val expectedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            date,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            null,
-            null,
-            "token_test"
-        )
-        val newUserDTOWithoutToken=newUserDTO
-        newUserDTOWithoutToken.token=null
+        every { Calendar.getInstance() }.returns(actualCalendar)
 
-        every { userRepositoryMock.findByEmail(newUserDTOWithoutToken.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
-        every { jwtUtils.sign(newUserDTOWithoutToken.email, newUserDTOWithoutToken.role, 5) }.returns("token_test")
+        every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
 
-        newUserDTOWithoutToken.token="token_test"
-
-        every { userRepositoryMock.add(newUserDTOWithoutToken)  }.returns(expectedUserDTO)
-
+        every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
         val userDTO=UserServiceImpl(userRepositoryMock, jwtUtils).add(user)
 
@@ -94,38 +113,21 @@ class UserServiceTest{
     @Test
     fun `when a valid user will be sucessfully modified modify it`(){
 
-        val expectedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            date,
-            Gender.FEM,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            date,
-            Calendar.getInstance().time,
-            "token_test"
-        )
+        every { Calendar.getInstance() }.returns(actualCalendar)
 
         val updatedUserDTO=newUserDTO
         updatedUserDTO.role=Roles.ADMIN
         updatedUserDTO.id=1
-        updatedUserDTO.creationDate=date
 
         every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
 
-
-        //every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
-
-        every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedUserDTO)
         every { userRepositoryMock.get(1)}.returns(updatedUserDTO)
-
+        every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
 
 
         val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, updatedUserDTO.role, updatedUserDTO.email)
 
-        assertEquals(expectedUserDTO,userDTO)
+        assertEquals(expectedModifiedUserDTO,userDTO)
     }
 
     @Test(expected = ValidationException::class)
