@@ -46,10 +46,6 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
-        val originalUser=get(id)
-        if(originalUser == userDTO){
-            throw UnmodifiedUserException()
-        }
         userList[id]=userDTO
         return userDTO
     }

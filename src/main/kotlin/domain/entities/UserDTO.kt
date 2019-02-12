@@ -16,5 +16,5 @@ data class UserDTO(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     var creationDate: Date?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
-    var modificationDate: Date?,
+    val modificationDate: Date?,
     var token:String?)

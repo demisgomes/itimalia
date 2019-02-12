@@ -14,8 +14,10 @@ import java.util.*
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
+        val userToBeModified = userRepository.get(id)
+
         val newUserDTO = UserDTO(
-            userDTO.id,
+            userToBeModified.id,
             userDTO.email,
             userDTO.password,
             userDTO.birthDate,
@@ -23,11 +25,10 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             userDTO.name,
             userDTO.phone,
             userDTO.role,
-            userDTO.creationDate,
-            Calendar.getInstance().time,
-            null
+            userToBeModified.creationDate,
+            userToBeModified.modificationDate,
+            userToBeModified.token
         )
-        val userToBeModified = userRepository.get(id)
 
         if (role == Roles.ADMIN) {
             return updateCall(newUserDTO, userToBeModified, id)
@@ -53,6 +54,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             throw EmailAlreadyExistsException()
         }
         catch (exception:UserNotFoundException){
+            val actualDate= Calendar.getInstance().time
             val newUserDTO=UserDTO(
                 null,
                 newUser.email,
@@ -63,8 +65,8 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 newUser.phone,
                 Roles.USER,
                 Calendar.getInstance().time,
-                Calendar.getInstance().time,
-                jwtUtils.sign(newUser.email,Roles.USER,5)
+                actualDate,
+                jwtUtils.sign(newUser.email,Roles.USER,actualDate, 5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
@@ -90,9 +92,28 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     private fun updateCall(newUserDTO:UserDTO, userToBeModified:UserDTO, id:Int):UserDTO{
-        newUserDTO.token = jwtUtils.sign(userToBeModified.email, newUserDTO.role, 5)
+        if(newUserDTO == userToBeModified){
+            throw UnmodifiedUserException()
+        }
+
+
+        val actualDate=Calendar.getInstance().time
+        val modifiedUserDTO=UserDTO(
+            userToBeModified.id,
+            newUserDTO.email,
+            newUserDTO.password,
+            newUserDTO.birthDate,
+            newUserDTO.gender,
+            newUserDTO.name,
+            newUserDTO.phone,
+            newUserDTO.role,
+            userToBeModified.creationDate,
+            actualDate,
+            jwtUtils.sign(newUserDTO.email, newUserDTO.role, actualDate, 5)
+        )
+
         UserValidation().validate(newUserDTO)
-        return userRepository.update(id, newUserDTO)
+        return userRepository.update(id, modifiedUserDTO)
     }
 
 }

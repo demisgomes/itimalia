@@ -30,8 +30,6 @@ class ItimaliaApplication : KoinComponent {
             .create()
             .accessManager(jwtAccessManager)
             .start(getHerokuAssignedPort())
-
-        
         routeConfig.register(app)
     }
 }

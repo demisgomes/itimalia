@@ -17,6 +17,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             throw EmailAlreadyExistsException()
         }
         catch (exception: UserNotFoundException){
+            val actualDate = Calendar.getInstance().time
             val newUserDTO=UserDTO(
                 null,
                 newUser.email,
@@ -27,8 +28,8 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 newUser.phone,
                 Roles.ADMIN,
                 Calendar.getInstance().time,
-                Calendar.getInstance().time,
-                jwtUtils.sign(newUser.email, Roles.ADMIN,5)
+                actualDate,
+                jwtUtils.sign(newUser.email, Roles.ADMIN,actualDate,5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
