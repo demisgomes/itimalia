@@ -7,6 +7,7 @@ import domain.entities.UserDTO
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTUtils
+import domain.repositories.UserRepository
 import domain.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -20,7 +21,7 @@ import kotlin.test.assertEquals
 
 class UserServiceTest{
 
-    private lateinit var userRepositoryImplMock: UserRepositoryImpl
+    private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: UserDTO
     private lateinit var date:Date
     private lateinit var jwtUtils: JWTUtils
@@ -43,7 +44,7 @@ class UserServiceTest{
             "token_test"
         )
 
-        userRepositoryImplMock= mockk(relaxed = true)
+        userRepositoryMock= mockk(relaxed = true)
 
         jwtUtils= mockk(relaxed = true)
     }
@@ -57,8 +58,7 @@ class UserServiceTest{
             date,
             Gender.MASC,
             "New User",
-            "81823183183",
-            Roles.USER
+            "81823183183"
         )
 
         val expectedUserDTO = UserDTO(
@@ -70,61 +70,23 @@ class UserServiceTest{
             "New User",
             "81823183183",
             Roles.USER,
-            date,
-            Calendar.getInstance().time,
+            null,
+            null,
             "token_test"
         )
         val newUserDTOWithoutToken=newUserDTO
         newUserDTOWithoutToken.token=null
 
-        every { jwtUtils.sign(newUserDTOWithoutToken.email, newUserDTOWithoutToken.role, 60) }.returns("token_test")
+        every { userRepositoryMock.findByEmail(newUserDTOWithoutToken.email) }.throws(UserNotFoundException())
+
+        every { jwtUtils.sign(newUserDTOWithoutToken.email, newUserDTOWithoutToken.role, 5) }.returns("token_test")
 
         newUserDTOWithoutToken.token="token_test"
 
-        every { userRepositoryImplMock.add(newUserDTOWithoutToken)  }.returns(expectedUserDTO)
+        every { userRepositoryMock.add(newUserDTOWithoutToken)  }.returns(expectedUserDTO)
 
 
-        val userDTO=UserServiceImpl(userRepositoryImplMock, jwtUtils).add(user)
-
-        assertEquals(expectedUserDTO,userDTO)
-    }
-
-    @Test
-    fun `when a valid user with admin permissions request a sign up, register it`(){
-        val user = NewUser(
-            "newUser@domain.com",
-            "password",
-            date,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN
-        )
-
-        val expectedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            user.birthDate,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            Calendar.getInstance().time,
-            Calendar.getInstance().time,
-            "token_test"
-        )
-
-        val adminUserDTO=newUserDTO
-        adminUserDTO.role=Roles.ADMIN
-        adminUserDTO.token=null
-
-        every { jwtUtils.sign(adminUserDTO.email, adminUserDTO.role, 60) }.returns("token_test")
-
-        adminUserDTO.token="token_test"
-
-        every { userRepositoryImplMock.add(adminUserDTO)  }.returns(expectedUserDTO)
-        val userDTO=UserServiceImpl(userRepositoryImplMock, jwtUtils).add(user)
+        val userDTO=UserServiceImpl(userRepositoryMock, jwtUtils).add(user)
 
         assertEquals(expectedUserDTO,userDTO)
     }
@@ -142,7 +104,7 @@ class UserServiceTest{
             "81823183183",
             Roles.ADMIN,
             date,
-            null,
+            Calendar.getInstance().time,
             "token_test"
         )
 
@@ -151,10 +113,17 @@ class UserServiceTest{
         updatedUserDTO.id=1
         updatedUserDTO.creationDate=date
 
-        every { userRepositoryImplMock.update(1,updatedUserDTO) }.returns(expectedUserDTO)
-        every { userRepositoryImplMock.get(1)}.returns(newUserDTO)
+        every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
 
-        val userDTO=UserServiceImpl(userRepositoryImplMock,jwtUtils).update(1,updatedUserDTO, updatedUserDTO.role, updatedUserDTO.email)
+
+        //every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
+
+        every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedUserDTO)
+        every { userRepositoryMock.get(1)}.returns(updatedUserDTO)
+
+
+
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, updatedUserDTO.role, updatedUserDTO.email)
 
         assertEquals(expectedUserDTO,userDTO)
     }
@@ -167,10 +136,12 @@ class UserServiceTest{
             Calendar.getInstance().time,
             null,
             "New User",
-            "81823183183",
-            Roles.USER
+            "81823183183"
         )
-        UserServiceImpl(userRepositoryImplMock, jwtUtils).add(newUser)
+
+
+        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+        UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }
 
     @Test(expected = ValidationException::class)
@@ -181,11 +152,12 @@ class UserServiceTest{
             null,
             Gender.MASC,
             "New User",
-            "81823183183",
-            Roles.USER
+            "81823183183"
         )
 
-        UserServiceImpl(userRepositoryImplMock, jwtUtils).add(newUser)
+
+        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+        UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }
 
     @Test
@@ -204,19 +176,19 @@ class UserServiceTest{
             null
         )
 
-        every { userRepositoryImplMock.get(56415)  }.returns(expectedUserDTO)
+        every { userRepositoryMock.get(56415)  }.returns(expectedUserDTO)
 
 
-        assertEquals(expectedUserDTO, UserServiceImpl(userRepositoryImplMock, jwtUtils).get(56415))
+        assertEquals(expectedUserDTO, UserServiceImpl(userRepositoryMock, jwtUtils).get(56415))
     }
 
 
     @Test(expected = UserNotFoundException::class)
     fun `when a user with invalid id was requested, throws UserNotFoundException`(){
         val userException=UserNotFoundException()
-        every { userRepositoryImplMock.get(844)  }.throws(userException)
+        every { userRepositoryMock.get(844)  }.throws(userException)
 
-        UserServiceImpl(userRepositoryImplMock, jwtUtils).get(844)
+        UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
     }
 
 }

@@ -22,9 +22,7 @@ class UserControllerTest{
     lateinit var userServiceMock: UserService
     lateinit var contextMock: Context
     lateinit var returnedUser:UserDTO
-    lateinit var returnedAdminUser:UserDTO
     lateinit var newUser:NewUser
-    lateinit var newAdminUser:NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
 
@@ -49,39 +47,14 @@ class UserControllerTest{
             null,
             null)
 
-        returnedAdminUser= UserDTO(
-            null,
-            "newUser@domain.com",
-            "password",
-            date,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            null,
-            null,
-            null)
-
         newUser = NewUser(
             "newUser@domain.com",
             "password",
             date,
             Gender.MASC,
             "New User",
-            "81823183183",
-            Roles.USER
+            "81823183183"
         )
-
-        newAdminUser = NewUser(
-            "newUser@domain.com",
-            "password",
-            date,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN
-        )
-
         newLoginUser = UserLogin(
             "newUser@domain.com",
             "password"
@@ -455,17 +428,7 @@ class UserControllerTest{
 //        verify { contextMock.json(invalidGenderException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
 //    }
 
-    @Test
-    fun `when add a valid user with admin permissions should return the user with status 201`(){
 
-        every{ userServiceMock.add(newAdminUser)}.returns(returnedAdminUser)
-
-        every { contextMock.body<NewUser>() }.returns(newAdminUser)
-
-        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
-
-        verify { contextMock.json(returnedAdminUser).status(HttpStatus.CREATED_201) }
-    }
 
     @Test
     fun `when a user with valid credentials log in, should return the logged user with status 200`(){

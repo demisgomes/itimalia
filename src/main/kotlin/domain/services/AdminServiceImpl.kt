@@ -8,6 +8,7 @@ import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
+import java.util.*
 
 class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):AdminService{
     override fun add(newUser: NewUser): UserDTO {
@@ -25,8 +26,8 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 newUser.name,
                 newUser.phone,
                 Roles.ADMIN,
-                null,
-                null,
+                Calendar.getInstance().time,
+                Calendar.getInstance().time,
                 jwtUtils.sign(newUser.email, Roles.ADMIN,5)
             )
             UserValidation().validate(newUserDTO)
