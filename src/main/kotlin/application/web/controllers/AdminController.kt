@@ -6,15 +6,16 @@ import domain.exceptions.EmailAlreadyExistsException
 import domain.exceptions.InvalidGenderException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTAccessManager
+import domain.services.AdminService
 import domain.services.UserService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
 
-class AdminController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager){
+class AdminController(private val adminService: AdminService, private val jwtAccessManager: JWTAccessManager){
     fun addAdminUser(context: Context){
         try{
             val newUser=context.body<NewUser>()
-            val addedUser=userService.add(newUser)
+            val addedUser=adminService.add(newUser)
             context.json(addedUser).status(HttpStatus.CREATED_201)
         }
         catch (exception: ValidationException){
