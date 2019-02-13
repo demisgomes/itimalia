@@ -29,7 +29,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 Roles.ADMIN,
                 Calendar.getInstance().time,
                 actualDate,
-                jwtUtils.sign(newUser.email, Roles.ADMIN,actualDate,5)
+                jwtUtils.sign(newUser.email, Roles.ADMIN,5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)

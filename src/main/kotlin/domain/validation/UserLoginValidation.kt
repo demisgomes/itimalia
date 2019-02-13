@@ -1,16 +1,14 @@
 package domain.validation
+
 import domain.entities.UserDTO
+import domain.entities.UserLogin
 import domain.exceptions.ValidationException
 
-class UserValidation{
-
-    fun validate(userDTO:UserDTO){
+class UserLoginValidation{
+    fun validate(userLogin: UserLogin){
         val validations = mutableListOf<Validation<*>>()
 
-        validations.add(Validation("email",userDTO.email).validEmail())
-        validations.add(Validation("name",userDTO.name).validName())
-        validations.add(Validation("birthDate",userDTO.birthDate).validBirthDate())
-        validations.add(Validation("gender",userDTO.gender).validGender())
+        validations.add(Validation("email",userLogin.email).validEmail())
 
         val errorsMap = hashMapOf<String, MutableList<String>>()
 
@@ -22,6 +20,4 @@ class UserValidation{
         }
         if (errorsMap.size > 0) throw ValidationException(errorsMap)
     }
-
-
 }

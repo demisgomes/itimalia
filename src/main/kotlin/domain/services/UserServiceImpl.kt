@@ -7,6 +7,7 @@ import domain.entities.UserLogin
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
+import domain.validation.UserLoginValidation
 import domain.validation.UserValidation
 import io.javalin.security.Role
 import java.lang.IndexOutOfBoundsException
@@ -44,6 +45,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
+        UserLoginValidation().validate(newUserLogin)
         return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
     }
 
@@ -66,7 +68,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 Roles.USER,
                 Calendar.getInstance().time,
                 actualDate,
-                jwtUtils.sign(newUser.email,Roles.USER,actualDate, 5)
+                jwtUtils.sign(newUser.email,Roles.USER, 5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
@@ -109,7 +111,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             newUserDTO.role,
             userToBeModified.creationDate,
             actualDate,
-            jwtUtils.sign(newUserDTO.email, newUserDTO.role, actualDate, 5)
+            jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5)
         )
 
         UserValidation().validate(newUserDTO)

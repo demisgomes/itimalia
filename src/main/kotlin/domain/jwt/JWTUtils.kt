@@ -9,7 +9,7 @@ import java.util.*
 
 class JWTUtils{
 
-    fun sign(email:String, role: Role, modificationDate:Date, maxAgeInMinutes:Int):String{
+    fun sign(email:String, role: Role, maxAgeInMinutes:Int):String{
 
         val algorithm = Algorithm.HMAC256("fabulous_password")
         return JWT
@@ -17,7 +17,6 @@ class JWTUtils{
             .withIssuer("Itimalia")
             .withClaim("email", email)
             .withClaim("role",role.toString())
-            .withClaim("modificationDate", modificationDate)
             .withExpiresAt(convertToDate(maxAgeInMinutes)).sign(algorithm)
     }
 

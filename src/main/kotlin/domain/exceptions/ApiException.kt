@@ -3,7 +3,7 @@ package domain.exceptions
 import java.lang.Exception
 
 abstract class ApiException: Exception{
-    //constructor(cause: Throwable) : super(cause)
+    constructor(cause: Throwable) : super(cause)
     constructor(message: String) : super(message)
 
     abstract fun httpStatus(): Int

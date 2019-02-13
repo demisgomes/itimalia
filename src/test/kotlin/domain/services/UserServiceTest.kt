@@ -1,9 +1,6 @@
 package domain.services
 
-import domain.entities.Gender
-import domain.entities.NewUser
-import domain.entities.Roles
-import domain.entities.UserDTO
+import domain.entities.*
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTUtils
@@ -12,12 +9,17 @@ import domain.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.verify
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
+import org.junit.rules.ExpectedException
+
+
 
 
 class UserServiceTest{
@@ -29,6 +31,10 @@ class UserServiceTest{
     private lateinit var date:Date
     private lateinit var jwtUtils: JWTUtils
     private lateinit var actualCalendar: Calendar
+    private lateinit var invalidUserLogin: UserLogin
+
+    @get:Rule
+    val expectedEx = ExpectedException.none()
 
     @Before
     fun setup() {
@@ -78,7 +84,7 @@ class UserServiceTest{
             "token_test"
         )
 
-
+        invalidUserLogin= UserLogin("myemail.com", "password")
 
         userRepositoryMock= mockk(relaxed = true)
 
@@ -115,13 +121,23 @@ class UserServiceTest{
 
         every { Calendar.getInstance() }.returns(actualCalendar)
 
-        val updatedUserDTO=newUserDTO
-        updatedUserDTO.role=Roles.ADMIN
-        updatedUserDTO.id=1
+        val updatedUserDTO=UserDTO(
+            1,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.ADMIN,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
 
         every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
 
-        every { userRepositoryMock.get(1)}.returns(updatedUserDTO)
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
 
 
@@ -192,6 +208,25 @@ class UserServiceTest{
 
         UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
     }
+
+    @Test(expected = ValidationException::class)
+    fun `when a user with invalid email tries sign in, throws ValidationException`(){
+        //val validationException=ValidationException(hashMapOf("email" to mutableListOf("invalid email")))
+
+        UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
+
+        //verify { validationException }
+    }
+
+    @Test
+    @Throws(ValidationException::class)
+    fun shouldThrowRuntimeExceptionWhenEmployeeIDisNull() {
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {email=[invalid email]}")
+        // do something that should throw the exception...
+        UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
+    }
+
 
 }
 
