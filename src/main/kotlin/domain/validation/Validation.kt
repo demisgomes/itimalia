@@ -23,7 +23,7 @@ fun Validation<Date?>.validBirthDate():Validation<Date?>{
     val minTimeInMillis:Long =1000*3600*8760*13
 
     if(this.fieldValue==null){
-        this.errorMessageList.add("Invalid Date")
+        this.errorMessageList.add("invalid birthDate")
     }
     else{
         if(Calendar.getInstance().timeInMillis-this.fieldValue.time<minTimeInMillis){

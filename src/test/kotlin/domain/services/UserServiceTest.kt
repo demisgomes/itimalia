@@ -5,21 +5,17 @@ import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
-import domain.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.verify
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
-import org.junit.rules.ExpectedException
-
-
 
 
 class UserServiceTest{
@@ -146,24 +142,27 @@ class UserServiceTest{
         assertEquals(expectedModifiedUserDTO,userDTO)
     }
 
-    @Test(expected = ValidationException::class)
-    fun `when a user without admin permissions with invalid gender tries sign in, expect ValidationException`(){
+    @Test
+    fun `when a user without admin permissions with invalid gender tries sign in, expect ValidationException with fields gender = invalid gender`(){
         val newUser = NewUser(
             "newUser@domain.com",
             "password",
-            Calendar.getInstance().time,
+            date,
             null,
             "New User",
             "81823183183"
         )
 
-
         every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {gender=[invalid gender]}")
+
         UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }
 
-    @Test(expected = ValidationException::class)
-    fun `when a user without admin permissions with invalid birth date tries sign in, expect ValidationException`(){
+    @Test
+    fun `when a user without admin permissions with invalid birth date tries sign in, expect ValidationException with fields birthdate = invalid birthDate`(){
         val newUser = NewUser(
             "newUser@domain.com",
             "password",
@@ -172,9 +171,10 @@ class UserServiceTest{
             "New User",
             "81823183183"
         )
-
-
         every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {birthDate=[invalid birthDate]}")
         UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }
 
@@ -195,8 +195,6 @@ class UserServiceTest{
         )
 
         every { userRepositoryMock.get(56415)  }.returns(expectedUserDTO)
-
-
         assertEquals(expectedUserDTO, UserServiceImpl(userRepositoryMock, jwtUtils).get(56415))
     }
 
@@ -209,24 +207,12 @@ class UserServiceTest{
         UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
     }
 
-    @Test(expected = ValidationException::class)
-    fun `when a user with invalid email tries sign in, throws ValidationException`(){
-        //val validationException=ValidationException(hashMapOf("email" to mutableListOf("invalid email")))
-
-        UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
-
-        //verify { validationException }
-    }
-
     @Test
-    @Throws(ValidationException::class)
-    fun shouldThrowRuntimeExceptionWhenEmployeeIDisNull() {
+    fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not sucessfull in following field(s): {email=[invalid email]}")
-        // do something that should throw the exception...
         UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
     }
-
 
 }
 
