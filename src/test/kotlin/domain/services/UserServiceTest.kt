@@ -1,6 +1,7 @@
 package domain.services
 
 import domain.entities.*
+import domain.exceptions.UnauthorizedDifferentUserChangeException
 import domain.exceptions.UserNotFoundException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTUtils
@@ -213,6 +214,33 @@ class UserServiceTest{
         expectedEx.expectMessage("The validation does not sucessfull in following field(s): {email=[invalid email]}")
         UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
     }
+
+    @Test
+    fun `when an user without admin permission tries to delete your account should return no content with status 204`(){
+        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
+        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
+
+        val deletedUser=UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, expectedUserDTO.role, expectedUserDTO.email)
+        assertEquals(expectedUserDTO, deletedUser)
+    }
+
+    @Test
+    fun `when an user with admin permission tries to delete any account should return no content with status 204`(){
+        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
+        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
+
+        val deletedUser=UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, Roles.ADMIN, expectedUserDTO.email)
+        assertEquals(expectedUserDTO, deletedUser)
+    }
+
+    @Test(expected = UnauthorizedDifferentUserChangeException::class)
+    fun `when an user without admin permission tries to delete another account should expect UnauthorizedDifferentUserChangeException`(){
+        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
+        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
+
+        UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, expectedUserDTO.role, expectedUserDTO.email+"A")
+    }
+
 
 }
 
