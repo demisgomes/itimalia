@@ -1,9 +1,7 @@
 package domain.services
 
 import domain.entities.*
-import domain.exceptions.UnauthorizedDifferentUserChangeException
-import domain.exceptions.UserNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import io.mockk.every
@@ -24,11 +22,16 @@ class UserServiceTest{
     private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: UserDTO
     private lateinit var expectedUserDTO:UserDTO
-    private lateinit var expectedModifiedUserDTO:UserDTO
+    private lateinit var expectedAdminModifiedUserDTO:UserDTO
     private lateinit var date:Date
     private lateinit var jwtUtils: JWTUtils
     private lateinit var actualCalendar: Calendar
     private lateinit var invalidUserLogin: UserLogin
+    private lateinit var updatedAdminUserDTO:UserDTO
+    private lateinit var expectedModifiedUserDTO:UserDTO
+    private lateinit var validUserLogin: UserLogin
+
+    private lateinit var updatedUserDTO:UserDTO
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -39,6 +42,35 @@ class UserServiceTest{
         date=formatter.parse("01/01/1990")
         mockkStatic(Calendar::class)
         actualCalendar= Calendar.getInstance()
+
+
+        updatedAdminUserDTO=UserDTO(
+            1,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.ADMIN,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
+
+        updatedUserDTO=UserDTO(
+            1,
+            "newUser@domain.com",
+            "password123",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.USER,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
 
         newUserDTO = UserDTO(
             null,
@@ -70,6 +102,20 @@ class UserServiceTest{
         expectedModifiedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
+            "password123",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.USER,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
+
+        expectedAdminModifiedUserDTO = UserDTO(
+            1,
+            "newUser@domain.com",
             "password",
             date,
             Gender.MASC,
@@ -82,6 +128,8 @@ class UserServiceTest{
         )
 
         invalidUserLogin= UserLogin("myemail.com", "password")
+
+        validUserLogin= UserLogin("newUser@domain.com", "password")
 
         userRepositoryMock= mockk(relaxed = true)
 
@@ -113,24 +161,30 @@ class UserServiceTest{
         assertEquals(expectedUserDTO,userDTO)
     }
 
-    @Test
-    fun `when a valid user will be sucessfully modified modify it`(){
-
-        every { Calendar.getInstance() }.returns(actualCalendar)
-
-        val updatedUserDTO=UserDTO(
-            1,
+    @Test(expected = EmailAlreadyExistsException::class)
+    fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`(){
+        val user = NewUser(
             "newUser@domain.com",
             "password",
             date,
             Gender.MASC,
             "New User",
-            "81823183183",
-            Roles.ADMIN,
-            actualCalendar.time,
-            actualCalendar.time,
-            "token_test"
+            "81823183183"
         )
+
+        val unexpectedUserDTO = expectedUserDTO
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
+
+        UserServiceImpl(userRepositoryMock, jwtUtils).add(user)
+    }
+
+    @Test
+    fun `when an user without admin permission tries to modify its account should return the modified user`(){
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
 
         every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
 
@@ -138,9 +192,122 @@ class UserServiceTest{
         every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
 
 
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, updatedUserDTO.role, updatedUserDTO.email)
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, Roles.USER, updatedUserDTO.email)
 
         assertEquals(expectedModifiedUserDTO,userDTO)
+    }
+
+    @Test
+    fun `when an user with admin permission tries to modify any account should return the modified user`(){
+
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+
+        //when
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.ADMIN, updatedAdminUserDTO.email+"A")
+
+        //then
+        assertEquals(expectedAdminModifiedUserDTO,userDTO)
+    }
+
+    @Test(expected = UnauthorizedDifferentUserChangeException::class)
+    fun `when an user without admin permission tries to modify another account should expect UnauthorizedDifferentUserChangeException`(){
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+
+        //when
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.USER, updatedAdminUserDTO.email+"A")
+
+        //then
+        assertEquals(expectedAdminModifiedUserDTO,userDTO)
+    }
+
+    @Test(expected = UnauthorizedRoleChangeException::class)
+    fun `when an user without admin permission tries to modify its account changing from user to admin should expect UnauthorizedRoleChangeException`(){
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+
+        //when
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.USER, updatedAdminUserDTO.email)
+
+        //then
+        assertEquals(expectedAdminModifiedUserDTO,userDTO)
+    }
+
+    @Test(expected = UnmodifiedUserException::class)
+    fun `when an user without admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { jwtUtils.sign(expectedUserDTO.email, expectedUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+
+        //when
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.USER, expectedUserDTO.email)
+
+        //then
+        //assertEquals(expectedAdminModifiedUserDTO,userDTO)
+    }
+
+    @Test(expected = UnmodifiedUserException::class)
+    fun `when an user with admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedAdminModifiedUserDTO)
+        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+
+        //when
+        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedAdminModifiedUserDTO, Roles.ADMIN, expectedAdminModifiedUserDTO.email)
+
+        //then
+        //assertEquals(expectedAdminModifiedUserDTO,userDTO)
+    }
+
+    @Test(expected = UnmodifiedUserException::class)
+    fun `when an user with admin permission tries to modify another account but without modifications should expect UnmodifiedUserException`(){
+        //given
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        //every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
+
+        //when
+        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.ADMIN, updatedAdminUserDTO.email)
+
+        //then return exception
     }
 
     @Test
@@ -213,6 +380,30 @@ class UserServiceTest{
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not sucessfull in following field(s): {email=[invalid email]}")
         UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
+    }
+
+    @Test
+    fun `when an user tries login with a valid email and password and them matches with a user, return the signed user`() {
+        //given validUserLogin
+
+        //when
+        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.returns(expectedUserDTO)
+
+        val userDTO=UserServiceImpl(userRepositoryMock, jwtUtils).login(validUserLogin)
+
+        //then
+        assertEquals(expectedUserDTO,userDTO)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when an user tries login with a valid email and password but not matches with any user, should expectreturn UserNotFoundException`() {
+        //given validUserLogin
+
+        //when
+        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.throws(UserNotFoundException())
+        UserServiceImpl(userRepositoryMock, jwtUtils).login(validUserLogin)
+
+        //then UserNotFoundException
     }
 
     @Test
