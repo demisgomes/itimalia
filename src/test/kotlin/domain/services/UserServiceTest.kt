@@ -226,7 +226,6 @@ class UserServiceTest{
         every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
-        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
 
 
         //when
@@ -264,7 +263,6 @@ class UserServiceTest{
         every { jwtUtils.sign(expectedUserDTO.email, expectedUserDTO.role, 5) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
-        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
 
 
         //when

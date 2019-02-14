@@ -371,8 +371,6 @@ class UserControllerTest{
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
-        //every { jwtAccessManagerMock.manage(contextMock) }
-
     }
 
 
@@ -392,8 +390,6 @@ class UserControllerTest{
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
-        //every { jwtAccessManagerMock.manage(contextMock) }
-
     }
 
     @Test
@@ -412,7 +408,6 @@ class UserControllerTest{
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
-        //every { jwtAccessManagerMock.manage(contextMock) }
 
     }
 
