@@ -4,6 +4,7 @@ import domain.entities.Gender
 import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
+import domain.exceptions.EmailAlreadyExistsException
 import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
@@ -26,6 +27,7 @@ class AdminServiceTest{
     private lateinit var date: Date
     private lateinit var actualCalendar: Calendar
     private lateinit var jwtUtils: JWTUtils
+    private lateinit var expectedUserDTO:UserDTO
 
     @Before
     fun setup() {
@@ -33,6 +35,20 @@ class AdminServiceTest{
         date=formatter.parse("01/01/1990")
         mockkStatic(Calendar::class)
         actualCalendar=Calendar.getInstance()
+
+        expectedUserDTO = UserDTO(
+            1,
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183",
+            Roles.USER,
+            actualCalendar.time,
+            actualCalendar.time,
+            "token_test"
+        )
 
         newUserDTO = UserDTO(
             null,
@@ -93,4 +109,33 @@ class AdminServiceTest{
 
         assertEquals(expectedUserDTO,userDTO)
     }
+
+    @Test(expected = EmailAlreadyExistsException::class)
+    fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`(){
+        val user = NewUser(
+            "newUser@domain.com",
+            "password",
+            date,
+            Gender.MASC,
+            "New User",
+            "81823183183"
+        )
+
+        val unexpectedUserDTO = expectedUserDTO
+
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
+
+        AdminServiceImpl(userRepositoryMock, jwtUtils).add(user)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when a user with invalid id was requested, throws UserNotFoundException`(){
+        val userException=UserNotFoundException()
+        every { userRepositoryMock.get(844)  }.throws(userException)
+
+        AdminServiceImpl(userRepositoryMock, jwtUtils).get(844)
+    }
+
 }
