@@ -1,20 +1,20 @@
 package application.web.controllers
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import domain.entities.*
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.UserService
 import io.javalin.Context
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
 import org.junit.Test
-import org.omg.CORBA.DynAnyPackage.Invalid
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.test.assertEquals
 
 class UserControllerTest{
     lateinit var userServiceMock: UserService
@@ -448,77 +448,5 @@ class UserControllerTest{
 
         verify { contextMock.json(invalidCredentialsException.createErrorResponse()).status(HttpStatus.UNAUTHORIZED_401) }
 
-    }
-
-
-    @Test
-    fun `mocking a relaxed sum`(){
-        val sumMock=mockk<Sum>(relaxed = true)
-
-        //every { sumMock.sum(1,2) }.returns(3)
-
-        assertEquals("", sumMock.sum(1,2).philo)
-    }
-
-//    @Test
-//    fun `mocking a non-relaxed sum`(){
-//        val sumMock=mockk<Sum>()
-//
-//        every { sumMock.sum(1,2) }.returns(Animal(null,null))
-//
-//        assertEquals(Animal("A1","B2"), sumMock.sum(1,2))
-//    }
-
-    @Test
-    fun `mocking a spy sum`(){
-        val sumMock=spyk<Sum>()
-
-        //every { sumMock.sum(1,2) }.returns(0)
-
-        assertEquals("A1", sumMock.sum(1,2).name)
-    }
-
-//    @Test
-//    fun `mocking a relaxed animal`(){
-//        val animalMock=mockk<Animal>(relaxed = true)
-//
-//        animalMock.name="cat"
-//        animalMock.philo="chordata"
-//
-//        animalMock.print()
-//        verify { animalMock.changeName() }
-//
-//        assertEquals("", animalMock.print())
-//    }
-
-//    @Test
-//    fun `mocking an animal`(){
-//        val animalMock=mockk<Animal>()
-//        animalMock.name="cat"
-//        animalMock.philo="chordata"
-//
-//        animalMock.print()
-//        verify { animalMock.changeName() }
-//
-//
-//        //assertEquals(" and ", animalMock.print())
-//    }
-
-}
-
-class Sum{
-    fun sum(a:Int, b:Int):Animal {
-        return Animal("A"+a.toString(),"B"+b.toString())
-    }
-}
-
-class Animal(var name:String?=null, var philo:String?=null){
-    fun print():String{
-        //changeName()
-        return "$name and $philo"
-    }
-
-    fun changeName():String{
-        return name+"L"
     }
 }

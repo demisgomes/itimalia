@@ -2,7 +2,6 @@ package application.web
 
 import application.config.RouteConfig
 import commons.koin.*
-import domain.entities.Roles
 import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
 import org.koin.standalone.KoinComponent

@@ -7,7 +7,6 @@ import domain.exceptions.InvalidGenderException
 import domain.exceptions.ValidationException
 import domain.jwt.JWTAccessManager
 import domain.services.AdminService
-import domain.services.UserService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
 

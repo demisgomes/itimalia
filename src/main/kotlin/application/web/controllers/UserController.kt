@@ -22,7 +22,6 @@ class UserController(private val userService: UserService, private val jwtAccess
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
             return
         }
-
     }
 
     fun addUser(context: Context){
