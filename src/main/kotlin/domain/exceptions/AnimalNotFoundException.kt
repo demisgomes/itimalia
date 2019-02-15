@@ -2,17 +2,17 @@ package domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class UserNotFoundException : ApiException("User not found") {
+class AnimalNotFoundException :ApiException("Animal not found"){
+
     override fun httpStatus(): Int {
         return HttpStatus.NOT_FOUND_404
     }
 
     override fun apiError(): ApiError {
-        return ApiError.USER_NOT_FOUND_ERROR
+        return ApiError.ANIMAL_NOT_FOUND_ERROR
     }
 
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }

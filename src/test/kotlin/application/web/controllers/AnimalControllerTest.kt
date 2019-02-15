@@ -4,6 +4,7 @@ import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.NewAnimal
 import domain.entities.Specie
+import domain.exceptions.AnimalNotFoundException
 import domain.exceptions.InvalidNameException
 import domain.exceptions.InvalidSpecieException
 import domain.services.AnimalService
@@ -15,6 +16,7 @@ import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
 import org.junit.Test
 import java.util.*
+import kotlin.test.assertEquals
 
 class AnimalControllerTest {
 
@@ -89,7 +91,7 @@ class AnimalControllerTest {
     }
 
     @Test
-    fun `when an admin tries to register an animal with name, age null, time unit non null, specie, and description, should return the created animal with null age and time unit with status 200 OK`(){
+    fun `when an admin tries to register an animal with name, age null, time unit non null, specie, and description, should return the created animal with null age and time unit with status 201 CREATED`(){
         //given newAnimal
         val newAnimalWithNullAge=NewAnimal("Name", null, newAnimal.timeUnit, newAnimal.specie, "An animal that needs attention")
         val expectedAnimalWithNullAgeAndTimeUnitDTO = AnimalDTO(
@@ -113,7 +115,7 @@ class AnimalControllerTest {
     }
 
     @Test
-    fun `when an admin tries to register an animal with name, valid age, time unit null, specie, and description, should return the created animal with time unit in years with status 200 OK`(){
+    fun `when an admin tries to register an animal with name, valid age, time unit null, specie, and description, should return the created animal with time unit in years with status 201 CREATED`(){
         //given newAnimal
         val newAnimalWithNullTimeUnit=NewAnimal("Name", 3, null, newAnimal.specie, "An animal that needs attention")
         val expectedAnimalWithTimeUnitInYears = AnimalDTO(
@@ -133,5 +135,67 @@ class AnimalControllerTest {
 
         //then
         verify { contextMock.json(expectedAnimalWithTimeUnitInYears).status(HttpStatus.CREATED_201) }
+    }
+
+    @Test
+    fun `when any user requests an animal in which the id exists, should return the expected animal with status 200 OK`(){
+        //given id = 1
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        AnimalController(animalServiceMock).findAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(expectedAnimalDTO).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when any user requests an animal in which the id not exists, should expect the AnimalNotFoundException with status 404 Not found`(){
+        //given id = 1
+        val animalNotFoundException= AnimalNotFoundException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.get(1) }.throws(animalNotFoundException)
+        AnimalController(animalServiceMock).findAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
+    }
+
+    @Test
+    fun `when an admin tries modify an animal that exists with valid fields, should return the modified animal with status 200 OK`(){
+        //given id =1
+        val updatedAnimal=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+        val expectedModifiedAnimalDTO=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, actualCalendar.time, expectedAnimalDTO.status)
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.body<AnimalDTO>() }.returns(updatedAnimal)
+        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.update(1,updatedAnimal) }.returns(expectedModifiedAnimalDTO)
+        AnimalController(animalServiceMock).updateAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(expectedModifiedAnimalDTO).status(HttpStatus.OK_200) }
+
+    }
+
+    @Test
+    fun `when an admin tries modify an animal that not exists with valid fields, should expect AnimalNotFoundException and return status 404 NOT FOUND`(){
+        //given id =1
+        val animalNotFoundException=AnimalNotFoundException()
+        val updatedAnimal=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.body<AnimalDTO>() }.returns(updatedAnimal)
+        every { animalServiceMock.get(1) }.throws(animalNotFoundException)
+        AnimalController(animalServiceMock).updateAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
+
     }
 }
