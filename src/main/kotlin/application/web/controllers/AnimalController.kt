@@ -3,8 +3,7 @@ package application.web.controllers
 import domain.entities.AnimalDTO
 import domain.entities.NewAnimal
 import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.InvalidNameException
-import domain.exceptions.InvalidSpecieException
+import domain.exceptions.ValidationException
 import domain.services.AnimalService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
@@ -16,10 +15,7 @@ class AnimalController(private val animalService: AnimalService) {
             val newAnimalDTO=animalService.add(newAnimal)
             context.json(newAnimalDTO).status(HttpStatus.CREATED_201)
         }
-        catch (exception:InvalidSpecieException){
-            context.json(exception.createErrorResponse()).status(exception.httpStatus())
-        }
-        catch (exception:InvalidNameException){
+        catch (exception:ValidationException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
 
@@ -48,6 +44,22 @@ class AnimalController(private val animalService: AnimalService) {
         catch (exception:AnimalNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
+        catch (exception:ValidationException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+    }
+
+    fun deleteAnimal(context: Context) {
+        try{
+            val id:Int=context.pathParam("id").toInt()
+            animalService.get(id)
+            animalService.delete(id)
+            context.status(HttpStatus.NO_CONTENT_204)
+        }
+        catch (exception:AnimalNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+
     }
 
 }

@@ -5,8 +5,7 @@ import domain.entities.AnimalStatus
 import domain.entities.NewAnimal
 import domain.entities.Specie
 import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.InvalidNameException
-import domain.exceptions.InvalidSpecieException
+import domain.exceptions.ValidationException
 import domain.services.AnimalService
 import io.javalin.Context
 import io.mockk.every
@@ -16,7 +15,6 @@ import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
 import org.junit.Test
 import java.util.*
-import kotlin.test.assertEquals
 
 class AnimalControllerTest {
 
@@ -60,34 +58,34 @@ class AnimalControllerTest {
     }
 
     @Test
-    fun `when an admin tries to register a valid animal with name, age (can be null), specie null, and description, should expect InvalidSpecieException and return BAD request with status 400`() {
+    fun `when an admin tries to register a valid animal with name, age (can be null), specie null, and description, should expect ValidationException and return BAD request with status 400`() {
         //given
-        val invalidSpecieException= InvalidSpecieException()
+        val validationException= ValidationException(hashMapOf("specie" to mutableListOf("Invalid specie. You must choose cat or dog.")))
         val newAnimalWithInvalidSpecie=NewAnimal(newAnimal.name, newAnimal.age, newAnimal.timeUnit, null, "")
 
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithInvalidSpecie)
-        every { animalServiceMock.add(newAnimalWithInvalidSpecie) }.throws(invalidSpecieException)
+        every { animalServiceMock.add(newAnimalWithInvalidSpecie) }.throws(validationException)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then
-        verify { contextMock.json(invalidSpecieException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
+        verify { contextMock.json(validationException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
 
     }
 
     @Test
-    fun `when an admin tries to register a valid animal with blank name, age (can be null), specie, and description, should expect InvalidNameException and return BAD request with status 400`() {
+    fun `when an admin tries to register a valid animal with blank name, age (can be null), specie, and description, should expect ValidationException and return BAD request with status 400`() {
         //given
-        val invalidNameException = InvalidNameException()
+        val validationException = ValidationException(hashMapOf("name" to mutableListOf("Invalid name. Only accept names with letters.")))
         val newAnimalWithInvalidName=NewAnimal("", newAnimal.age, newAnimal.timeUnit, newAnimal.specie, "")
 
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithInvalidName)
-        every { animalServiceMock.add(newAnimalWithInvalidName) }.throws(invalidNameException)
+        every { animalServiceMock.add(newAnimalWithInvalidName) }.throws(validationException)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then
-        verify { contextMock.json(invalidNameException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
+        verify { contextMock.json(validationException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
     }
 
     @Test
@@ -193,6 +191,54 @@ class AnimalControllerTest {
         every { contextMock.body<AnimalDTO>() }.returns(updatedAnimal)
         every { animalServiceMock.get(1) }.throws(animalNotFoundException)
         AnimalController(animalServiceMock).updateAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
+
+    }
+
+    @Test
+    fun `when an admin tries to modify a animal with blank name, age (can be null), specie, and description, should expect ValidationException and return BAD request with status 400`() {
+        //given
+        val validationException = ValidationException(hashMapOf("name" to mutableListOf("Invalid name. Only accept names with letters.")))
+        val updatedAnimalWithBlankName=AnimalDTO("", expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { contextMock.body<AnimalDTO>() }.returns(updatedAnimalWithBlankName)
+        every { animalServiceMock.update(1,updatedAnimalWithBlankName) }.throws(validationException)
+        AnimalController(animalServiceMock).updateAnimal(contextMock)
+
+        //then
+        verify { contextMock.json(validationException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
+    }
+
+
+    @Test
+    fun `when an admin tries to delete an animal that exists, should return no content with status 204`(){
+        //given id = 1
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.delete(1) }.returns(expectedAnimalDTO)
+        AnimalController(animalServiceMock).deleteAnimal(contextMock)
+
+        //then
+        verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
+
+    }
+
+    @Test
+    fun `when an admin tries to delete an animal that not exists, should expect an AnimalNotFoundExceptio and return the status 404 NOT FOUND`(){
+        //given id = 1
+        val animalNotFoundException=AnimalNotFoundException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.get(1) }.throws(animalNotFoundException)
+        AnimalController(animalServiceMock).deleteAnimal(contextMock)
 
         //then
         verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
