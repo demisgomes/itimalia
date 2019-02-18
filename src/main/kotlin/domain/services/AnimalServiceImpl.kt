@@ -3,7 +3,6 @@ package domain.services
 import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.NewAnimal
-import domain.entities.Specie
 import domain.repositories.AnimalRepository
 import domain.validation.AnimalValidation
 import java.util.*
@@ -14,7 +13,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
     }
 
     fun add(newAnimal: NewAnimal): AnimalDTO {
-        val animalToBeAddedDTO = AnimalDTO(
+        var animalToBeAddedDTO = AnimalDTO(
             newAnimal.name,
             newAnimal.age,
             newAnimal.timeUnit,
@@ -25,8 +24,8 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
             AnimalStatus.AVAILABLE
         )
 
-        AnimalValidation().validate(animalToBeAddedDTO)
-        return animalRepository.add(newAnimal)
+        animalToBeAddedDTO=AnimalValidation().validate(animalToBeAddedDTO)
+        return animalRepository.add(animalToBeAddedDTO)
     }
 
 }

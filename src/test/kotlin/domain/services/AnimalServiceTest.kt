@@ -9,6 +9,7 @@ import domain.exceptions.ValidationException
 import domain.repositories.AnimalRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,6 +30,7 @@ class AnimalServiceTest{
     @Before
     fun setup(){
         actualCalendar= Calendar.getInstance()
+        mockkStatic(Calendar::class)
         animalRepositoryMock= mockk(relaxed = true)
         newAnimal = NewAnimal("animal", 3, Calendar.MONTH, Specie.CAT, "An animal that needs attention")
         expectedAnimalDTO = AnimalDTO(
@@ -75,10 +77,11 @@ class AnimalServiceTest{
 
     @Test
     fun `when register a valid animal with whole fields filled correctly, should register it returning the animal with creation, modification, and status AVAILABLE`(){
-        //given newAnimal
+        //given newAnimal, expectedAnimalDTO
 
         //when
-        every { animalRepositoryMock.add(newAnimal) }.returns(expectedAnimalDTO)
+        every { animalRepositoryMock.add(expectedAnimalDTO) }.returns(expectedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
         val animalDTO= AnimalServiceImpl(animalRepositoryMock).add(newAnimal)
 
         //then
@@ -86,10 +89,9 @@ class AnimalServiceTest{
     }
 
     @Test
-    fun `when register a valid animal with blank name and other fields filled correctly, should expect ValidationException with message 'invalid Name the name cannot be blank or contain numbers'`(){
+    fun `when register an animal with blank name and other fields filled correctly, should expect ValidationException with message 'invalid Name the name cannot be blank or contain numbers'`(){
         //given
         val newAnimalWithInvalidName=NewAnimal("", newAnimal.age, newAnimal.timeUnit, newAnimal.specie, "")
-
 
         //when
         expectedEx.expect(ValidationException::class.java)
@@ -98,5 +100,43 @@ class AnimalServiceTest{
         AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithInvalidName)
 
         //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
+    }
+
+    @Test
+    fun `when register an animal with null specie and other fields filled correctly, should expect ValidationException with message 'Invalid specie the specie must be cat or dog'`(){
+        //given
+        val newAnimalWithInvalidSpecie=NewAnimal(newAnimal.name, newAnimal.age, newAnimal.timeUnit, null, "")
+
+        //when
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
+
+        AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithInvalidSpecie)
+
+        //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
+
+    }
+
+    @Test
+    fun `when register an animal with null age, valid timeUnit and other fields filled correctly, should register the animal with age and timeUnit with null`(){
+        //given
+        val newAnimalWithAgeNullAndTimeUnitValid=NewAnimal(newAnimal.name, null, newAnimal.timeUnit, Specie.CAT, newAnimal.description)
+        val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            null,
+            null,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            expectedAnimalDTO.modificationDate,
+            AnimalStatus.AVAILABLE)
+
+        //when
+        every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithAgeNullAndTimeUnitValid)
+
+        //then
+        assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
     }
 }

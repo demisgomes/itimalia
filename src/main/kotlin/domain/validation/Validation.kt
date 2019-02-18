@@ -1,6 +1,7 @@
 package domain.validation
 
 import domain.entities.Gender
+import domain.entities.Specie
 import java.util.*
 
 class Validation<T>(val fieldName: String, val fieldValue: T,
@@ -43,6 +44,13 @@ fun Validation<String>.validEmail():Validation<String>{
 fun Validation<String>.validName():Validation<String>{
     if(!nameRegex.matches(fieldValue)){
         this.errorMessageList.add("Invalid name. The name cannot be blank or contain numbers")
+    }
+    return this
+}
+
+fun Validation<Specie?>.validSpecie():Validation<Specie?>{
+    if(this.fieldValue==null){
+        this.errorMessageList.add("Invalid specie. The specie must be cat or dog")
     }
     return this
 }
