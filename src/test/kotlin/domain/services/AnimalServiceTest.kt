@@ -261,4 +261,32 @@ class AnimalServiceTest{
         //then
         assertEquals(modifiedAnimalDTO, animalDTO)
     }
+
+    //DELETE METHODS
+    @Test
+    fun `when delete an animal where its id exists, should return the animal`(){
+        //given
+        val id=1
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every{(animalRepositoryMock).delete(id)}.returns(expectedAnimalDTO)
+        val animalDTO= AnimalServiceImpl(animalRepositoryMock).delete(id)
+
+        //then
+        assertEquals(expectedAnimalDTO,animalDTO)
+    }
+
+    @Test(expected = AnimalNotFoundException::class)
+    fun `when delete an animal where its id not exists, should expect an AnimalNotFoundException`(){
+        //given
+        val id=1
+        val animalNotFoundException=AnimalNotFoundException()
+
+        //when
+        every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
+        AnimalServiceImpl(animalRepositoryMock).delete(id)
+
+        //then expect AnimalNotFoundException
+    }
 }

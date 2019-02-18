@@ -45,4 +45,9 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
         return animalRepository.update(id,animalToBeModifiedDTO)
     }
 
+    fun delete(id: Int): AnimalDTO {
+        get(id)
+        return animalRepository.delete(id)
+    }
+
 }
