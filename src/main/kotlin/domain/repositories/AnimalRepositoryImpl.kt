@@ -2,25 +2,24 @@ package domain.repositories
 
 import domain.entities.AnimalDTO
 import domain.exceptions.AnimalNotFoundException
-import java.lang.IndexOutOfBoundsException
-import java.util.ArrayList
+import java.lang.NullPointerException
 
 class AnimalRepositoryImpl:AnimalRepository{
     companion object {
-        val animalsList=ArrayList<AnimalDTO>()
+        val animalsList=HashMap<Int, AnimalDTO>()
     }
     override fun get(id: Int): AnimalDTO {
         try{
-            return animalsList[id]
+            return animalsList[id]!!
         }
-        catch (exception:IndexOutOfBoundsException){
+        catch (exception:NullPointerException){
             throw AnimalNotFoundException()
         }
 
     }
 
     override fun add(newAnimal: AnimalDTO): AnimalDTO {
-        animalsList.add(newAnimal)
+        animalsList[animalsList.size+1] = newAnimal
         return newAnimal
     }
 
@@ -31,7 +30,7 @@ class AnimalRepositoryImpl:AnimalRepository{
 
     override fun delete(id: Int): AnimalDTO {
         val animalToBeRemoved=get(id)
-        animalsList.removeAt(id)
+        animalsList.remove(id)
         return animalToBeRemoved
     }
 

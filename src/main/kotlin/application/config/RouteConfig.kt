@@ -1,16 +1,17 @@
 package application.config
 
 import application.web.controllers.AdminController
+import application.web.controllers.AnimalController
 import application.web.controllers.UserController
 import domain.entities.Roles
 import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.security.SecurityUtil.roles
+import javax.management.relation.Role
 
 
-
-class RouteConfig(private val userController: UserController, private val adminController: AdminController){
+class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController){
     fun register(app: Javalin) {
 
 
@@ -32,6 +33,14 @@ class RouteConfig(private val userController: UserController, private val adminC
 
             ApiBuilder.path("admins"){
                 ApiBuilder.post(adminController::addAdminUser, roles(Roles.ANYONE))
+            }
+            ApiBuilder.path("animals"){
+                ApiBuilder.path(":id"){
+                    ApiBuilder.get(animalController::findAnimal, roles(Roles.ANYONE))
+                    ApiBuilder.put(animalController::updateAnimal, roles(Roles.ADMIN))
+                    ApiBuilder.delete(animalController::deleteAnimal, roles(Roles.ADMIN))
+                }
+                ApiBuilder.post(animalController::addAnimal, roles(Roles.ADMIN))
             }
 
         }

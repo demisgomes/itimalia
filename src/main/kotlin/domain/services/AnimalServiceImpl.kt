@@ -7,12 +7,12 @@ import domain.repositories.AnimalRepository
 import domain.validation.AnimalValidation
 import java.util.*
 
-class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
-    fun get(id: Int): AnimalDTO {
+class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
+    override fun get(id: Int): AnimalDTO {
         return animalRepository.get(id)
     }
 
-    fun add(newAnimal: NewAnimal): AnimalDTO {
+    override fun add(newAnimal: NewAnimal): AnimalDTO {
         var animalToBeAddedDTO = AnimalDTO(
             newAnimal.name,
             newAnimal.age,
@@ -28,24 +28,24 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
         return animalRepository.add(animalToBeAddedDTO)
     }
 
-    fun update(id:Int, animalDTO: AnimalDTO): AnimalDTO {
-        get(id)
+    override fun update(id:Int, updatedAnimalDTO: AnimalDTO): AnimalDTO {
+        val animalInDatabase=get(id)
         var animalToBeModifiedDTO = AnimalDTO(
-            animalDTO.name,
-            animalDTO.age,
-            animalDTO.timeUnit,
-            animalDTO.specie,
-            animalDTO.description,
-            animalDTO.creationDate,
+            updatedAnimalDTO.name,
+            updatedAnimalDTO.age,
+            updatedAnimalDTO.timeUnit,
+            updatedAnimalDTO.specie,
+            updatedAnimalDTO.description,
+            animalInDatabase.creationDate,
             Calendar.getInstance().time,
-            animalDTO.status
+            updatedAnimalDTO.status
         )
 
         animalToBeModifiedDTO=AnimalValidation().validate(animalToBeModifiedDTO)
         return animalRepository.update(id,animalToBeModifiedDTO)
     }
 
-    fun delete(id: Int): AnimalDTO {
+    override fun delete(id: Int): AnimalDTO {
         get(id)
         return animalRepository.delete(id)
     }

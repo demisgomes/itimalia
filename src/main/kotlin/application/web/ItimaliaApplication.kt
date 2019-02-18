@@ -21,7 +21,8 @@ class ItimaliaApplication : KoinComponent {
                 controllerModule,
                 configModule,
                 JWTModule,
-                accessManagerModule
+                accessManagerModule,
+                repositoryModule
             )
         )
 
