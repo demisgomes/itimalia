@@ -1,9 +1,6 @@
 package application.web.controllers
 
-import domain.entities.AnimalDTO
-import domain.entities.AnimalStatus
-import domain.entities.NewAnimal
-import domain.entities.Specie
+import domain.entities.*
 import domain.exceptions.AnimalNotFoundException
 import domain.exceptions.ValidationException
 import domain.services.AnimalService
@@ -30,11 +27,11 @@ class AnimalControllerTest {
         contextMock = mockk(relaxed = true)
         actualCalendar = Calendar.getInstance()
 
-        newAnimal = NewAnimal("animal", 3, Calendar.MONTH, Specie.CAT, "An animal that needs attention")
+        newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
         expectedAnimalDTO = AnimalDTO(
             "animal",
             3,
-            Calendar.MONTH,
+            TimeUnit.MONTH,
             Specie.CAT,
             "An animal that needs attention",
             actualCalendar.time,
@@ -119,7 +116,7 @@ class AnimalControllerTest {
         val expectedAnimalWithTimeUnitInYears = AnimalDTO(
             "animal",
             3,
-            Calendar.YEAR,
+            TimeUnit.YEAR,
             Specie.CAT,
             "An animal that needs attention",
             actualCalendar.time,

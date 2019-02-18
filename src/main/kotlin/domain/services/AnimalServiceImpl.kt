@@ -28,4 +28,21 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository) {
         return animalRepository.add(animalToBeAddedDTO)
     }
 
+    fun update(id:Int, animalDTO: AnimalDTO): AnimalDTO {
+        get(id)
+        var animalToBeModifiedDTO = AnimalDTO(
+            animalDTO.name,
+            animalDTO.age,
+            animalDTO.timeUnit,
+            animalDTO.specie,
+            animalDTO.description,
+            animalDTO.creationDate,
+            Calendar.getInstance().time,
+            animalDTO.status
+        )
+
+        animalToBeModifiedDTO=AnimalValidation().validate(animalToBeModifiedDTO)
+        return animalRepository.update(id,animalToBeModifiedDTO)
+    }
+
 }

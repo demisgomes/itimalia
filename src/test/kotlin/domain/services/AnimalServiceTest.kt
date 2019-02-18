@@ -1,9 +1,6 @@
 package domain.services
 
-import domain.entities.AnimalDTO
-import domain.entities.AnimalStatus
-import domain.entities.NewAnimal
-import domain.entities.Specie
+import domain.entities.*
 import domain.exceptions.AnimalNotFoundException
 import domain.exceptions.ValidationException
 import domain.repositories.AnimalRepository
@@ -32,11 +29,11 @@ class AnimalServiceTest{
         actualCalendar= Calendar.getInstance()
         mockkStatic(Calendar::class)
         animalRepositoryMock= mockk(relaxed = true)
-        newAnimal = NewAnimal("animal", 3, Calendar.MONTH, Specie.CAT, "An animal that needs attention")
+        newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
         expectedAnimalDTO = AnimalDTO(
             "animal",
             3,
-            Calendar.MONTH,
+            TimeUnit.MONTH,
             Specie.CAT,
             "An animal that needs attention",
             actualCalendar.time,
@@ -138,5 +135,130 @@ class AnimalServiceTest{
 
         //then
         assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
+    }
+
+    @Test
+    fun `when register an animal with valid age, null timeUnit and other fields filled correctly, should register the animal with specified age and timeUnit in years`(){
+        //given
+        val newAnimalWithValidAgeAndTimeUnitNull=NewAnimal(newAnimal.name, 3, null, Specie.CAT, newAnimal.description)
+        val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            3,
+            TimeUnit.YEAR,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            expectedAnimalDTO.modificationDate,
+            AnimalStatus.AVAILABLE)
+
+        //when
+        every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithValidAgeAndTimeUnitNull)
+
+        //then
+        assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
+    }
+
+    //PUT METHODS
+    @Test
+    fun `when an animal with valid fields and it exists, requests a modification, modify it changing the modification date`(){
+        //given
+        val id=1
+        val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            "An animal that needs more attention",
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.AVAILABLE
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every { animalRepositoryMock.update(id,modifiedAnimalDTO) }.returns(modifiedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+
+        //then
+        assertEquals(modifiedAnimalDTO, animalDTO)
+    }
+
+    @Test(expected = AnimalNotFoundException::class)
+    fun `when an animal with valid fields and it not exists requests a modification, should expect a AnimalNotFoundException`(){
+        //given
+        val id=1
+        val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            "An animal that needs more attention",
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.AVAILABLE
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.throws(AnimalNotFoundException())
+        AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+
+        //then expect AnimalNotFoundException
+    }
+
+    @Test
+    fun `when an animal with invalid name, other fields OK, it exists, and requests a modification, should expect a ValidationException with message 'Invalid name the name cannot be blank or contain numbers'`(){
+        //given
+        val id=1
+        val modifiedAnimalDTO=AnimalDTO(
+            "",
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            "An animal that needs more attention",
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.AVAILABLE
+        )
+
+        //when
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not successful in following field(s): {name=[Invalid name. The name cannot be blank or contain numbers]}")
+
+        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+
+        //then
+        assertEquals(modifiedAnimalDTO, animalDTO)
+    }
+
+    @Test
+    fun `when an animal with invalid specie, other fields OK, it exists, and requests a modification, should expect ValidationException with message 'Invalid specie the specie must be cat or dog'`(){
+        //given
+        val id=1
+        val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            null,
+            "An animal that needs more attention",
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.AVAILABLE
+        )
+
+        //when
+        expectedEx.expect(ValidationException::class.java)
+        expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
+
+        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+
+        //then
+        assertEquals(modifiedAnimalDTO, animalDTO)
     }
 }

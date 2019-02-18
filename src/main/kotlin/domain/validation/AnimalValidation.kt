@@ -1,7 +1,9 @@
 package domain.validation
 
 import domain.entities.AnimalDTO
+import domain.entities.TimeUnit
 import domain.exceptions.ValidationException
+import java.util.*
 
 class AnimalValidation{
     fun validate(animalDTO: AnimalDTO):AnimalDTO{
@@ -18,6 +20,19 @@ class AnimalValidation{
                 animalDTO.name,
                 null,
                 null,
+                animalDTO.specie,
+                animalDTO.description,
+                animalDTO.creationDate,
+                animalDTO.modificationDate,
+                animalDTO.status
+            )
+        }
+
+        else if (animalDTO.age!=null && animalDTO.timeUnit==null){
+            validatedAnimalDTO= AnimalDTO(
+                animalDTO.name,
+                animalDTO.age,
+                TimeUnit.YEAR,
                 animalDTO.specie,
                 animalDTO.description,
                 animalDTO.creationDate,
