@@ -266,10 +266,9 @@ class UserServiceTest{
 
 
         //when
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.USER, expectedUserDTO.email)
+        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.USER, expectedUserDTO.email)
 
-        //then
-        //assertEquals(expectedAdminModifiedUserDTO,userDTO)
+        //then expect UnmodifiedUserException
     }
 
     @Test(expected = UnmodifiedUserException::class)
@@ -322,7 +321,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
 
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {gender=[invalid gender]}")
+        expectedEx.expectMessage("The validation does not successful in following field(s): {gender=[invalid gender]}")
 
         UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }

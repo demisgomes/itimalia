@@ -42,7 +42,7 @@ fun Validation<String>.validEmail():Validation<String>{
 
 fun Validation<String>.validName():Validation<String>{
     if(!nameRegex.matches(fieldValue)){
-        this.errorMessageList.add("Invalid name")
+        this.errorMessageList.add("Invalid name. The name cannot be blank or contain numbers")
     }
     return this
 }
