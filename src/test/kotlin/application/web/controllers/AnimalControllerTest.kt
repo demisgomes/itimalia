@@ -313,4 +313,20 @@ class AnimalControllerTest {
         //then
         verify { contextMock.json(animalGoneException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
     }
+
+    @Test
+    fun `when an user tries to adopt an animal that does not exists, should expect an AnimalNotFoundException and return the error with status NOT FOUND 404`(){
+        //given id=1
+        val id=1
+        val animalNotFoundException= AnimalNotFoundException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.adopt(id) }.throws(animalNotFoundException)
+
+        AnimalController(animalServiceMock).adopt(contextMock)
+
+        //then
+        verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
+    }
 }
