@@ -42,6 +42,9 @@ class RouteConfig(private val userController: UserController, private val adminC
                 }
                 ApiBuilder.post(animalController::addAnimal, roles(Roles.ADMIN))
             }
+            ApiBuilder.path("animals/adopt/:id"){
+                ApiBuilder.post(animalController::adopt, roles(Roles.USER))
+            }
 
         }
     }
