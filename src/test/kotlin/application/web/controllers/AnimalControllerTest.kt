@@ -1,8 +1,7 @@
 package application.web.controllers
 
 import domain.entities.*
-import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.services.AnimalService
 import io.javalin.Context
 import io.mockk.every
@@ -240,5 +239,78 @@ class AnimalControllerTest {
         //then
         verify { contextMock.json(animalNotFoundException.createErrorResponse()).status(HttpStatus.NOT_FOUND_404) }
 
+    }
+
+    @Test
+    fun `when an user tries to adopt an animal that is available for adoption, return the animal with AnimalStatus adopted and status 200 OK`(){
+        //given id=1
+        val id=1
+        val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.ADOPTED
+        )
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.adopt(id) }.returns(expectedAdoptedAnimalDTO)
+
+        AnimalController(animalServiceMock).adopt(contextMock)
+
+        //then
+        verify { contextMock.json(expectedAdoptedAnimalDTO).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when an user tries to adopt an animal that alread was adopted, should expect a AnimalAlreadyAdoptedException and return the error with status UNAUTHORIZED 401`(){
+        //given id=1
+        val id=1
+        val animalAlreadyAdoptedException=AnimalAlreadyAdoptedException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.adopt(id) }.throws(animalAlreadyAdoptedException)
+
+        AnimalController(animalServiceMock).adopt(contextMock)
+
+        //then
+        verify { contextMock.json(animalAlreadyAdoptedException.createErrorResponse()).status(HttpStatus.UNAUTHORIZED_401) }
+    }
+
+    @Test
+    fun `when an user tries to adopt an animal that has dead, should expect a AnimalDeadException and return the error with status FORBIDDEN 403`(){
+        //given id=1
+        val id=1
+        val animalDeadException= AnimalDeadException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.adopt(id) }.throws(animalDeadException)
+
+        AnimalController(animalServiceMock).adopt(contextMock)
+
+        //then
+        verify { contextMock.json(animalDeadException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
+    }
+
+    @Test
+    fun `when an user tries to adopt an animal that has gone, should expect an AnimalGoneException and return the error with status FORBIDDEN 403`(){
+        //given id=1
+        val id=1
+        val animalGoneException= AnimalGoneException()
+
+        //when
+        every { contextMock.pathParam("id") }.returns("1")
+        every { animalServiceMock.adopt(id) }.throws(animalGoneException)
+
+        AnimalController(animalServiceMock).adopt(contextMock)
+
+        //then
+        verify { contextMock.json(animalGoneException.createErrorResponse()).status(HttpStatus.FORBIDDEN_403) }
     }
 }

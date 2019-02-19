@@ -3,11 +3,37 @@ package domain.services
 import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.NewAnimal
+import domain.exceptions.AnimalAlreadyAdoptedException
+import domain.exceptions.AnimalDeadException
+import domain.exceptions.AnimalGoneException
 import domain.repositories.AnimalRepository
 import domain.validation.AnimalValidation
 import java.util.*
 
 class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
+    override fun adopt(id: Int): AnimalDTO {
+        val animalToBeAdopted=get(id)
+        when {
+            animalToBeAdopted.status==AnimalStatus.AVAILABLE -> {
+                val animalAdopted=AnimalDTO(
+                    animalToBeAdopted.name,
+                    animalToBeAdopted.age,
+                    animalToBeAdopted.timeUnit,
+                    animalToBeAdopted.specie,
+                    animalToBeAdopted.description,
+                    animalToBeAdopted.creationDate,
+                    Calendar.getInstance().time,
+                    AnimalStatus.ADOPTED
+                )
+                return animalRepository.update(id,animalAdopted)
+            }
+            animalToBeAdopted.status==AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
+            animalToBeAdopted.status==AnimalStatus.DEAD -> throw AnimalDeadException()
+            else -> throw AnimalGoneException()
+        }
+
+    }
+
     override fun get(id: Int): AnimalDTO {
         return animalRepository.get(id)
     }
@@ -40,7 +66,6 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
             Calendar.getInstance().time,
             updatedAnimalDTO.status
         )
-
         animalToBeModifiedDTO=AnimalValidation().validate(animalToBeModifiedDTO)
         return animalRepository.update(id,animalToBeModifiedDTO)
     }

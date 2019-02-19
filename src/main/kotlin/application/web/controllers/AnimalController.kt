@@ -2,8 +2,7 @@ package application.web.controllers
 
 import domain.entities.AnimalDTO
 import domain.entities.NewAnimal
-import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.services.AnimalService
 import io.javalin.Context
 import org.eclipse.jetty.http.HttpStatus
@@ -60,6 +59,26 @@ class AnimalController(private val animalService: AnimalService) {
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
 
+    }
+
+    fun adopt(context: Context) {
+        try{
+            val id:Int=context.pathParam("id").toInt()
+            val adoptedAnimal=animalService.adopt(id)
+            context.json(adoptedAnimal).status(HttpStatus.OK_200)
+        }
+        catch (exception:AnimalNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:AnimalAlreadyAdoptedException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception: AnimalDeadException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:AnimalGoneException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
     }
 
 }

@@ -8,5 +8,6 @@ interface AnimalService {
     fun get(id:Int): AnimalDTO
     fun update(id: Int, updatedAnimalDTO: AnimalDTO): AnimalDTO
     fun delete(id: Int): AnimalDTO
+    fun adopt(id:Int): AnimalDTO
 
 }

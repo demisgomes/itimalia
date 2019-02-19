@@ -1,8 +1,7 @@
 package domain.services
 
 import domain.entities.*
-import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.repositories.AnimalRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -288,5 +287,103 @@ class AnimalServiceTest{
         AnimalServiceImpl(animalRepositoryMock).delete(id)
 
         //then expect AnimalNotFoundException
+    }
+
+    @Test
+    fun `when adopt an animal that has AnimalStatus available return the adopted animal`(){
+        //given
+        val id=1
+        val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.ADOPTED
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { animalRepositoryMock.update(id, expectedAdoptedAnimalDTO) }.returns(expectedAdoptedAnimalDTO)
+
+        val animalDTO=AnimalServiceImpl(animalRepositoryMock).adopt(id)
+
+        //then
+        assertEquals(expectedAdoptedAnimalDTO,animalDTO)
+    }
+
+    @Test(expected = AnimalAlreadyAdoptedException::class)
+    fun `when adopt an animal that has AnimalStatus adopted should expect an AnimalAlreadyAdotpedException`(){
+        //given
+        val id=1
+        val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.ADOPTED
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedAdoptedAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+
+        //then expect AnimalAlreadyAdoptedException
+    }
+
+    @Test(expected = AnimalDeadException::class)
+    fun `when adopt an animal that has AnimalStatus dead should expect an AnimalDeadException`(){
+        //given
+        val id=1
+        val expectedDeadAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.DEAD
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedDeadAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+
+        //then expect AnimalDeadException
+    }
+
+    @Test(expected = AnimalGoneException::class)
+    fun `when adopt an animal that has AnimalStatus adopted should expect an AnimalAlreadyAdotpedException and return the error with status UNAUTHORIZED 401`(){
+        //given
+        val id=1
+        val expectedGoneAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.name,
+            expectedAnimalDTO.age,
+            expectedAnimalDTO.timeUnit,
+            expectedAnimalDTO.specie,
+            expectedAnimalDTO.description,
+            expectedAnimalDTO.creationDate,
+            actualCalendar.time,
+            AnimalStatus.GONE
+        )
+
+        //when
+        every { animalRepositoryMock.get(id) }.returns(expectedGoneAnimalDTO)
+        every { Calendar.getInstance() }.returns(actualCalendar)
+
+        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+
+        //then expect AnimalGoneException
     }
 }
