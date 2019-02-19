@@ -5,6 +5,10 @@ import domain.exceptions.AnimalNotFoundException
 import java.lang.NullPointerException
 
 class AnimalRepositoryImpl:AnimalRepository{
+    override fun getAll(): List<AnimalDTO> {
+        return animalsList.values.toList()
+    }
+
     companion object {
         val animalsList=HashMap<Int, AnimalDTO>()
     }

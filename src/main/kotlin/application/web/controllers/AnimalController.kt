@@ -81,4 +81,14 @@ class AnimalController(private val animalService: AnimalService) {
         }
     }
 
+    fun findAllAnimals(context: Context){
+        try{
+           val animals=animalService.getAll()
+            context.json(animals).status(HttpStatus.OK_200)
+        }
+        catch (exception:AnimalNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+    }
+
 }

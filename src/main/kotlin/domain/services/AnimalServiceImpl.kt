@@ -11,6 +11,10 @@ import domain.validation.AnimalValidation
 import java.util.*
 
 class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
+    override fun getAll(): List<AnimalDTO> {
+        return animalRepository.getAll()
+    }
+
     override fun adopt(id: Int): AnimalDTO {
         val animalToBeAdopted=get(id)
         when {
