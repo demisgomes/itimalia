@@ -92,42 +92,27 @@ class AnimalController(private val animalService: AnimalService) {
                 context.queryParam("name")!=null -> return(findAnimalsByName(context))
             }
             context.json(animals).status(HttpStatus.OK_200)
-        }
-        catch (exception:AnimalNotFoundException){
+        }catch (exception:AnimalNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }
 
     fun findAnimalsByStatus(context: Context){
-        try{
-            val name=context.queryParam("status").toString()
-            val animals=animalService.getByStatus(AnimalStatus.valueOf(name.toUpperCase()))
-            context.json(animals).status(HttpStatus.OK_200)
-        }
-        catch (exception:AnimalNotFoundException){
-            context.json(exception.createErrorResponse()).status(exception.httpStatus())
-        }
+        val name=context.queryParam("status").toString()
+        val animals=animalService.getByStatus(AnimalStatus.valueOf(name.toUpperCase()))
+        context.json(animals).status(HttpStatus.OK_200)
+
     }
 
     fun findAnimalsBySpecie(context: Context){
-        try{
-            val specie=context.queryParam("specie").toString()
-            val animals=animalService.getBySpecie(Specie.valueOf(specie.toUpperCase()))
-            context.json(animals).status(HttpStatus.OK_200)
-        }
-        catch (exception:AnimalNotFoundException){
-            context.json(exception.createErrorResponse()).status(exception.httpStatus())
-        }
+        val specie=context.queryParam("specie").toString()
+        val animals=animalService.getBySpecie(Specie.valueOf(specie.toUpperCase()))
+        context.json(animals).status(HttpStatus.OK_200)
     }
 
     fun findAnimalsByName(context: Context){
-        try{
-            val name=context.queryParam("name").toString()
-            val animals=animalService.getByName(name)
-            context.json(animals).status(HttpStatus.OK_200)
-        }
-        catch (exception:AnimalNotFoundException){
-            context.json(exception.createErrorResponse()).status(exception.httpStatus())
-        }
+        val name=context.queryParam("name").toString()
+        val animals=animalService.getByName(name)
+        context.json(animals).status(HttpStatus.OK_200)
     }
 }

@@ -337,7 +337,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
 
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {birthDate=[invalid birthDate]}")
+        expectedEx.expectMessage("The validation does not successful in following field(s): {birthDate=[invalid birthDate]}")
         UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
     }
 
@@ -373,7 +373,7 @@ class UserServiceTest{
     @Test
     fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not sucessfull in following field(s): {email=[invalid email]}")
+        expectedEx.expectMessage("The validation does not successful in following field(s): {email=[invalid email]}")
         UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
     }
 

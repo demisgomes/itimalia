@@ -2,6 +2,7 @@ package application.web.controllers
 
 import domain.entities.*
 import domain.jwt.JWTAccessManager
+import domain.services.AdminService
 import domain.services.UserService
 import io.javalin.Context
 import io.mockk.every
@@ -16,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AdminControllerTest{
-    lateinit var userServiceMock: UserService
+    lateinit var adminServiceMock: AdminService
     lateinit var contextMock: Context
     lateinit var returnedAdminUser: UserDTO
     lateinit var newAdminUser: NewUser
@@ -26,7 +27,7 @@ class AdminControllerTest{
 
     @Before
     fun setup(){
-        userServiceMock = mockk(relaxed=true)
+        adminServiceMock = mockk(relaxed=true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock= mockk(relaxed = true)
 
@@ -66,11 +67,11 @@ class AdminControllerTest{
     @Test
     fun `when add a valid user with admin permissions should return the user with status 201`(){
 
-        every{ userServiceMock.add(newAdminUser)}.returns(returnedAdminUser)
+        every{ adminServiceMock.add(newAdminUser)}.returns(returnedAdminUser)
 
         every { contextMock.body<NewUser>() }.returns(newAdminUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
+        AdminController(adminServiceMock, jwtAccessManagerMock).addAdminUser(contextMock)
 
         verify { contextMock.json(returnedAdminUser).status(HttpStatus.CREATED_201) }
     }
