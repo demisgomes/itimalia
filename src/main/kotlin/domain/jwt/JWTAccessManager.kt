@@ -61,7 +61,6 @@ class JWTAccessManager(
         return decodedJWT.getClaim("email").asString()
     }
 
-    @Throws(UnauthorizedAdminRoleException::class)
     override fun manage(handler: Handler, context: Context, permittedRoles: Set<Role>) {
 
         //if token has been expired and this handler requires admin or user permissions, return invalid token exception

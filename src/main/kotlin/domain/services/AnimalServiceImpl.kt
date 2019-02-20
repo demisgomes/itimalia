@@ -3,6 +3,7 @@ package domain.services
 import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.NewAnimal
+import domain.entities.Specie
 import domain.exceptions.AnimalAlreadyAdoptedException
 import domain.exceptions.AnimalDeadException
 import domain.exceptions.AnimalGoneException
@@ -11,6 +12,21 @@ import domain.validation.AnimalValidation
 import java.util.*
 
 class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
+    override fun getBySpecie(specie: Specie): List<AnimalDTO>{
+        val allAnimals=animalRepository.getAll()
+        return allAnimals.filter { it.specie==specie }
+    }
+
+    override fun getByName(name: String): List<AnimalDTO> {
+        val allAnimals=animalRepository.getAll()
+        return allAnimals.filter { it.name.contains(name) }
+    }
+
+    override fun getByStatus(animalStatus: AnimalStatus): List<AnimalDTO> {
+        val allAnimals=animalRepository.getAll()
+        return allAnimals.filter { it.status==animalStatus }
+    }
+
     override fun getAll(): List<AnimalDTO> {
         return animalRepository.getAll()
     }
