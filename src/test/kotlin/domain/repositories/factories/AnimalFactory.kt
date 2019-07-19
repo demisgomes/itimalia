@@ -7,15 +7,15 @@ import domain.entities.TimeUnit
 import org.joda.time.DateTime
 
 object AnimalFactory{
-    fun sample(name:String = "animal", age: Int? = 3, timeUnit: TimeUnit? = TimeUnit.MONTH): AnimalDTO {
+    fun sample(name:String = "animal", age: Int? = 3, timeUnit: TimeUnit? = TimeUnit.MONTH, creationDate: DateTime? = DateTime.now(), modificationDate: DateTime? = DateTime.now()): AnimalDTO {
         return AnimalDTO(
             name,
             age,
             timeUnit,
             Specie.CAT,
             "An animal that needs attention",
-            DateTime.now(),
-            DateTime.now(),
+            creationDate,
+            modificationDate,
             AnimalStatus.AVAILABLE
         )
     }

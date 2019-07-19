@@ -6,11 +6,19 @@ import domain.entities.Specie
 import domain.entities.TimeUnit
 import domain.repositories.factories.AnimalFactory
 import holder.DatabaseHolder
+import io.mockk.every
 import io.mockk.mockkStatic
+import io.mockk.verify
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.junit.*
+import resources.storage.entities.AnimalMap
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class AnimalRepositoryTest{
     private lateinit var expectedAnimalDTO: AnimalDTO
@@ -36,9 +44,6 @@ class AnimalRepositoryTest{
             DatabaseHolder.stop()
         }
     }
-
-
-
 
     @Test
     fun `when adds an animal in database, return it`(){
@@ -81,6 +86,39 @@ class AnimalRepositoryTest{
 
         //then
         assertEquals(listAnimals, returnedAnimals)
+    }
+
+    @Test
+    fun `when updates a previous animal should return the animal`(){
+        //given
+        val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
+        val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        //when
+        AnimalRepositoryImpl().add(mia)
+        AnimalRepositoryImpl().update(1,lala)
+
+        val updatedAnimal = AnimalRepositoryImpl().get(1)
+
+        //then
+        assertEquals("Lala", updatedAnimal.name)
+        assertEquals(8, updatedAnimal.age)
+        assertEquals(TimeUnit.YEAR, updatedAnimal.timeUnit)
+        assertNotEquals(actualDateTime, updatedAnimal.modificationDate)
+        assertEquals(actualDateTime, updatedAnimal.creationDate)
+    }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `when remove an existent animal, remove it`(){
+        //given
+        val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
+        AnimalRepositoryImpl().add(mia)
+
+        //when
+        AnimalRepositoryImpl().delete(1)
+
+        //then
+        AnimalRepositoryImpl().get(1)
     }
 
 }

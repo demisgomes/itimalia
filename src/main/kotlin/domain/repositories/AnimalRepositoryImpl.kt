@@ -4,10 +4,9 @@ import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.Specie
 import domain.entities.TimeUnit
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import resources.storage.entities.AnimalMap
 
 class AnimalRepositoryImpl:AnimalRepository{
@@ -67,13 +66,26 @@ class AnimalRepositoryImpl:AnimalRepository{
     }
 
     override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
-        animalsList[id]=animalDTO
+        transaction {
+            (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
+                resultRow[AnimalMap.name] = animalDTO.name
+                resultRow[AnimalMap.age] = animalDTO.age
+                resultRow[AnimalMap.timeUnit] = animalDTO.timeUnit?.toString()
+                resultRow[AnimalMap.specie] = animalDTO.specie?.toString()
+                resultRow[AnimalMap.modificationDate] = DateTime.now()
+                resultRow[AnimalMap.description] = animalDTO.description
+                resultRow[AnimalMap.status] = animalDTO.status.toString()
+            }
+        }
         return animalDTO
     }
 
     override fun delete(id: Int): AnimalDTO {
         val animalToBeRemoved=get(id)
-        animalsList.remove(id)
+        transaction {
+            AnimalMap.deleteWhere { AnimalMap.id eq id }
+        }
+
         return animalToBeRemoved
     }
 
