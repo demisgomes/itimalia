@@ -1,7 +1,7 @@
 package domain.entities
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import java.util.*
+import org.joda.time.DateTime
 
 data class AnimalDTO(
     val name: String,
@@ -10,7 +10,7 @@ data class AnimalDTO(
     val specie: Specie?,
     val description: String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
-    val creationDate: Date?,
+    val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
-    val modificationDate: Date?,
+    val modificationDate: DateTime?,
     val status: AnimalStatus)

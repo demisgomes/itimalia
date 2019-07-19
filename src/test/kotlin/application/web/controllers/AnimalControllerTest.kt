@@ -8,15 +8,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
+import org.joda.time.DateTime
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class AnimalControllerTest {
 
     private lateinit var contextMock: Context
     private lateinit var animalServiceMock: AnimalService
-    private lateinit var actualCalendar: Calendar
+    private lateinit var actualDateTime: DateTime
     private lateinit var newAnimal:NewAnimal
     private lateinit var expectedAnimalDTO:AnimalDTO
 
@@ -24,7 +24,7 @@ class AnimalControllerTest {
     fun setup() {
         animalServiceMock = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
-        actualCalendar = Calendar.getInstance()
+        actualDateTime = DateTime.now()
 
         newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
         expectedAnimalDTO = AnimalDTO(
@@ -33,8 +33,8 @@ class AnimalControllerTest {
             TimeUnit.MONTH,
             Specie.CAT,
             "An animal that needs attention",
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
 
@@ -94,8 +94,8 @@ class AnimalControllerTest {
             null,
             Specie.CAT,
             "An animal that needs attention",
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
         //when
@@ -118,8 +118,8 @@ class AnimalControllerTest {
             TimeUnit.YEAR,
             Specie.CAT,
             "An animal that needs attention",
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
         //when
@@ -162,7 +162,7 @@ class AnimalControllerTest {
     fun `when an admin tries modify an animal that exists with valid fields, should return the modified animal with status 200 OK`(){
         //given id =1
         val updatedAnimal=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
-        val expectedModifiedAnimalDTO=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, actualCalendar.time, expectedAnimalDTO.status)
+        val expectedModifiedAnimalDTO=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, actualDateTime, expectedAnimalDTO.status)
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
@@ -252,7 +252,7 @@ class AnimalControllerTest {
             expectedAnimalDTO.specie,
             expectedAnimalDTO.description,
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.ADOPTED
         )
 

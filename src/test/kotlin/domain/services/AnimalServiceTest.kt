@@ -6,6 +6,7 @@ import domain.repositories.AnimalRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import org.joda.time.DateTime
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +17,7 @@ import kotlin.test.assertEquals
 class AnimalServiceTest{
 
     private lateinit var animalRepositoryMock: AnimalRepository
-    private lateinit var actualCalendar: Calendar
+    private lateinit var actualDateTime: DateTime
     private lateinit var expectedAnimalDTO: AnimalDTO
     private lateinit var newAnimal: NewAnimal
 
@@ -25,7 +26,7 @@ class AnimalServiceTest{
 
     @Before
     fun setup(){
-        actualCalendar= Calendar.getInstance()
+        actualDateTime= DateTime.now()
         mockkStatic(Calendar::class)
         animalRepositoryMock= mockk(relaxed = true)
         newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
@@ -35,8 +36,8 @@ class AnimalServiceTest{
             TimeUnit.MONTH,
             Specie.CAT,
             "An animal that needs attention",
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
     }
@@ -77,7 +78,7 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.add(expectedAnimalDTO) }.returns(expectedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO= AnimalServiceImpl(animalRepositoryMock).add(newAnimal)
 
         //then
@@ -129,7 +130,7 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithAgeNullAndTimeUnitValid)
 
         //then
@@ -152,7 +153,7 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithValidAgeAndTimeUnitNull)
 
         //then
@@ -171,14 +172,14 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             "An animal that needs more attention",
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every { animalRepositoryMock.update(id,modifiedAnimalDTO) }.returns(modifiedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
 
         //then
@@ -196,7 +197,7 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             "An animal that needs more attention",
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
 
@@ -218,7 +219,7 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             "An animal that needs more attention",
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
 
@@ -227,7 +228,7 @@ class AnimalServiceTest{
         expectedEx.expectMessage("The validation does not successful in following field(s): {name=[Invalid name. The name cannot be blank or contain numbers]}")
 
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
 
         //then
@@ -245,7 +246,7 @@ class AnimalServiceTest{
             null,
             "An animal that needs more attention",
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.AVAILABLE
         )
 
@@ -254,7 +255,7 @@ class AnimalServiceTest{
         expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
 
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
 
         //then
@@ -300,13 +301,13 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             expectedAnimalDTO.description,
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.ADOPTED
         )
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
         every { animalRepositoryMock.update(id, expectedAdoptedAnimalDTO) }.returns(expectedAdoptedAnimalDTO)
 
         val animalDTO=AnimalServiceImpl(animalRepositoryMock).adopt(id)
@@ -326,13 +327,13 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             expectedAnimalDTO.description,
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.ADOPTED
         )
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAdoptedAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         AnimalServiceImpl(animalRepositoryMock).adopt(id)
 
@@ -350,13 +351,13 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             expectedAnimalDTO.description,
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.DEAD
         )
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedDeadAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         AnimalServiceImpl(animalRepositoryMock).adopt(id)
 
@@ -374,13 +375,13 @@ class AnimalServiceTest{
             expectedAnimalDTO.specie,
             expectedAnimalDTO.description,
             expectedAnimalDTO.creationDate,
-            actualCalendar.time,
+            actualDateTime,
             AnimalStatus.GONE
         )
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedGoneAnimalDTO)
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         AnimalServiceImpl(animalRepositoryMock).adopt(id)
 

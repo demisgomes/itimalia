@@ -9,6 +9,7 @@ import domain.exceptions.AnimalDeadException
 import domain.exceptions.AnimalGoneException
 import domain.repositories.AnimalRepository
 import domain.validation.AnimalValidation
+import org.joda.time.DateTime
 import java.util.*
 
 class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
@@ -42,7 +43,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
                     animalToBeAdopted.specie,
                     animalToBeAdopted.description,
                     animalToBeAdopted.creationDate,
-                    Calendar.getInstance().time,
+                    DateTime.now(),
                     AnimalStatus.ADOPTED
                 )
                 return animalRepository.update(id,animalAdopted)
@@ -65,8 +66,8 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
             newAnimal.timeUnit,
             newAnimal.specie,
             newAnimal.description,
-            Calendar.getInstance().time,
-            Calendar.getInstance().time,
+            DateTime.now(),
+            DateTime.now(),
             AnimalStatus.AVAILABLE
         )
 
@@ -83,7 +84,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
             updatedAnimalDTO.specie,
             updatedAnimalDTO.description,
             animalInDatabase.creationDate,
-            Calendar.getInstance().time,
+            DateTime.now(),
             updatedAnimalDTO.status
         )
         animalToBeModifiedDTO=AnimalValidation().validate(animalToBeModifiedDTO)
