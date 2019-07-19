@@ -23,6 +23,14 @@ object DatabaseHolder{
         Server.createPgServer().start()
     }
 
+    fun tearDown(){
+        transaction {
+            addLogger(StdOutSqlLogger)
+            SchemaUtils.drop(AnimalMap)
+            SchemaUtils.create(AnimalMap)
+        }
+    }
+
     fun stop(){
         Server.createPgServer().stop()
     }

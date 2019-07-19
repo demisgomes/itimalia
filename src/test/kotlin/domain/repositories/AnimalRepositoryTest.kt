@@ -4,6 +4,7 @@ import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.Specie
 import domain.entities.TimeUnit
+import domain.repositories.factories.AnimalFactory
 import holder.DatabaseHolder
 import io.mockk.mockkStatic
 import org.joda.time.DateTime
@@ -18,16 +19,8 @@ class AnimalRepositoryTest{
     @Before
     fun setup(){
         actualDateTime= DateTime.now()
-        expectedAnimalDTO = AnimalDTO(
-            "animal",
-            3,
-            TimeUnit.MONTH,
-            Specie.CAT,
-            "An animal that needs attention",
-            actualDateTime,
-            actualDateTime,
-            AnimalStatus.AVAILABLE
-        )
+        expectedAnimalDTO = AnimalFactory.sample()
+        DatabaseHolder.tearDown()
     }
 
     companion object {
@@ -68,6 +61,26 @@ class AnimalRepositoryTest{
 
         //then
         assertEquals(expectedAnimalDTO, returnedAnimalDTO)
+    }
+
+    @Test
+    fun `when add many animals in database, should return all via getAll()`(){
+        //given
+        val mia = AnimalFactory.sample(name = "Mia")
+        val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR)
+        val emy = AnimalFactory.sample(name = "Emy", age = 5, timeUnit = TimeUnit.YEAR)
+
+        AnimalRepositoryImpl().add(mia)
+        AnimalRepositoryImpl().add(lala)
+        AnimalRepositoryImpl().add(emy)
+
+        val listAnimals = listOf(mia, lala, emy)
+
+        //when
+        val returnedAnimals=AnimalRepositoryImpl().getAll()
+
+        //then
+        assertEquals(listAnimals, returnedAnimals)
     }
 
 }

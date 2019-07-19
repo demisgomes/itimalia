@@ -6,12 +6,26 @@ import domain.entities.Specie
 import domain.entities.TimeUnit
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import resources.storage.entities.AnimalMap
 
 class AnimalRepositoryImpl:AnimalRepository{
     override fun getAll(): List<AnimalDTO> {
-        return animalsList.values.toList()
+        return transaction {
+            (AnimalMap).selectAll().map { resultRow ->
+                AnimalDTO(
+                    name = resultRow[AnimalMap.name],
+                    age = resultRow[AnimalMap.age],
+                    timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
+                    specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
+                    creationDate = resultRow[AnimalMap.creationDate],
+                    modificationDate = resultRow[AnimalMap.modificationDate],
+                    description = resultRow[AnimalMap.description],
+                    status = AnimalStatus.valueOf(resultRow[AnimalMap.status])
+                )
+            }
+        }
     }
 
     companion object {
