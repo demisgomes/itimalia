@@ -4,6 +4,7 @@ import domain.entities.Gender
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.UserNotFoundException
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -34,16 +35,23 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun findByCredentials(email: String, password: String): UserDTO {
-        try{
-            return userList.values.filter {
-                it.email == email &&
-                        it.password == password
-            }[0]
+        return transaction {
+            UserMap.select { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { resultRow ->
+                UserDTO(
+                    resultRow[UserMap.id],
+                    resultRow[UserMap.email],
+                    resultRow[UserMap.password],
+                    resultRow[UserMap.birthDate],
+                    Gender.valueOf(resultRow[UserMap.gender]),
+                    resultRow[UserMap.name],
+                    resultRow[UserMap.phone],
+                    Roles.valueOf(resultRow[UserMap.role]),
+                    resultRow[UserMap.creationDate],
+                    resultRow[UserMap.modificationDate],
+                    resultRow[UserMap.token]
+                )
+            }.first()
         }
-        catch (exception: IndexOutOfBoundsException){
-            throw UserNotFoundException()
-        }
-
     }
 
     companion object {
