@@ -6,12 +6,12 @@ import domain.entities.UserDTO
 import org.joda.time.DateTime
 
 object UserFactory{
-    fun sampleDTO(email:String = "myemail@email.com", password: String = "myPassword", role: Roles = Roles.ANYONE, token:String? = "My token"): UserDTO{
+    fun sampleDTO(email:String = "myemail@email.com", password: String = "myPassword", role: Roles = Roles.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now() ): UserDTO{
         return UserDTO(
             id = null,
             email = email,
             password = password,
-            birthDate = DateTime.now(),
+            birthDate = birthDate,
             gender = Gender.UNDEFINED,
             name = "Usuario",
             phone = "8199999999",

@@ -4,10 +4,13 @@ import domain.entities.Gender
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.UserNotFoundException
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
+import org.joda.time.DateTime
 import resources.storage.entities.AnimalMap
 import resources.storage.entities.UserMap
 
@@ -78,7 +81,19 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
-        userList[id]=userDTO
+        transaction {
+            (UserMap).update({ UserMap.id eq id }) {
+                it[UserMap.name] = userDTO.name
+                it[UserMap.birthDate] = userDTO.birthDate
+                it[UserMap.email] = userDTO.email
+                it[UserMap.gender] = userDTO.gender.toString()
+                it[UserMap.password] = userDTO.password
+                it[UserMap.modificationDate] = DateTime.now()
+                it[UserMap.phone] = userDTO.phone
+                it[UserMap.token] = userDTO.token!!
+                it[UserMap.role] = userDTO.role.toString()
+            }
+        }
         return userDTO
     }
 
@@ -89,11 +104,22 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun get(id: Int): UserDTO {
-        if(userList.containsKey(id)){
-            return userList[id]!!
-        }
-        else{
-            throw UserNotFoundException()
+        return transaction {
+            UserMap.select { UserMap.id eq id }.map { resultRow ->
+                UserDTO(
+                    resultRow[UserMap.id],
+                    resultRow[UserMap.email],
+                    resultRow[UserMap.password],
+                    resultRow[UserMap.birthDate],
+                    Gender.valueOf(resultRow[UserMap.gender]),
+                    resultRow[UserMap.name],
+                    resultRow[UserMap.phone],
+                    Roles.valueOf(resultRow[UserMap.role]),
+                    resultRow[UserMap.creationDate],
+                    resultRow[UserMap.modificationDate],
+                    resultRow[UserMap.token]
+                )
+            }.first()
         }
     }
 

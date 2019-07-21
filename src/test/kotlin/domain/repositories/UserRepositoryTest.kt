@@ -7,6 +7,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class UserRepositoryTest{
     lateinit var email:String
@@ -18,6 +19,8 @@ class UserRepositoryTest{
         email = "meuUser@email.com"
         password = "minhaSenha"
         userRepository= UserRepositoryImpl()
+
+        DatabaseHolder.tearDown()
     }
     companion object {
         @JvmStatic
@@ -73,6 +76,27 @@ class UserRepositoryTest{
         userRepository.findByCredentials(email, "n")
 
         //then exception
+    }
+
+    @Test
+    fun `given an valid user, when updates it, should update it updating the modification date`(){
+        //given userDTO
+        val userDTO = UserFactory.sampleDTO()
+        userRepository.add(userDTO)
+        val userAddedDTO = userRepository.get(1)
+
+        val newUserDTO = UserFactory.sampleDTO(email = "myNewEmail@email.com")
+        //when
+        userRepository.update(1, newUserDTO)
+
+        //then
+        val updatedUserDTO = userRepository.get(1)
+        assertEquals(userAddedDTO.password, updatedUserDTO.password)
+        assertEquals(userAddedDTO.gender, updatedUserDTO.gender)
+        assertNotEquals(userAddedDTO.birthDate, updatedUserDTO.birthDate)
+        assertEquals(userAddedDTO.creationDate, updatedUserDTO.creationDate)
+        assertNotEquals(userAddedDTO.modificationDate, updatedUserDTO.modificationDate)
+        assertNotEquals(userAddedDTO.email, updatedUserDTO.email)
     }
 
 
