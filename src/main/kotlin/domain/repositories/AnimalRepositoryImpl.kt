@@ -27,9 +27,6 @@ class AnimalRepositoryImpl:AnimalRepository{
         }
     }
 
-    companion object {
-        val animalsList=HashMap<Int, AnimalDTO>()
-    }
     override fun get(id: Int): AnimalDTO {
         return transaction {
             (AnimalMap).select{ AnimalMap.id eq id }.map { resultRow ->

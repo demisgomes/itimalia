@@ -10,6 +10,7 @@ import domain.repositories.UserRepository
 import domain.validation.UserLoginValidation
 import domain.validation.UserValidation
 import io.javalin.security.Role
+import org.joda.time.DateTime
 import java.lang.IndexOutOfBoundsException
 import java.util.*
 
@@ -56,7 +57,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             throw EmailAlreadyExistsException()
         }
         catch (exception:UserNotFoundException){
-            val actualDate= Calendar.getInstance().time
+            val actualDate= DateTime.now()
             val newUserDTO=UserDTO(
                 null,
                 newUser.email,
@@ -66,7 +67,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 newUser.name,
                 newUser.phone,
                 Roles.USER,
-                Calendar.getInstance().time,
+                actualDate,
                 actualDate,
                 jwtUtils.sign(newUser.email,Roles.USER, 5)
             )
@@ -99,7 +100,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         }
 
 
-        val actualDate=Calendar.getInstance().time
+        val actualDate=DateTime.now()
         val modifiedUserDTO=UserDTO(
             userToBeModified.id,
             newUserDTO.email,

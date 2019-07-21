@@ -7,12 +7,12 @@ import domain.repositories.UserRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -23,9 +23,9 @@ class UserServiceTest{
     private lateinit var newUserDTO: UserDTO
     private lateinit var expectedUserDTO:UserDTO
     private lateinit var expectedAdminModifiedUserDTO:UserDTO
-    private lateinit var date:Date
+    private lateinit var dateTime: DateTime
     private lateinit var jwtUtils: JWTUtils
-    private lateinit var actualCalendar: Calendar
+    private lateinit var actualDateTime: DateTime
     private lateinit var invalidUserLogin: UserLogin
     private lateinit var updatedAdminUserDTO:UserDTO
     private lateinit var expectedModifiedUserDTO:UserDTO
@@ -38,23 +38,23 @@ class UserServiceTest{
 
     @Before
     fun setup() {
-        val formatter:DateFormat= SimpleDateFormat("dd/mm/yyyy")
-        date=formatter.parse("01/01/1990")
+        val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
+        dateTime=formatter.parseDateTime("01/01/1990")
         mockkStatic(Calendar::class)
-        actualCalendar= Calendar.getInstance()
+        actualDateTime= DateTime.now()
 
 
         updatedAdminUserDTO=UserDTO(
             1,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.ADMIN,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -62,13 +62,13 @@ class UserServiceTest{
             1,
             "newUser@domain.com",
             "password123",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -76,26 +76,26 @@ class UserServiceTest{
             null,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
         expectedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -103,13 +103,13 @@ class UserServiceTest{
             1,
             "newUser@domain.com",
             "password123",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -117,13 +117,13 @@ class UserServiceTest{
             1,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.ADMIN,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -142,13 +142,13 @@ class UserServiceTest{
         val user = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183"
         )
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
@@ -166,7 +166,7 @@ class UserServiceTest{
         val user = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183"
@@ -174,7 +174,7 @@ class UserServiceTest{
 
         val unexpectedUserDTO = expectedUserDTO
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
@@ -184,7 +184,7 @@ class UserServiceTest{
     @Test
     fun `when an user without admin permission tries to modify its account should return the modified user`(){
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
 
@@ -202,7 +202,7 @@ class UserServiceTest{
 
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
 
@@ -221,7 +221,7 @@ class UserServiceTest{
     fun `when an user without admin permission tries to modify another account should expect UnauthorizedDifferentUserChangeException`(){
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
 
@@ -239,7 +239,7 @@ class UserServiceTest{
     fun `when an user without admin permission tries to modify its account changing from user to admin should expect UnauthorizedRoleChangeException`(){
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
 
@@ -258,7 +258,7 @@ class UserServiceTest{
     fun `when an user without admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(expectedUserDTO.email, expectedUserDTO.role, 5) }.returns("token_test")
 
@@ -275,7 +275,7 @@ class UserServiceTest{
     fun `when an user with admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
 
@@ -292,7 +292,7 @@ class UserServiceTest{
     fun `when an user with admin permission tries to modify another account but without modifications should expect UnmodifiedUserException`(){
         //given
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         //every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
 
@@ -310,7 +310,7 @@ class UserServiceTest{
         val newUser = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             null,
             "New User",
             "81823183183"
@@ -347,13 +347,13 @@ class UserServiceTest{
             56415,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            date,
-            Calendar.getInstance().time,
+            dateTime,
+            DateTime.now(),
             null
         )
 

@@ -8,6 +8,7 @@ import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
+import org.joda.time.DateTime
 import java.util.*
 
 class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):AdminService{
@@ -17,7 +18,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             throw EmailAlreadyExistsException()
         }
         catch (exception: UserNotFoundException){
-            val actualDate = Calendar.getInstance().time
+            val actualDate = DateTime.now()
             val newUserDTO=UserDTO(
                 null,
                 newUser.email,
@@ -27,7 +28,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 newUser.name,
                 newUser.phone,
                 Roles.ADMIN,
-                Calendar.getInstance().time,
+                actualDate,
                 actualDate,
                 jwtUtils.sign(newUser.email, Roles.ADMIN,5)
             )

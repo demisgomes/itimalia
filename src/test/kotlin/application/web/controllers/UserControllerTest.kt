@@ -10,10 +10,10 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class UserControllerTest{
@@ -23,7 +23,7 @@ class UserControllerTest{
     lateinit var newUser:NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
-    lateinit var actualCalendar:Calendar
+    lateinit var actualDateTime:DateTime
 
     @Before
     fun setup(){
@@ -31,27 +31,27 @@ class UserControllerTest{
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
         mockkStatic(Calendar::class)
-        actualCalendar= Calendar.getInstance()
+        actualDateTime= DateTime.now()
 
-        val formatter: DateFormat = SimpleDateFormat("dd/mm/yyyy")
-        val date=formatter.parse("01/01/1990")
+        val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
+        val dateTime=formatter.parseDateTime("01/01/1990")
         returnedUser= UserDTO(
             null,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             null)
 
         newUser = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183"

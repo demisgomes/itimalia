@@ -11,12 +11,10 @@ import domain.repositories.UserRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -24,29 +22,29 @@ class AdminServiceTest{
 
     private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: UserDTO
-    private lateinit var date: Date
-    private lateinit var actualCalendar: Calendar
+    private lateinit var dateTime: DateTime
+    private lateinit var actualDateTime: DateTime
     private lateinit var jwtUtils: JWTUtils
     private lateinit var expectedUserDTO:UserDTO
 
     @Before
     fun setup() {
-        val formatter: DateFormat = SimpleDateFormat("dd/mm/yyyy")
-        date=formatter.parse("01/01/1990")
+        val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
+        dateTime=formatter.parseDateTime("01/01/1990")
         mockkStatic(Calendar::class)
-        actualCalendar=Calendar.getInstance()
+        actualDateTime= DateTime.now()
 
         expectedUserDTO = UserDTO(
             1,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.USER,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -54,13 +52,13 @@ class AdminServiceTest{
             null,
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183",
             Roles.ADMIN,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
@@ -75,7 +73,7 @@ class AdminServiceTest{
         val user = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183"
@@ -90,12 +88,12 @@ class AdminServiceTest{
             "New User",
             "81823183183",
             Roles.ADMIN,
-            actualCalendar.time,
-            actualCalendar.time,
+            actualDateTime,
+            actualDateTime,
             "token_test"
         )
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
@@ -115,7 +113,7 @@ class AdminServiceTest{
         val user = NewUser(
             "newUser@domain.com",
             "password",
-            date,
+            dateTime,
             Gender.MASC,
             "New User",
             "81823183183"
@@ -123,7 +121,7 @@ class AdminServiceTest{
 
         val unexpectedUserDTO = expectedUserDTO
 
-        every { Calendar.getInstance() }.returns(actualCalendar)
+        every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 

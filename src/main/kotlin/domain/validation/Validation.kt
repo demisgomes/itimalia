@@ -3,6 +3,7 @@ package domain.validation
 import domain.entities.Gender
 import domain.entities.Specie
 import domain.entities.TimeUnit
+import org.joda.time.DateTime
 import java.util.*
 
 class Validation<T>(val fieldName: String, val fieldValue: T,
@@ -20,7 +21,7 @@ fun Validation<Gender?>.validGender():Validation<Gender?>{
 }
 
 @Suppress("INTEGER_OVERFLOW")
-fun Validation<Date?>.validBirthDate():Validation<Date?>{
+fun Validation<DateTime?>.validBirthDate():Validation<DateTime?>{
     //Only more than 13 years old
     val minTimeInMillis:Long =1000*3600*8760*13
 
@@ -28,7 +29,7 @@ fun Validation<Date?>.validBirthDate():Validation<Date?>{
         this.errorMessageList.add("invalid birthDate")
     }
     else{
-        if(Calendar.getInstance().timeInMillis-this.fieldValue.time<minTimeInMillis){
+        if(DateTime.now().millis-this.fieldValue.millis<minTimeInMillis){
             this.errorMessageList.add("Only accept users with 13 years old or more")
         }
     }
