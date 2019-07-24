@@ -3,6 +3,7 @@ package domain.services
 import domain.entities.*
 import domain.exceptions.*
 import domain.repositories.AnimalRepository
+import domain.repositories.factories.AnimalFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -11,7 +12,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
-import java.util.*
 import kotlin.test.assertEquals
 
 class AnimalServiceTest{
@@ -20,6 +20,9 @@ class AnimalServiceTest{
     private lateinit var actualDateTime: DateTime
     private lateinit var expectedAnimalDTO: AnimalDTO
     private lateinit var newAnimal: NewAnimal
+    private lateinit var animalService : AnimalService
+
+    private val animalsList = listOf(AnimalFactory.sample(), AnimalFactory.sample(name = "Lala", specie = Specie.DOG), AnimalFactory.sample(specie = Specie.CAT, status = AnimalStatus.ADOPTED), AnimalFactory.sample(specie = Specie.DOG, status = AnimalStatus.GONE))
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -40,6 +43,7 @@ class AnimalServiceTest{
             actualDateTime,
             AnimalStatus.AVAILABLE
         )
+        animalService = AnimalServiceImpl(animalRepositoryMock)
     }
 
     //GET METHOD TESTS
@@ -51,21 +55,75 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        val animalDTO= AnimalServiceImpl(animalRepositoryMock).get(id)
+        val animalDTO= animalService.get(id)
 
         //then
         assertEquals(expectedAnimalDTO,animalDTO)
     }
 
+    @Test
+    fun `when request an animal by specie, should return the animals`(){
+        //given animalsList
+
+        //when
+        every { animalRepositoryMock.getAll() }.returns(animalsList)
+        val cats = animalService.getBySpecie(Specie.CAT)
+
+        //then
+        assertEquals(2, cats.size)
+        assertEquals(Specie.CAT, cats.first().specie)
+        assertEquals(Specie.CAT, cats[1].specie)
+    }
+
+    @Test
+    fun `when request an animal by status, should return the animals`(){
+        //given animalsList
+
+        //when
+        every { animalRepositoryMock.getAll() }.returns(animalsList)
+        val availables= animalService.getByStatus(AnimalStatus.AVAILABLE)
+
+        //then
+        assertEquals(2, availables.size)
+        assertEquals(AnimalStatus.AVAILABLE, availables.first().status)
+        assertEquals(AnimalStatus.AVAILABLE, availables[1].status)
+    }
+
+    @Test
+    fun `when request an animal by name, should return the animals`(){
+        //given animalsList
+        val query = "animal"
+        //when
+        every { animalRepositoryMock.getAll() }.returns(animalsList)
+        val names= animalService.getByName(query)
+
+        //then
+        assertEquals(3, names.size)
+        assertEquals(query, names.first().name)
+        assertEquals(query, names[1].name)
+        assertEquals(query, names[2].name)
+    }
+
+    @Test
+    fun `when request all animals, should return all animals`(){
+        //given animalsList
+
+        //when
+        every { animalRepositoryMock.getAll() }.returns(animalsList)
+        val animals = animalService.getAll()
+        //then
+        assertEquals(animals, animalsList)
+    }
+
     @Test(expected = AnimalNotFoundException::class)
-    fun `when request an animal where its id not exists, should expect an NoSuchElementException`(){
+    fun `when request an animal where its id not exists, should expect an AnimalNotFoundException`(){
         //given
         val id=1
         val animalNotFoundException=AnimalNotFoundException()
 
         //when
         every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
-        AnimalServiceImpl(animalRepositoryMock).get(id)
+        animalService.get(id)
 
         //then expect NoSuchElementException
     }
@@ -79,7 +137,7 @@ class AnimalServiceTest{
         //when
         every { animalRepositoryMock.add(expectedAnimalDTO) }.returns(expectedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO= AnimalServiceImpl(animalRepositoryMock).add(newAnimal)
+        val animalDTO= animalService.add(newAnimal)
 
         //then
         assertEquals(expectedAnimalDTO,animalDTO)
@@ -94,7 +152,7 @@ class AnimalServiceTest{
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {name=[Invalid name. The name cannot be blank or contain numbers]}")
 
-        AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithInvalidName)
+        animalService.add(newAnimalWithInvalidName)
 
         //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
     }
@@ -108,7 +166,7 @@ class AnimalServiceTest{
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
 
-        AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithInvalidSpecie)
+        animalService.add(newAnimalWithInvalidSpecie)
 
         //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
 
@@ -131,7 +189,7 @@ class AnimalServiceTest{
         //when
         every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithAgeNullAndTimeUnitValid)
+        val animalDTO=animalService.add(newAnimalWithAgeNullAndTimeUnitValid)
 
         //then
         assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
@@ -154,7 +212,7 @@ class AnimalServiceTest{
         //when
         every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).add(newAnimalWithValidAgeAndTimeUnitNull)
+        val animalDTO=animalService.add(newAnimalWithValidAgeAndTimeUnitNull)
 
         //then
         assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
@@ -180,7 +238,7 @@ class AnimalServiceTest{
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every { animalRepositoryMock.update(id,modifiedAnimalDTO) }.returns(modifiedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+        val animalDTO=animalService.update(id,modifiedAnimalDTO)
 
         //then
         assertEquals(modifiedAnimalDTO, animalDTO)
@@ -203,7 +261,7 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.get(id) }.throws(AnimalNotFoundException())
-        AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+        animalService.update(id,modifiedAnimalDTO)
 
         //then expect AnimalNotFoundException
     }
@@ -229,7 +287,7 @@ class AnimalServiceTest{
 
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+        val animalDTO=animalService.update(id,modifiedAnimalDTO)
 
         //then
         assertEquals(modifiedAnimalDTO, animalDTO)
@@ -256,7 +314,7 @@ class AnimalServiceTest{
 
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
+        val animalDTO=animalService.update(id,modifiedAnimalDTO)
 
         //then
         assertEquals(modifiedAnimalDTO, animalDTO)
@@ -271,7 +329,7 @@ class AnimalServiceTest{
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every{(animalRepositoryMock).delete(id)}.returns(expectedAnimalDTO)
-        val animalDTO= AnimalServiceImpl(animalRepositoryMock).delete(id)
+        val animalDTO= animalService.delete(id)
 
         //then
         assertEquals(expectedAnimalDTO,animalDTO)
@@ -285,7 +343,7 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
-        AnimalServiceImpl(animalRepositoryMock).delete(id)
+        animalService.delete(id)
 
         //then expect AnimalNotFoundException
     }
@@ -310,7 +368,7 @@ class AnimalServiceTest{
         every { DateTime.now() }.returns(actualDateTime)
         every { animalRepositoryMock.update(id, expectedAdoptedAnimalDTO) }.returns(expectedAdoptedAnimalDTO)
 
-        val animalDTO=AnimalServiceImpl(animalRepositoryMock).adopt(id)
+        val animalDTO=animalService.adopt(id)
 
         //then
         assertEquals(expectedAdoptedAnimalDTO,animalDTO)
@@ -335,7 +393,7 @@ class AnimalServiceTest{
         every { animalRepositoryMock.get(id) }.returns(expectedAdoptedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+        animalService.adopt(id)
 
         //then expect AnimalAlreadyAdoptedException
     }
@@ -359,7 +417,7 @@ class AnimalServiceTest{
         every { animalRepositoryMock.get(id) }.returns(expectedDeadAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+        animalService.adopt(id)
 
         //then expect AnimalDeadException
     }
@@ -383,7 +441,7 @@ class AnimalServiceTest{
         every { animalRepositoryMock.get(id) }.returns(expectedGoneAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        AnimalServiceImpl(animalRepositoryMock).adopt(id)
+        animalService.adopt(id)
 
         //then expect AnimalGoneException
     }

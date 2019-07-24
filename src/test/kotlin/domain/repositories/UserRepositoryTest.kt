@@ -13,14 +13,12 @@ import kotlin.test.assertNotEquals
 class UserRepositoryTest{
     lateinit var email:String
     lateinit var password: String
-    lateinit var userRepository: UserRepositoryImpl
+    private val userRepository = UserRepositoryImpl()
 
     @Before
     fun setup(){
         email = "meuUser@email.com"
         password = "minhaSenha"
-        userRepository= UserRepositoryImpl()
-
         DatabaseHolder.tearDown()
     }
     companion object {

@@ -16,6 +16,7 @@ import kotlin.test.assertNotEquals
 class AnimalRepositoryTest{
     private lateinit var expectedAnimalDTO: AnimalDTO
     private lateinit var actualDateTime: DateTime
+    private val animalRepository = AnimalRepositoryImpl() 
 
     @Before
     fun setup(){
@@ -43,7 +44,7 @@ class AnimalRepositoryTest{
         //given expectedAnimalDTO
 
         //when
-        val animalDTO=AnimalRepositoryImpl().add(expectedAnimalDTO)
+        val animalDTO=animalRepository.add(expectedAnimalDTO)
 
         //then
         assertEquals(expectedAnimalDTO, animalDTO)
@@ -52,10 +53,10 @@ class AnimalRepositoryTest{
     @Test
     fun `when gets an previous added animal in database, return it`(){
         //given expectedAnimalDTO
-        AnimalRepositoryImpl().add(expectedAnimalDTO)
+        animalRepository.add(expectedAnimalDTO)
 
         //when
-        val returnedAnimalDTO=AnimalRepositoryImpl().get(1)
+        val returnedAnimalDTO=animalRepository.get(1)
 
         //then
         assertEquals(expectedAnimalDTO, returnedAnimalDTO)
@@ -68,14 +69,14 @@ class AnimalRepositoryTest{
         val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR)
         val emy = AnimalFactory.sample(name = "Emy", age = 5, timeUnit = TimeUnit.YEAR)
 
-        AnimalRepositoryImpl().add(mia)
-        AnimalRepositoryImpl().add(lala)
-        AnimalRepositoryImpl().add(emy)
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
 
         val listAnimals = listOf(mia, lala, emy)
 
         //when
-        val returnedAnimals=AnimalRepositoryImpl().getAll()
+        val returnedAnimals=animalRepository.getAll()
 
         //then
         assertEquals(listAnimals, returnedAnimals)
@@ -88,10 +89,10 @@ class AnimalRepositoryTest{
         val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
 
         //when
-        AnimalRepositoryImpl().add(mia)
-        AnimalRepositoryImpl().update(1,lala)
+        animalRepository.add(mia)
+        animalRepository.update(1,lala)
 
-        val updatedAnimal = AnimalRepositoryImpl().get(1)
+        val updatedAnimal = animalRepository.get(1)
 
         //then
         assertEquals("Lala", updatedAnimal.name)
@@ -105,13 +106,13 @@ class AnimalRepositoryTest{
     fun `when remove an existent animal, remove it`(){
         //given
         val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
-        AnimalRepositoryImpl().add(mia)
+        animalRepository.add(mia)
 
         //when
-        AnimalRepositoryImpl().delete(1)
+        animalRepository.delete(1)
 
         //then
-        AnimalRepositoryImpl().get(1)
+        animalRepository.get(1)
     }
 
 }

@@ -31,8 +31,8 @@ class UserServiceTest{
     private lateinit var updatedAdminUserDTO:UserDTO
     private lateinit var expectedModifiedUserDTO:UserDTO
     private lateinit var validUserLogin: UserLogin
-
     private lateinit var updatedUserDTO:UserDTO
+    private lateinit var userService: UserService
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -135,6 +135,8 @@ class UserServiceTest{
         userRepositoryMock= mockk(relaxed = true)
 
         jwtUtils= mockk(relaxed = true)
+
+        userService = UserServiceImpl(userRepositoryMock, jwtUtils)
     }
 
 
@@ -157,7 +159,7 @@ class UserServiceTest{
 
         every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
-        val userDTO=UserServiceImpl(userRepositoryMock, jwtUtils).add(user)
+        val userDTO=userService.add(user)
 
         assertEquals(expectedUserDTO,userDTO)
     }
@@ -179,7 +181,7 @@ class UserServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
-        UserServiceImpl(userRepositoryMock, jwtUtils).add(user)
+        userService.add(user)
     }
 
     @Test
@@ -322,7 +324,7 @@ class UserServiceTest{
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {gender=[invalid gender]}")
 
-        UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
+        userService.add(newUser)
     }
 
     @Test
@@ -339,7 +341,7 @@ class UserServiceTest{
 
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {birthDate=[invalid birthDate]}")
-        UserServiceImpl(userRepositoryMock, jwtUtils).add(newUser)
+        userService.add(newUser)
     }
 
     @Test
@@ -359,7 +361,7 @@ class UserServiceTest{
         )
 
         every { userRepositoryMock.get(56415)  }.returns(expectedUserDTO)
-        assertEquals(expectedUserDTO, UserServiceImpl(userRepositoryMock, jwtUtils).get(56415))
+        assertEquals(expectedUserDTO, userService.get(56415))
     }
 
 
@@ -368,7 +370,7 @@ class UserServiceTest{
         val userException=UserNotFoundException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
-        UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
+        userService.get(844)
     }
 
     @Test(expected = UserNotFoundException::class)
@@ -376,7 +378,7 @@ class UserServiceTest{
         val userException=UserNotFoundException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
-        UserServiceImpl(userRepositoryMock, jwtUtils).update(844, expectedModifiedUserDTO, Roles.ADMIN, expectedModifiedUserDTO.email)
+        userService.update(844, expectedModifiedUserDTO, Roles.ADMIN, expectedModifiedUserDTO.email)
     }
 
     @Test(expected = UserNotFoundException::class)
@@ -384,14 +386,14 @@ class UserServiceTest{
         val userException=UserNotFoundException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
-        UserServiceImpl(userRepositoryMock, jwtUtils).delete(844, Roles.ADMIN, expectedModifiedUserDTO.email)
+        userService.delete(844, Roles.ADMIN, expectedModifiedUserDTO.email)
     }
 
     @Test
     fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {email=[invalid email]}")
-        UserServiceImpl(userRepositoryMock, jwtUtils).login(invalidUserLogin)
+        userService.login(invalidUserLogin)
     }
 
     @Test
@@ -401,7 +403,7 @@ class UserServiceTest{
         //when
         every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.returns(expectedUserDTO)
 
-        val userDTO=UserServiceImpl(userRepositoryMock, jwtUtils).login(validUserLogin)
+        val userDTO=userService.login(validUserLogin)
 
         //then
         assertEquals(expectedUserDTO,userDTO)
@@ -413,7 +415,7 @@ class UserServiceTest{
 
         //when
         every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.throws(UserNotFoundException())
-        UserServiceImpl(userRepositoryMock, jwtUtils).login(validUserLogin)
+        userService.login(validUserLogin)
 
         //then UserNotFoundException
     }

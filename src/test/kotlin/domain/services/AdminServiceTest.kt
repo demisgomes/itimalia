@@ -27,6 +27,7 @@ class AdminServiceTest{
     private lateinit var actualDateTime: DateTime
     private lateinit var jwtUtils: JWTUtils
     private lateinit var expectedUserDTO:UserDTO
+    private lateinit var adminService: AdminService
 
     @Before
     fun setup() {
@@ -66,6 +67,8 @@ class AdminServiceTest{
         userRepositoryMock= mockk(relaxed = true)
 
         jwtUtils= mockk(relaxed = true)
+
+        adminService = AdminServiceImpl(userRepositoryMock, jwtUtils)
     }
 
 
@@ -104,7 +107,7 @@ class AdminServiceTest{
 
         every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
-        val userDTO=AdminServiceImpl(userRepositoryMock, jwtUtils).add(user)
+        val userDTO=adminService.add(user)
 
         assertEquals(expectedUserDTO,userDTO)
     }
@@ -126,7 +129,7 @@ class AdminServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
-        AdminServiceImpl(userRepositoryMock, jwtUtils).add(user)
+        adminService.add(user)
     }
 
     @Test(expected = NoSuchElementException::class)
@@ -134,7 +137,7 @@ class AdminServiceTest{
         val userException=NoSuchElementException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
-        AdminServiceImpl(userRepositoryMock, jwtUtils).get(844)
+        adminService.get(844)
     }
 
 }
