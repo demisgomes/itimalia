@@ -16,7 +16,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
         }
-        catch (exception: UserNotFoundException){
+        catch (exception: NoSuchElementException){
             val actualDate = DateTime.now()
             val newUserDTO=UserDTO(
                 null,

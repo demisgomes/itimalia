@@ -27,7 +27,7 @@ class AnimalServiceTest{
     @Before
     fun setup(){
         actualDateTime= DateTime.now()
-        mockkStatic(Calendar::class)
+        mockkStatic(DateTime::class)
         animalRepositoryMock= mockk(relaxed = true)
         newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
         expectedAnimalDTO = AnimalDTO(
@@ -67,7 +67,7 @@ class AnimalServiceTest{
         every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
         AnimalServiceImpl(animalRepositoryMock).get(id)
 
-        //then expect AnimalNotFoundException
+        //then expect NoSuchElementException
     }
 
     //POST METHODS
@@ -186,8 +186,8 @@ class AnimalServiceTest{
         assertEquals(modifiedAnimalDTO, animalDTO)
     }
 
-    @Test(expected = AnimalNotFoundException::class)
-    fun `when an animal with valid fields and it not exists requests a modification, should expect a AnimalNotFoundException`(){
+    @Test(expected = NoSuchElementException::class)
+    fun `when an animal with valid fields and it not exists requests a modification, should expect a NoSuchElementException`(){
         //given
         val id=1
         val modifiedAnimalDTO=AnimalDTO(
@@ -202,10 +202,10 @@ class AnimalServiceTest{
         )
 
         //when
-        every { animalRepositoryMock.get(id) }.throws(AnimalNotFoundException())
+        every { animalRepositoryMock.get(id) }.throws(NoSuchElementException())
         AnimalServiceImpl(animalRepositoryMock).update(id,modifiedAnimalDTO)
 
-        //then expect AnimalNotFoundException
+        //then expect NoSuchElementException
     }
 
     @Test
@@ -277,17 +277,17 @@ class AnimalServiceTest{
         assertEquals(expectedAnimalDTO,animalDTO)
     }
 
-    @Test(expected = AnimalNotFoundException::class)
-    fun `when delete an animal where its id not exists, should expect an AnimalNotFoundException`(){
+    @Test(expected = NoSuchElementException::class)
+    fun `when delete an animal where its id not exists, should expect an NoSuchElementException`(){
         //given
         val id=1
-        val animalNotFoundException=AnimalNotFoundException()
+        val animalNotFoundException=NoSuchElementException()
 
         //when
         every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
         AnimalServiceImpl(animalRepositoryMock).delete(id)
 
-        //then expect AnimalNotFoundException
+        //then expect NoSuchElementException
     }
 
     @Test

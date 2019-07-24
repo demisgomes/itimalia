@@ -16,6 +16,7 @@ import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.test.assertEquals
 
 class AdminServiceTest{
@@ -31,7 +32,7 @@ class AdminServiceTest{
     fun setup() {
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         dateTime=formatter.parseDateTime("01/01/1990")
-        mockkStatic(Calendar::class)
+        mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
 
         expectedUserDTO = UserDTO(
@@ -95,7 +96,7 @@ class AdminServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(NoSuchElementException())
 
         every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
 
@@ -128,9 +129,9 @@ class AdminServiceTest{
         AdminServiceImpl(userRepositoryMock, jwtUtils).add(user)
     }
 
-    @Test(expected = UserNotFoundException::class)
+    @Test(expected = NoSuchElementException::class)
     fun `when a user with invalid id was requested, throws UserNotFoundException`(){
-        val userException=UserNotFoundException()
+        val userException=NoSuchElementException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
         AdminServiceImpl(userRepositoryMock, jwtUtils).get(844)
