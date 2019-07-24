@@ -13,16 +13,7 @@ class AnimalRepositoryImpl:AnimalRepository{
     override fun getAll(): List<AnimalDTO> {
         return transaction {
             (AnimalMap).selectAll().map { resultRow ->
-                AnimalDTO(
-                    name = resultRow[AnimalMap.name],
-                    age = resultRow[AnimalMap.age],
-                    timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
-                    specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
-                    creationDate = resultRow[AnimalMap.creationDate],
-                    modificationDate = resultRow[AnimalMap.modificationDate],
-                    description = resultRow[AnimalMap.description],
-                    status = AnimalStatus.valueOf(resultRow[AnimalMap.status])
-                )
+                buildAnimalDTO(resultRow)
             }
         }
     }
@@ -30,18 +21,22 @@ class AnimalRepositoryImpl:AnimalRepository{
     override fun get(id: Int): AnimalDTO {
         return transaction {
             (AnimalMap).select{ AnimalMap.id eq id }.map { resultRow ->
-                 AnimalDTO(
-                    name = resultRow[AnimalMap.name],
-                    age = resultRow[AnimalMap.age],
-                    timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
-                    specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
-                    creationDate = resultRow[AnimalMap.creationDate],
-                    modificationDate = resultRow[AnimalMap.modificationDate],
-                    description = resultRow[AnimalMap.description],
-                    status = AnimalStatus.valueOf(resultRow[AnimalMap.status])
-                )
+                buildAnimalDTO(resultRow)
             }.first()
         }
+    }
+
+    private fun buildAnimalDTO(resultRow: ResultRow): AnimalDTO {
+        return AnimalDTO(
+            name = resultRow[AnimalMap.name],
+            age = resultRow[AnimalMap.age],
+            timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
+            specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
+            creationDate = resultRow[AnimalMap.creationDate],
+            modificationDate = resultRow[AnimalMap.modificationDate],
+            description = resultRow[AnimalMap.description],
+            status = AnimalStatus.valueOf(resultRow[AnimalMap.status])
+        )
     }
 
     override fun add(newAnimal: AnimalDTO): AnimalDTO {

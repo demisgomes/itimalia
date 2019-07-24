@@ -12,19 +12,7 @@ class UserRepositoryImpl:UserRepository{
     override fun findByEmail(email: String):UserDTO {
         return transaction {
             UserMap.select { UserMap.email eq email }.map { resultRow ->
-                UserDTO(
-                    resultRow[UserMap.id],
-                    resultRow[UserMap.email],
-                    resultRow[UserMap.password],
-                    resultRow[UserMap.birthDate],
-                    Gender.valueOf(resultRow[UserMap.gender]),
-                    resultRow[UserMap.name],
-                    resultRow[UserMap.phone],
-                    Roles.valueOf(resultRow[UserMap.role]),
-                    resultRow[UserMap.creationDate],
-                    resultRow[UserMap.modificationDate],
-                    resultRow[UserMap.token]
-                )
+                buildUserDTO(resultRow)
             }.first()
         }
 
@@ -33,19 +21,7 @@ class UserRepositoryImpl:UserRepository{
     override fun findByCredentials(email: String, password: String): UserDTO {
         return transaction {
             UserMap.select { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { resultRow ->
-                UserDTO(
-                    resultRow[UserMap.id],
-                    resultRow[UserMap.email],
-                    resultRow[UserMap.password],
-                    resultRow[UserMap.birthDate],
-                    Gender.valueOf(resultRow[UserMap.gender]),
-                    resultRow[UserMap.name],
-                    resultRow[UserMap.phone],
-                    Roles.valueOf(resultRow[UserMap.role]),
-                    resultRow[UserMap.creationDate],
-                    resultRow[UserMap.modificationDate],
-                    resultRow[UserMap.token]
-                )
+                buildUserDTO(resultRow)
             }.first()
         }
     }
@@ -96,21 +72,25 @@ class UserRepositoryImpl:UserRepository{
     override fun get(id: Int): UserDTO {
         return transaction {
             UserMap.select { UserMap.id eq id }.map { resultRow ->
-                UserDTO(
-                    resultRow[UserMap.id],
-                    resultRow[UserMap.email],
-                    resultRow[UserMap.password],
-                    resultRow[UserMap.birthDate],
-                    Gender.valueOf(resultRow[UserMap.gender]),
-                    resultRow[UserMap.name],
-                    resultRow[UserMap.phone],
-                    Roles.valueOf(resultRow[UserMap.role]),
-                    resultRow[UserMap.creationDate],
-                    resultRow[UserMap.modificationDate],
-                    resultRow[UserMap.token]
-                )
+                buildUserDTO(resultRow)
             }.first()
         }
+    }
+
+    private fun buildUserDTO(resultRow: ResultRow): UserDTO {
+        return UserDTO(
+            resultRow[UserMap.id],
+            resultRow[UserMap.email],
+            resultRow[UserMap.password],
+            resultRow[UserMap.birthDate],
+            Gender.valueOf(resultRow[UserMap.gender]),
+            resultRow[UserMap.name],
+            resultRow[UserMap.phone],
+            Roles.valueOf(resultRow[UserMap.role]),
+            resultRow[UserMap.creationDate],
+            resultRow[UserMap.modificationDate],
+            resultRow[UserMap.token]
+        )
     }
 
 }
