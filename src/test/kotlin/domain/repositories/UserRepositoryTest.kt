@@ -1,5 +1,6 @@
 package domain.repositories
 
+import domain.exceptions.UserNotFoundException
 import domain.repositories.factories.UserFactory
 import holder.DatabaseHolder
 import org.junit.AfterClass
@@ -66,7 +67,7 @@ class UserRepositoryTest{
         assertEquals(userDTO, user)
     }
 
-    @Test(expected = NoSuchElementException::class)
+    @Test(expected = UserNotFoundException::class)
     fun `given an valid user in database, when did not find by credentials, should return UserNotFoundException`(){
         //given userDTO
         val userDTO = UserFactory.sampleDTO(email = email, password = password)
@@ -99,7 +100,7 @@ class UserRepositoryTest{
         assertNotEquals(userAddedDTO.email, updatedUserDTO.email)
     }
 
-    @Test(expected = NoSuchElementException::class)
+    @Test(expected = UserNotFoundException::class)
     fun `given a user that exists in database, when call a delete operation, should remove the user`(){
         //given userDTO
         val userDTO = UserFactory.sampleDTO()

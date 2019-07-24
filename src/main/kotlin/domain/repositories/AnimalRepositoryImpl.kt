@@ -4,6 +4,8 @@ import domain.entities.AnimalDTO
 import domain.entities.AnimalStatus
 import domain.entities.Specie
 import domain.entities.TimeUnit
+import domain.exceptions.AnimalNotFoundException
+import domain.exceptions.UserNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -11,18 +13,29 @@ import resources.storage.entities.AnimalMap
 
 class AnimalRepositoryImpl:AnimalRepository{
     override fun getAll(): List<AnimalDTO> {
-        return transaction {
-            (AnimalMap).selectAll().map { resultRow ->
-                buildAnimalDTO(resultRow)
+        try{
+            return transaction {
+                (AnimalMap).selectAll().map { resultRow ->
+                    buildAnimalDTO(resultRow)
+                }
             }
         }
+        catch (exception:NoSuchElementException){
+            throw AnimalNotFoundException()
+        }
+
     }
 
     override fun get(id: Int): AnimalDTO {
-        return transaction {
-            (AnimalMap).select{ AnimalMap.id eq id }.map { resultRow ->
-                buildAnimalDTO(resultRow)
-            }.first()
+        try{
+            return transaction {
+                (AnimalMap).select{ AnimalMap.id eq id }.map { resultRow ->
+                    buildAnimalDTO(resultRow)
+                }.first()
+            }
+        }
+        catch (exception:NoSuchElementException){
+            throw AnimalNotFoundException()
         }
     }
 
@@ -58,27 +71,37 @@ class AnimalRepositoryImpl:AnimalRepository{
     }
 
     override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
-        transaction {
-            (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
-                resultRow[AnimalMap.name] = animalDTO.name
-                resultRow[AnimalMap.age] = animalDTO.age
-                resultRow[AnimalMap.timeUnit] = animalDTO.timeUnit?.toString()
-                resultRow[AnimalMap.specie] = animalDTO.specie?.toString()
-                resultRow[AnimalMap.modificationDate] = DateTime.now()
-                resultRow[AnimalMap.description] = animalDTO.description
-                resultRow[AnimalMap.status] = animalDTO.status.toString()
+        try {
+            transaction {
+                (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
+                    resultRow[AnimalMap.name] = animalDTO.name
+                    resultRow[AnimalMap.age] = animalDTO.age
+                    resultRow[AnimalMap.timeUnit] = animalDTO.timeUnit?.toString()
+                    resultRow[AnimalMap.specie] = animalDTO.specie?.toString()
+                    resultRow[AnimalMap.modificationDate] = DateTime.now()
+                    resultRow[AnimalMap.description] = animalDTO.description
+                    resultRow[AnimalMap.status] = animalDTO.status.toString()
+                }
             }
+            return animalDTO
         }
-        return animalDTO
+        catch (exception:NoSuchElementException){
+            throw AnimalNotFoundException()
+        }
     }
 
     override fun delete(id: Int): AnimalDTO {
-        val animalToBeRemoved=get(id)
-        transaction {
-            AnimalMap.deleteWhere { AnimalMap.id eq id }
-        }
+        try {
+            val animalToBeRemoved=get(id)
+            transaction {
+                AnimalMap.deleteWhere { AnimalMap.id eq id }
+            }
 
-        return animalToBeRemoved
+            return animalToBeRemoved
+        }
+        catch (exception:NoSuchElementException){
+            throw UserNotFoundException()
+        }
     }
 
 }

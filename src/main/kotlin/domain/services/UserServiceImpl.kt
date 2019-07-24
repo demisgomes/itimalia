@@ -14,48 +14,37 @@ import org.joda.time.DateTime
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
-        try{
-            val userToBeModified = userRepository.get(id)
+        val userToBeModified = userRepository.get(id)
+        val newUserDTO = UserDTO(
+            userToBeModified.id,
+            userDTO.email,
+            userDTO.password,
+            userDTO.birthDate,
+            userDTO.gender,
+            userDTO.name,
+            userDTO.phone,
+            userDTO.role,
+            userToBeModified.creationDate,
+            userToBeModified.modificationDate,
+            userToBeModified.token
+        )
 
-            val newUserDTO = UserDTO(
-                userToBeModified.id,
-                userDTO.email,
-                userDTO.password,
-                userDTO.birthDate,
-                userDTO.gender,
-                userDTO.name,
-                userDTO.phone,
-                userDTO.role,
-                userToBeModified.creationDate,
-                userToBeModified.modificationDate,
-                userToBeModified.token
-            )
+        if (role == Roles.ADMIN) {
+            return updateCall(newUserDTO, userToBeModified, id)
+        }
 
-            if (role == Roles.ADMIN) {
+        if (userToBeModified.email == email) {
+            if (userToBeModified.role == newUserDTO.role) {
                 return updateCall(newUserDTO, userToBeModified, id)
             }
-
-            if (userToBeModified.email == email) {
-                if (userToBeModified.role == newUserDTO.role) {
-                    return updateCall(newUserDTO, userToBeModified, id)
-                }
-                throw UnauthorizedRoleChangeException()
-            }
-            throw UnauthorizedDifferentUserChangeException()
+            throw UnauthorizedRoleChangeException()
         }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
+        throw UnauthorizedDifferentUserChangeException()
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
         UserLoginValidation().validate(newUserLogin)
-        try{
-            return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
-        }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
+        return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
     }
 
     override fun add(newUser: NewUser): UserDTO {
@@ -64,7 +53,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
         }
-        catch (exception:NoSuchElementException){
+        catch (exception:UserNotFoundException){
             val actualDate= DateTime.now()
             val newUserDTO=UserDTO(
                 null,
@@ -86,29 +75,19 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     override fun delete(id:Int, role:Role, email:String):UserDTO{
-        try{
-            val userToBeDeleted=userRepository.get(id)
+        val userToBeDeleted=userRepository.get(id)
 
-            if(role==Roles.ADMIN) {
-                return userRepository.delete(id)
-            }
-            if(userToBeDeleted.email == email){
-                return userRepository.delete(id)
-            }
-            throw UnauthorizedDifferentUserChangeException()
+        if(role==Roles.ADMIN) {
+            return userRepository.delete(id)
         }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
+        if(userToBeDeleted.email == email){
+            return userRepository.delete(id)
         }
+        throw UnauthorizedDifferentUserChangeException()
     }
 
     override fun get(id: Int): UserDTO {
-        try{
-            return userRepository.get(id)
-        }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
+        return userRepository.get(id)
     }
 
     private fun updateCall(newUserDTO:UserDTO, userToBeModified:UserDTO, id:Int):UserDTO{

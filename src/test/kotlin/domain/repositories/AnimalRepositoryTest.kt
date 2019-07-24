@@ -2,6 +2,7 @@ package domain.repositories
 
 import domain.entities.AnimalDTO
 import domain.entities.TimeUnit
+import domain.exceptions.AnimalNotFoundException
 import domain.repositories.factories.AnimalFactory
 import holder.DatabaseHolder
 import org.joda.time.DateTime
@@ -100,7 +101,7 @@ class AnimalRepositoryTest{
         assertEquals(actualDateTime, updatedAnimal.creationDate)
     }
 
-    @Test(expected = NoSuchElementException::class)
+    @Test(expected = AnimalNotFoundException::class)
     fun `when remove an existent animal, remove it`(){
         //given
         val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
