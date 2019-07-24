@@ -2,7 +2,6 @@ package domain.entities
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
-import java.util.*
 
 data class UserDTO(
     var id: Int?,

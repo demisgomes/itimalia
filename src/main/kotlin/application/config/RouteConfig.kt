@@ -4,11 +4,9 @@ import application.web.controllers.AdminController
 import application.web.controllers.AnimalController
 import application.web.controllers.UserController
 import domain.entities.Roles
-import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.security.SecurityUtil.roles
-import javax.management.relation.Role
 
 
 class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController){

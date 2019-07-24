@@ -1,7 +1,6 @@
 package domain.services
 
 import domain.entities.NewUser
-import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.entities.UserLogin
 import io.javalin.security.Role

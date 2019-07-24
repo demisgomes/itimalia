@@ -10,7 +10,6 @@ import domain.exceptions.AnimalGoneException
 import domain.repositories.AnimalRepository
 import domain.validation.AnimalValidation
 import org.joda.time.DateTime
-import java.util.*
 
 class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
     override fun getBySpecie(specie: Specie): List<AnimalDTO>{

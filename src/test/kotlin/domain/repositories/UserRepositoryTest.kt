@@ -79,7 +79,7 @@ class UserRepositoryTest{
     }
 
     @Test
-    fun `given an valid user, when updates it, should update it updating the modification date`(){
+    fun `given a valid user, when updates it, should update it updating the modification date`(){
         //given userDTO
         val userDTO = UserFactory.sampleDTO()
         userRepository.add(userDTO)
@@ -99,5 +99,17 @@ class UserRepositoryTest{
         assertNotEquals(userAddedDTO.email, updatedUserDTO.email)
     }
 
+    @Test(expected = NoSuchElementException::class)
+    fun `given a user that exists in database, when call a delete operation, should remove the user`(){
+        //given userDTO
+        val userDTO = UserFactory.sampleDTO()
+        userRepository.add(userDTO)
 
+        //when
+        userRepository.delete(1)
+
+        //then
+        userRepository.get(1)
+        //throws exception
+    }
 }

@@ -3,20 +3,13 @@ package domain.repositories
 import domain.entities.Gender
 import domain.entities.Roles
 import domain.entities.UserDTO
-import domain.exceptions.UserNotFoundException
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
-import resources.storage.entities.AnimalMap
 import resources.storage.entities.UserMap
 
 class UserRepositoryImpl:UserRepository{
     override fun findByEmail(email: String):UserDTO {
-
         return transaction {
             UserMap.select { UserMap.email eq email }.map { resultRow ->
                 UserDTO(
@@ -57,11 +50,6 @@ class UserRepositoryImpl:UserRepository{
         }
     }
 
-    companion object {
-        var userList:HashMap<Int, UserDTO> = HashMap()
-    }
-
-
     override fun add(userDTO: UserDTO): UserDTO {
         transaction {
             UserMap.insert {
@@ -99,7 +87,9 @@ class UserRepositoryImpl:UserRepository{
 
     override fun delete(id: Int): UserDTO {
         val originalUser=get(id)
-        userList.remove(id)
+        transaction {
+            UserMap.deleteWhere { UserMap.id eq id }
+        }
         return originalUser
     }
 

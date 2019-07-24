@@ -1,6 +1,5 @@
 package domain.validation
 
-import domain.entities.UserDTO
 import domain.entities.UserLogin
 import domain.exceptions.ValidationException
 

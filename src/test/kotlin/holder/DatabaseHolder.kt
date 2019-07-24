@@ -4,7 +4,6 @@ import application.config.DatabaseConfig
 import org.h2.tools.Server
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import resources.storage.entities.AnimalMap

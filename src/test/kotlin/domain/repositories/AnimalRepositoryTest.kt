@@ -1,22 +1,14 @@
 package domain.repositories
 
 import domain.entities.AnimalDTO
-import domain.entities.AnimalStatus
-import domain.entities.Specie
 import domain.entities.TimeUnit
 import domain.repositories.factories.AnimalFactory
 import holder.DatabaseHolder
-import io.mockk.every
-import io.mockk.mockkStatic
-import io.mockk.verify
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import org.junit.*
-import resources.storage.entities.AnimalMap
-import java.util.*
-import kotlin.NoSuchElementException
+import org.junit.AfterClass
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 

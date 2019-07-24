@@ -1,8 +1,6 @@
 package domain.entities
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.joda.time.DateTime
-import java.util.*
 
 data class NewUser(
     val email: String,

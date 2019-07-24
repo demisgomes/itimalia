@@ -2,9 +2,7 @@ package domain.validation
 
 import domain.entities.Gender
 import domain.entities.Specie
-import domain.entities.TimeUnit
 import org.joda.time.DateTime
-import java.util.*
 
 class Validation<T>(val fieldName: String, val fieldValue: T,
                               val errorMessageList: MutableList<String> = mutableListOf())

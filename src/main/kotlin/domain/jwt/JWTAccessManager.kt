@@ -2,10 +2,7 @@ package domain.jwt
 
 
 import com.auth0.jwt.JWT
-import com.auth0.jwt.interfaces.DecodedJWT
-import com.sun.org.apache.xpath.internal.operations.Bool
 import domain.entities.Roles
-import domain.exceptions.InvalidCredentialsException
 import domain.exceptions.InvalidTokenException
 import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UnauthorizedUserRoleException
@@ -13,11 +10,7 @@ import io.javalin.Context
 import io.javalin.Handler
 import io.javalin.security.AccessManager
 import io.javalin.security.Role
-import org.eclipse.jetty.http.HttpStatus
 import java.util.*
-import java.util.Optional.empty
-import java.util.Optional.ofNullable
-
 
 
 class JWTAccessManager(

@@ -3,7 +3,6 @@ package domain.validation
 import domain.entities.AnimalDTO
 import domain.entities.TimeUnit
 import domain.exceptions.ValidationException
-import java.util.*
 
 class AnimalValidation{
     fun validate(animalDTO: AnimalDTO):AnimalDTO{

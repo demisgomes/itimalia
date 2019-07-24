@@ -11,8 +11,6 @@ import domain.validation.UserLoginValidation
 import domain.validation.UserValidation
 import io.javalin.security.Role
 import org.joda.time.DateTime
-import java.lang.IndexOutOfBoundsException
-import java.util.*
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
