@@ -363,12 +363,28 @@ class UserServiceTest{
     }
 
 
-    @Test(expected = NoSuchElementException::class)
-    fun `when a user with invalid id was requested, throws NoSuchElementException`(){
+    @Test(expected = UserNotFoundException::class)
+    fun `when a user with invalid id was requested, throws UserNotFoundException`(){
         val userException=NoSuchElementException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
         UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when a user with invalid id was updated, throws UserNotFoundException`(){
+        val userException=NoSuchElementException()
+        every { userRepositoryMock.get(844)  }.throws(userException)
+
+        UserServiceImpl(userRepositoryMock, jwtUtils).update(844, expectedModifiedUserDTO, Roles.ADMIN, expectedModifiedUserDTO.email)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when a user with invalid id was deleted, throws UserNotFoundException`(){
+        val userException=NoSuchElementException()
+        every { userRepositoryMock.get(844)  }.throws(userException)
+
+        UserServiceImpl(userRepositoryMock, jwtUtils).delete(844, Roles.ADMIN, expectedModifiedUserDTO.email)
     }
 
     @Test
@@ -391,8 +407,8 @@ class UserServiceTest{
         assertEquals(expectedUserDTO,userDTO)
     }
 
-    @Test(expected = NoSuchElementException::class)
-    fun `when an user tries login with a valid email and password but not matches with any user, should expectreturn UserNotFoundException`() {
+    @Test(expected = UserNotFoundException::class)
+    fun `when an user tries login with a valid email and password but not matches with any user, should expect UserNotFoundException`() {
         //given validUserLogin
 
         //when
