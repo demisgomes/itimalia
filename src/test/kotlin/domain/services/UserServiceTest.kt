@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
 import java.util.*
+import kotlin.NoSuchElementException
 import kotlin.test.assertEquals
 
 
@@ -40,7 +41,7 @@ class UserServiceTest{
     fun setup() {
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         dateTime=formatter.parseDateTime("01/01/1990")
-        mockkStatic(Calendar::class)
+        mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
 
 
@@ -150,7 +151,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(NoSuchElementException())
 
         every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
 
@@ -316,7 +317,7 @@ class UserServiceTest{
             "81823183183"
         )
 
-        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUser.email) }.throws(NoSuchElementException())
 
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {gender=[invalid gender]}")
@@ -334,7 +335,7 @@ class UserServiceTest{
             "New User",
             "81823183183"
         )
-        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUser.email) }.throws(NoSuchElementException())
 
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The validation does not successful in following field(s): {birthDate=[invalid birthDate]}")
@@ -362,9 +363,9 @@ class UserServiceTest{
     }
 
 
-    @Test(expected = UserNotFoundException::class)
-    fun `when a user with invalid id was requested, throws UserNotFoundException`(){
-        val userException=UserNotFoundException()
+    @Test(expected = NoSuchElementException::class)
+    fun `when a user with invalid id was requested, throws NoSuchElementException`(){
+        val userException=NoSuchElementException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
         UserServiceImpl(userRepositoryMock, jwtUtils).get(844)
@@ -390,12 +391,12 @@ class UserServiceTest{
         assertEquals(expectedUserDTO,userDTO)
     }
 
-    @Test(expected = UserNotFoundException::class)
+    @Test(expected = NoSuchElementException::class)
     fun `when an user tries login with a valid email and password but not matches with any user, should expectreturn UserNotFoundException`() {
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.throws(NoSuchElementException())
         UserServiceImpl(userRepositoryMock, jwtUtils).login(validUserLogin)
 
         //then UserNotFoundException
