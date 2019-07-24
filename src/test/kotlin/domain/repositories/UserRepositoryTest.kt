@@ -50,6 +50,17 @@ class UserRepositoryTest{
         assertEquals(userDTO, user)
     }
 
+    @Test(expected = UserNotFoundException::class)
+    fun `given an nonexistent email, when request it via findByEmail, should expect a UserNotFoundException`(){
+        //given none
+
+        //when
+        userRepository.findByEmail(email)
+
+        //then exception
+    }
+
+
     @Test
     fun `given an valid user in database, when correctly find by credentials, should return the user`(){
         //given userDTO
@@ -96,6 +107,16 @@ class UserRepositoryTest{
         assertEquals(userAddedDTO.creationDate, updatedUserDTO.creationDate)
         assertNotEquals(userAddedDTO.modificationDate, updatedUserDTO.modificationDate)
         assertNotEquals(userAddedDTO.email, updatedUserDTO.email)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `given a non existent user, when try updates it, should expect UserNotFoundException`(){
+        //given none
+        val newUserDTO = UserFactory.sampleDTO(email = "myNewEmail@email.com")
+        //when
+        userRepository.update(1, newUserDTO)
+
+        //then exception
     }
 
     @Test(expected = UserNotFoundException::class)

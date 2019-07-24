@@ -83,6 +83,28 @@ class AnimalRepositoryTest{
     }
 
     @Test
+    fun `when does not exist animal, an update call should return AnimalNotFoundException`(){
+        //given none
+
+        //when
+        animalRepository.update(1, expectedAnimalDTO)
+
+        //then
+        //AnimalNotFoundException
+    }
+
+    @Test(expected = AnimalNotFoundException::class)
+    fun `when does not exist animal, a delete call should return AnimalNotFoundException`(){
+        //given none
+
+        //when
+        animalRepository.delete(1)
+
+        //then
+        //AnimalNotFoundException
+    }
+
+    @Test
     fun `when updates a previous animal should return the animal`(){
         //given
         val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)

@@ -38,32 +38,25 @@ class UserRepositoryImpl:UserRepository{
     }
 
     override fun add(userDTO: UserDTO): UserDTO {
-        try{
-            transaction {
-                UserMap.insert {
-                    it[UserMap.name] = userDTO.name
-                    it[UserMap.birthDate] = userDTO.birthDate
-                    it[UserMap.creationDate] = userDTO.creationDate
-                    it[UserMap.email] = userDTO.email
-                    it[UserMap.gender] = userDTO.gender.toString()
-                    it[UserMap.password] = userDTO.password
-                    it[UserMap.modificationDate] = userDTO.modificationDate
-                    it[UserMap.phone] = userDTO.phone
-                    it[UserMap.token] = userDTO.token!!
-                    it[UserMap.role] = userDTO.role.toString()
-                }
+        transaction {
+            UserMap.insert {
+                it[UserMap.name] = userDTO.name
+                it[UserMap.birthDate] = userDTO.birthDate
+                it[UserMap.creationDate] = userDTO.creationDate
+                it[UserMap.email] = userDTO.email
+                it[UserMap.gender] = userDTO.gender.toString()
+                it[UserMap.password] = userDTO.password
+                it[UserMap.modificationDate] = userDTO.modificationDate
+                it[UserMap.phone] = userDTO.phone
+                it[UserMap.token] = userDTO.token!!
+                it[UserMap.role] = userDTO.role.toString()
             }
-            return userDTO
         }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
-
+        return userDTO
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
-        try{
-            transaction {
+        val result = transaction {
                 (UserMap).update({ UserMap.id eq id }) {
                     it[UserMap.name] = userDTO.name
                     it[UserMap.birthDate] = userDTO.birthDate
@@ -76,24 +69,21 @@ class UserRepositoryImpl:UserRepository{
                     it[UserMap.role] = userDTO.role.toString()
                 }
             }
-            return userDTO
-        }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
+
+        result.let { res ->
+            when (res) {
+                0 -> throw UserNotFoundException()
+                else -> return userDTO
+            }
         }
     }
 
     override fun delete(id: Int): UserDTO {
-        try{
-            val originalUser=get(id)
-            transaction {
-                UserMap.deleteWhere { UserMap.id eq id }
-            }
-            return originalUser
+        val originalUser=get(id)
+        transaction {
+            UserMap.deleteWhere { UserMap.id eq id }
         }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
+        return originalUser
     }
 
     override fun get(id: Int): UserDTO {
