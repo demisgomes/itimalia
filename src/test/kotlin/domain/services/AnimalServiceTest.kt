@@ -57,11 +57,11 @@ class AnimalServiceTest{
         assertEquals(expectedAnimalDTO,animalDTO)
     }
 
-    @Test(expected = AnimalNotFoundException::class)
-    fun `when request an animal where its id not exists, should expect an AnimalNotFoundException`(){
+    @Test(expected = NoSuchElementException::class)
+    fun `when request an animal where its id not exists, should expect an NoSuchElementException`(){
         //given
         val id=1
-        val animalNotFoundException=AnimalNotFoundException()
+        val animalNotFoundException=NoSuchElementException()
 
         //when
         every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
