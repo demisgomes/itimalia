@@ -5,7 +5,6 @@ import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
-import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import io.mockk.every
@@ -15,8 +14,6 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
-import java.util.*
-import kotlin.NoSuchElementException
 import kotlin.test.assertEquals
 
 class AdminServiceTest{

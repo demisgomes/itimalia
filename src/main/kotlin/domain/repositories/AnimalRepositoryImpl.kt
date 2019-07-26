@@ -5,7 +5,6 @@ import domain.entities.AnimalStatus
 import domain.entities.Specie
 import domain.entities.TimeUnit
 import domain.exceptions.AnimalNotFoundException
-import domain.exceptions.UserNotFoundException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime

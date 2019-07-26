@@ -20,9 +20,11 @@ dependencies {
     compile 'io.javalin:javalin:2.6.0'
     compile 'org.slf4j:slf4j-simple:1.7.25'
 
+
     // Jackson
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1"
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.9.8'
 
     // Koin
     compile 'org.koin:koin-core:1.0.2'
