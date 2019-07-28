@@ -14,7 +14,7 @@ data class UserDTO(
     val phone: String,
     var role: Roles,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
-    var creationDate: DateTime,
+    val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
-    val modificationDate: DateTime,
+    val modificationDate: DateTime?,
     var token:String?)

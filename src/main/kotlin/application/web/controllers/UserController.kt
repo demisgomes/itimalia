@@ -64,6 +64,10 @@ class UserController(private val userService: UserService, private val jwtAccess
         catch (exception:UnauthorizedDifferentUserChangeException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
+        catch (exception:EmailAlreadyExistsException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+
     }
 
     fun deleteUser(context: Context){
@@ -92,6 +96,10 @@ class UserController(private val userService: UserService, private val jwtAccess
         }
         catch (exception:InvalidCredentialsException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception: UserNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+            return
         }
     }
 

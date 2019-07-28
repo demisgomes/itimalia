@@ -15,36 +15,47 @@ import org.joda.time.DateTime
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
         val userToBeModified = userRepository.get(id)
-        val newUserDTO = UserDTO(
-            userToBeModified.id,
-            userDTO.email,
-            userDTO.password,
-            userDTO.birthDate,
-            userDTO.gender,
-            userDTO.name,
-            userDTO.phone,
-            userDTO.role,
-            userToBeModified.creationDate,
-            userToBeModified.modificationDate,
-            userToBeModified.token
-        )
-
-        if (role == Roles.ADMIN) {
-            return updateCall(newUserDTO, userToBeModified, id)
+        try{
+            userRepository.findByEmail(userDTO.email)
+            throw EmailAlreadyExistsException()
         }
+        catch (exception:UserNotFoundException){
+            val newUserDTO = UserDTO(
+                userToBeModified.id,
+                userDTO.email,
+                userDTO.password,
+                userDTO.birthDate,
+                userDTO.gender,
+                userDTO.name,
+                userDTO.phone,
+                userDTO.role,
+                userToBeModified.creationDate,
+                userToBeModified.modificationDate,
+                userToBeModified.token
+            )
 
-        if (userToBeModified.email == email) {
-            if (userToBeModified.role == newUserDTO.role) {
+            if (role == Roles.ADMIN) {
                 return updateCall(newUserDTO, userToBeModified, id)
             }
-            throw UnauthorizedRoleChangeException()
+
+            if (userToBeModified.email == email) {
+                if (userToBeModified.role == newUserDTO.role) {
+                    return updateCall(newUserDTO, userToBeModified, id)
+                }
+                throw UnauthorizedRoleChangeException()
+            }
+            throw UnauthorizedDifferentUserChangeException()
         }
-        throw UnauthorizedDifferentUserChangeException()
+
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
         UserLoginValidation().validate(newUserLogin)
-        return userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
+        val user = userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
+        val token = jwtUtils.sign(user.email, user.role, 5)
+        val loggedUser = user.copy(token = token)
+        userRepository.update(loggedUser.id!!, loggedUser)
+        return userRepository.get(loggedUser.id!!)
     }
 
     override fun add(newUser: NewUser): UserDTO {

@@ -11,7 +11,7 @@ object UserMap: Table("users") {
     val name = varchar("name", VARCHAR_LENGTH)
     val phone = varchar("phone", VARCHAR_LENGTH)
     val role = varchar("role", VARCHAR_LENGTH)
-    val creationDate = datetime("creation_date")
-    val modificationDate = datetime("modification_date")
+    val creationDate = datetime("creation_date").nullable()
+    val modificationDate = datetime("modification_date").nullable()
     val token = varchar("token", VARCHAR_LENGTH)
 }

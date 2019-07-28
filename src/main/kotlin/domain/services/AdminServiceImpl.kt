@@ -4,6 +4,7 @@ import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
+import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserValidation
@@ -15,7 +16,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
         }
-        catch (exception: NoSuchElementException){
+        catch (exception: UserNotFoundException){
             val actualDate = DateTime.now()
             val newUserDTO=UserDTO(
                 null,
