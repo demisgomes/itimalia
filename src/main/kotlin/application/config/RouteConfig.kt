@@ -30,7 +30,7 @@ class RouteConfig(private val userController: UserController, private val adminC
             }
 
             ApiBuilder.path("admins"){
-                ApiBuilder.post(adminController::addAdminUser, roles(Roles.ANYONE))
+                ApiBuilder.post(adminController::addAdminUser, roles(Roles.ADMIN))
             }
             ApiBuilder.path("animals"){
                 ApiBuilder.path(":id"){

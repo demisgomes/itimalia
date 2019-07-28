@@ -44,7 +44,7 @@ class UserRepositoryTest{
         //when
         val user = userRepository.findByEmail(email)
 
-        userDTO.id = 1
+        userDTO.id = 2
 
         //then
         assertEquals(userDTO, user)
@@ -70,7 +70,7 @@ class UserRepositoryTest{
         //when
         val user = userRepository.findByCredentials(email, password)
 
-        userDTO.id = 1
+        userDTO.id = 2
 
         //then
         assertEquals(userDTO, user)
@@ -93,14 +93,14 @@ class UserRepositoryTest{
         //given userDTO
         val userDTO = UserFactory.sampleDTO()
         userRepository.add(userDTO)
-        val userAddedDTO = userRepository.get(1)
+        val userAddedDTO = userRepository.get(2)
 
         val newUserDTO = UserFactory.sampleDTO(email = "myNewEmail@email.com")
         //when
-        userRepository.update(1, newUserDTO)
+        userRepository.update(2, newUserDTO)
 
         //then
-        val updatedUserDTO = userRepository.get(1)
+        val updatedUserDTO = userRepository.get(2)
         assertEquals(userAddedDTO.password, updatedUserDTO.password)
         assertEquals(userAddedDTO.gender, updatedUserDTO.gender)
         assertNotEquals(userAddedDTO.birthDate, updatedUserDTO.birthDate)
@@ -114,7 +114,7 @@ class UserRepositoryTest{
         //given none
         val newUserDTO = UserFactory.sampleDTO(email = "myNewEmail@email.com")
         //when
-        userRepository.update(1, newUserDTO)
+        userRepository.update(2, newUserDTO)
 
         //then exception
     }

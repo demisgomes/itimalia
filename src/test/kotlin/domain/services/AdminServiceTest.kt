@@ -5,6 +5,7 @@ import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
+import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import io.mockk.every
@@ -96,7 +97,7 @@ class AdminServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(NoSuchElementException())
+        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
         every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
 
@@ -104,7 +105,7 @@ class AdminServiceTest{
 
         every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
-        val userDTO=adminService.add(user)
+        val userDTO=adminService.add(user, Roles.ADMIN)
 
         assertEquals(expectedUserDTO,userDTO)
     }
@@ -126,7 +127,7 @@ class AdminServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
-        adminService.add(user)
+        adminService.add(user, Roles.ADMIN)
     }
 
     @Test(expected = NoSuchElementException::class)

@@ -2,10 +2,7 @@ package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import domain.entities.NewUser
-import domain.exceptions.EmailAlreadyExistsException
-import domain.exceptions.InvalidGenderException
-import domain.exceptions.UserNotFoundException
-import domain.exceptions.ValidationException
+import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.AdminService
 import io.javalin.Context
@@ -15,7 +12,7 @@ class AdminController(private val adminService: AdminService, private val jwtAcc
     fun addAdminUser(context: Context){
         try{
             val newUser=context.body<NewUser>()
-            val addedUser=adminService.add(newUser)
+            val addedUser=adminService.add(newUser, jwtAccessManager.extractRole(context))
             context.json(addedUser).status(HttpStatus.CREATED_201)
         }
         catch (exception: ValidationException){
@@ -29,6 +26,9 @@ class AdminController(private val adminService: AdminService, private val jwtAcc
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
         catch (exception: UserNotFoundException){
+            context.json(exception.createErrorResponse()).status(exception.httpStatus())
+        }
+        catch (exception:UnauthorizedAdminRoleException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
         }
     }

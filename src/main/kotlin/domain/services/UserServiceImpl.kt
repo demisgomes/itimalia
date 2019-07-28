@@ -16,8 +16,14 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
         val userToBeModified = userRepository.get(id)
         try{
-            userRepository.findByEmail(userDTO.email)
-            throw EmailAlreadyExistsException()
+            val user = userRepository.findByEmail(userDTO.email)
+            //if found an email in another user, cannot update the email to other that exists
+            if(user.id != id){
+                throw EmailAlreadyExistsException()
+            }
+            else{
+                throw UserNotFoundException()
+            }
         }
         catch (exception:UserNotFoundException){
             val newUserDTO = UserDTO(

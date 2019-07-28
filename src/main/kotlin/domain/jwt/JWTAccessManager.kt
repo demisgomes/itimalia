@@ -15,11 +15,11 @@ import java.util.*
 
 class JWTAccessManager(
     private val userRoleClaim: String,
-    private val rolesMapping: Map<String, Role>,
-    private val defaultRole: Role
+    private val rolesMapping: Map<String, Roles>,
+    private val defaultRole: Roles
 ) : AccessManager {
 
-    fun extractRole(context: Context): Role {
+    fun extractRole(context: Context): Roles {
         val string = getTokenFromHeader(context)
         if(string== Optional.empty<String>()){
             return defaultRole

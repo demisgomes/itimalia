@@ -2,11 +2,12 @@ package application.config
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
+import domain.entities.Gender
+import domain.entities.Roles
+import domain.entities.UserDTO
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import resources.storage.entities.AnimalMap
 import resources.storage.entities.UserMap
 
@@ -31,6 +32,31 @@ object DatabaseConfig{
             addLogger(StdOutSqlLogger)
             //Do stuff
             SchemaUtils.create(*tables)
+            val adminUser = UserDTO(
+                id = null,
+                email = "admin@itimalia.org",
+                password = "admin",
+                birthDate = DateTime.now(),
+                gender = Gender.UNDEFINED,
+                name = "Admin",
+                phone = "8199999999",
+                role = Roles.ADMIN,
+                creationDate = DateTime.now(),
+                modificationDate = DateTime.now(),
+                token = "initial token"
+            )
+            UserMap.insert {
+                it[UserMap.name] = adminUser.name
+                it[UserMap.birthDate] = adminUser.birthDate
+                it[UserMap.creationDate] = adminUser.creationDate
+                it[UserMap.email] = adminUser.email
+                it[UserMap.gender] = adminUser.gender.toString()
+                it[UserMap.password] = adminUser.password
+                it[UserMap.modificationDate] = adminUser.modificationDate
+                it[UserMap.phone] = adminUser.phone
+                it[UserMap.token] = adminUser.token!!
+                it[UserMap.role] = adminUser.role.toString()
+            }
         }
     }
 

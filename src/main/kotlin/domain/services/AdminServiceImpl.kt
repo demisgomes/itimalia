@@ -4,6 +4,7 @@ import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
+import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
@@ -11,7 +12,10 @@ import domain.validation.UserValidation
 import org.joda.time.DateTime
 
 class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):AdminService{
-    override fun add(newUser: NewUser): UserDTO {
+    override fun add(newUser: NewUser, role: Roles): UserDTO {
+        if(role!=Roles.ADMIN){
+            throw UnauthorizedAdminRoleException()
+        }
         try{
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
