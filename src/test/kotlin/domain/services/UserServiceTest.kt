@@ -4,7 +4,6 @@ import domain.entities.*
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
-import domain.repositories.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -203,6 +202,24 @@ class UserServiceTest{
     }
 
     @Test
+    fun `when an user without admin permission tries to modify its account without change the email should return the modified user`(){
+
+        every { DateTime.now() }.returns(actualDateTime)
+
+        every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+        every { userRepositoryMock.findByEmail(updatedUserDTO.email) }.returns(expectedUserDTO)
+
+        every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
+
+
+        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, Roles.USER, updatedUserDTO.email)
+
+        assertEquals(expectedModifiedUserDTO,userDTO)
+    }
+
+    @Test
     fun `when an user with admin permission tries to modify any account should return the modified user`(){
 
         //given
@@ -277,6 +294,25 @@ class UserServiceTest{
         UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.USER, expectedUserDTO.email)
 
         //then expect UnmodifiedUserException
+    }
+
+    @Test(expected = EmailAlreadyExistsException::class)
+    fun `when an user without admin permission tries to modify its email by another email used, should expect EmailAlreadyExistsException`(){
+        //given
+
+        every { DateTime.now() }.returns(actualDateTime)
+
+        every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
+
+        val usedEmailUser = expectedUserDTO.copy(id = 2, email = expectedUserDTO.email+"A")
+        every { userRepositoryMock.findByEmail(expectedUserDTO.email) }.returns(usedEmailUser)
+
+        val modifiedUserDTO = expectedUserDTO.copy(email = expectedUserDTO.email+"A")
+
+        //when
+        userService.update(1,modifiedUserDTO, Roles.USER, expectedUserDTO.email)
+
+        //then EmailAlreadyExistsException
     }
 
     @Test(expected = UnmodifiedUserException::class)

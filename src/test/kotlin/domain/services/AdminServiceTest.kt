@@ -5,6 +5,7 @@ import domain.entities.NewUser
 import domain.entities.Roles
 import domain.entities.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
+import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UserNotFoundException
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
@@ -101,8 +102,6 @@ class AdminServiceTest{
 
         every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
 
-        //adminUserDTO.token="token_test"
-
         every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
 
         val userDTO=adminService.add(user, Roles.ADMIN)
@@ -128,6 +127,20 @@ class AdminServiceTest{
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
         adminService.add(user, Roles.ADMIN)
+    }
+
+    @Test(expected = UnauthorizedAdminRoleException::class)
+    fun `when a valid user tries to register a new user but does not have admin permissions, should expect UnauthorizedAdminRoleException`(){
+        val user = NewUser(
+            "newUser@domain.com",
+            "password",
+            dateTime,
+            Gender.MASC,
+            "New User",
+            "81823183183"
+        )
+
+        adminService.add(user, Roles.USER)
     }
 
     @Test(expected = NoSuchElementException::class)
