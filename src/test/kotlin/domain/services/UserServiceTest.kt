@@ -4,9 +4,11 @@ import domain.entities.*
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
+import domain.repositories.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.verify
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
@@ -431,26 +433,21 @@ class UserServiceTest{
 
     @Test
     fun `when an user without admin permission tries to delete your account should return no content with status 204`(){
-        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
-        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
 
-        val deletedUser=UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, expectedUserDTO.role, expectedUserDTO.email)
-        assertEquals(expectedUserDTO, deletedUser)
+        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
+        userService.delete(1, Roles.USER, expectedUserDTO.email)
+        verify { userRepositoryMock.delete(1) }
     }
 
     @Test
     fun `when an user with admin permission tries to delete any account should return no content with status 204`(){
-        every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
-        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
-
-        val deletedUser=UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, Roles.ADMIN, expectedUserDTO.email)
-        assertEquals(expectedUserDTO, deletedUser)
+        userService.delete(1, Roles.ADMIN, "admin@itimalia.org")
+        verify { userRepositoryMock.delete(1) }
     }
 
     @Test(expected = UnauthorizedDifferentUserChangeException::class)
     fun `when an user without admin permission tries to delete another account should expect UnauthorizedDifferentUserChangeException`(){
         every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
-        every { userRepositoryMock.delete(1) }.returns(expectedUserDTO)
 
         UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, expectedUserDTO.role, expectedUserDTO.email+"A")
     }

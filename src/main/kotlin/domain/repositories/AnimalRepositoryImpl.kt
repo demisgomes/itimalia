@@ -45,6 +45,19 @@ class AnimalRepositoryImpl:AnimalRepository{
         )
     }
 
+    private fun getByCreationDate(creationDate: DateTime): AnimalDTO{
+        try{
+            return transaction {
+                (AnimalMap).select{ AnimalMap.creationDate eq creationDate }.map { resultRow ->
+                    buildAnimalDTO(resultRow)
+                }.first()
+            }
+        }
+        catch (exception:NoSuchElementException){
+            throw AnimalNotFoundException()
+        }
+    }
+
     override fun add(newAnimal: AnimalDTO): AnimalDTO {
         transaction {
             AnimalMap.insert {
@@ -60,11 +73,11 @@ class AnimalRepositoryImpl:AnimalRepository{
             }
             commit()
         }
-        return newAnimal
+        return getByCreationDate(newAnimal.creationDate!!)
     }
 
     override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
-        transaction {
+        val result = transaction {
             (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
                 resultRow[AnimalMap.name] = animalDTO.name
                 resultRow[AnimalMap.age] = animalDTO.age
@@ -75,15 +88,19 @@ class AnimalRepositoryImpl:AnimalRepository{
                 resultRow[AnimalMap.status] = animalDTO.status.toString()
             }
         }
-        return animalDTO
+        result.let { res ->
+            when (res) {
+                0 -> throw AnimalNotFoundException()
+                else -> return get(id)
+            }
+        }
     }
 
-    override fun delete(id: Int): AnimalDTO {
-        val animalToBeRemoved=get(id)
-        transaction {
+    override fun delete(id: Int) {
+        val result = transaction {
             AnimalMap.deleteWhere { AnimalMap.id eq id }
         }
 
-        return animalToBeRemoved
+        if (result == 0) throw AnimalNotFoundException()
     }
 }

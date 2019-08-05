@@ -7,6 +7,7 @@ import domain.repositories.factories.AnimalFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.verify
 import org.joda.time.DateTime
 import org.junit.Before
 import org.junit.Rule
@@ -328,21 +329,20 @@ class AnimalServiceTest{
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        every{(animalRepositoryMock).delete(id)}.returns(expectedAnimalDTO)
-        val animalDTO= animalService.delete(id)
 
         //then
-        assertEquals(expectedAnimalDTO,animalDTO)
+        animalService.delete(id)
+        verify { animalRepositoryMock.delete(id) }
     }
 
     @Test(expected = AnimalNotFoundException::class)
     fun `when delete an animal where its id not exists, should expect an AnimalNotFoundException`(){
         //given
         val id=1
-        val animalNotFoundException=AnimalNotFoundException()
+
+        every { animalRepositoryMock.delete(id) }.throws(AnimalNotFoundException())
 
         //when
-        every { animalRepositoryMock.get(id) }.throws(animalNotFoundException)
         animalService.delete(id)
 
         //then expect AnimalNotFoundException

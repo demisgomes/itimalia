@@ -82,7 +82,7 @@ class AnimalRepositoryTest{
         assertEquals(listAnimals, returnedAnimals)
     }
 
-    @Test
+    @Test(expected = AnimalNotFoundException::class)
     fun `when does not exist animal, an update call should return AnimalNotFoundException`(){
         //given none
 

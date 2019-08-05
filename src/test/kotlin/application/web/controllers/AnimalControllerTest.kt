@@ -218,7 +218,6 @@ class AnimalControllerTest {
         //when
         every { contextMock.pathParam("id") }.returns("1")
         every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
-        every { animalServiceMock.delete(1) }.returns(expectedAnimalDTO)
         AnimalController(animalServiceMock).deleteAnimal(contextMock)
 
         //then

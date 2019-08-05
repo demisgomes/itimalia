@@ -65,7 +65,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     override fun add(newUser: NewUser): UserDTO {
-
         try{
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
@@ -91,7 +90,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
 
     }
 
-    override fun delete(id:Int, role:Role, email:String):UserDTO{
+    override fun delete(id:Int, role:Role, email:String){
         val userToBeDeleted=userRepository.get(id)
 
         if(role==Roles.ADMIN) {

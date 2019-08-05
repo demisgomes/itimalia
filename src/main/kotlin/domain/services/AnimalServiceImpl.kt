@@ -90,8 +90,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
         return animalRepository.update(id,animalToBeModifiedDTO)
     }
 
-    override fun delete(id: Int): AnimalDTO {
-        get(id)
+    override fun delete(id: Int) {
         return animalRepository.delete(id)
     }
 

@@ -306,8 +306,6 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.delete(1, returnedUser.role, returnedUser.email)}.returns(returnedUser)
-
         every { contextMock.pathParam("id") }.returns("1")
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
@@ -361,8 +359,6 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
-
         every { contextMock.pathParam("id") }.returns("1")
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
@@ -380,8 +376,6 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
-
         every { contextMock.pathParam("id") }.returns("1")
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
@@ -397,8 +391,6 @@ class UserControllerTest{
         every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
-
-        every{ userServiceMock.delete(1, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 

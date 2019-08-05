@@ -9,7 +9,7 @@ interface AnimalService {
     fun add(newAnimal: NewAnimal): AnimalDTO
     fun get(id:Int): AnimalDTO
     fun update(id: Int, updatedAnimalDTO: AnimalDTO): AnimalDTO
-    fun delete(id: Int): AnimalDTO
+    fun delete(id: Int)
     fun getAll():List<AnimalDTO>
     fun adopt(id:Int): AnimalDTO
     fun getByStatus(animalStatus: AnimalStatus):List<AnimalDTO>

@@ -52,7 +52,7 @@ class UserRepositoryImpl:UserRepository{
                 it[UserMap.role] = userDTO.role.toString()
             }
         }
-        return userDTO
+        return findByEmail(userDTO.email)
     }
 
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
@@ -73,17 +73,17 @@ class UserRepositoryImpl:UserRepository{
         result.let { res ->
             when (res) {
                 0 -> throw UserNotFoundException()
-                else -> return userDTO
+                else -> return get(id)
             }
         }
     }
 
-    override fun delete(id: Int): UserDTO {
-        val originalUser=get(id)
-        transaction {
+    override fun delete(id: Int) {
+        val result = transaction {
             UserMap.deleteWhere { UserMap.id eq id }
         }
-        return originalUser
+
+        if (result == 0) throw UserNotFoundException()
     }
 
     override fun get(id: Int): UserDTO {
