@@ -2,6 +2,7 @@ package application.web.controllers
 
 import domain.entities.*
 import domain.jwt.JWTAccessManager
+import domain.repositories.factories.UserFactory
 import domain.services.AdminService
 import io.javalin.Context
 import io.mockk.every
@@ -35,33 +36,10 @@ class AdminControllerTest{
 
 
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
-        val dateTime=formatter.parseDateTime("01/01/1990")
-        returnedAdminUser= UserDTO(
-            null,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            actualDateTime,
-            actualDateTime,
-            null)
-
-        newAdminUser = NewUser(
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183"
-        )
-
-        newLoginUser = UserLogin(
-            "newUser@domain.com",
-            "password"
-        )
+        val birthDate=formatter.parseDateTime("01/01/1990")
+        returnedAdminUser= UserFactory.sampleDTO(role = Roles.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        newAdminUser = UserFactory.sampleNew(role = Roles.ADMIN)
+        newLoginUser = UserFactory.sampleLogin()
     }
 
     @Test

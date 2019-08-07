@@ -3,6 +3,7 @@ package application.web.controllers
 import domain.entities.*
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
+import domain.repositories.factories.UserFactory
 import domain.services.UserService
 import io.javalin.Context
 import io.mockk.every
@@ -34,32 +35,10 @@ class UserControllerTest{
         actualDateTime= DateTime.now()
 
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
-        val dateTime=formatter.parseDateTime("01/01/1990")
-        returnedUser= UserDTO(
-            null,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            actualDateTime,
-            actualDateTime,
-            null)
-
-        newUser = NewUser(
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183"
-        )
-        newLoginUser = UserLogin(
-            "newUser@domain.com",
-            "password"
-        )
+        val birthDate=formatter.parseDateTime("01/01/1990")
+        returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        newUser = UserFactory.sampleNew()
+        newLoginUser = UserFactory.sampleLogin()
     }
 
     @Test
@@ -402,20 +381,6 @@ class UserControllerTest{
 
 
     }
-
-
-//    @Test
-//    fun `when a user has a invalid gender, should return bad request with status 400`(){
-//        val invalidGenderException=InvalidGenderException()
-//        val invalidFormatException=InvalidFormatException.from(contextMock.body<NewUser>())
-//
-//        every { contextMock.body<NewUser>() }.throws(InvalidFormatException())
-//
-//        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
-//
-//        verify { contextMock.json(invalidGenderException.createErrorResponse()).status(HttpStatus.BAD_REQUEST_400) }
-//    }
-
 
 
     @Test
