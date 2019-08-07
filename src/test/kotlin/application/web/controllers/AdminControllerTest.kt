@@ -38,7 +38,7 @@ class AdminControllerTest{
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         val birthDate=formatter.parseDateTime("01/01/1990")
         returnedAdminUser= UserFactory.sampleDTO(role = Roles.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
-        newAdminUser = UserFactory.sampleNew(role = Roles.ADMIN)
+        newAdminUser = UserFactory.sampleNew()
         newLoginUser = UserFactory.sampleLogin()
     }
 
