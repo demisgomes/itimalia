@@ -33,7 +33,7 @@ class AnimalServiceTest{
         actualDateTime= DateTime.now()
         mockkStatic(DateTime::class)
         animalRepositoryMock= mockk(relaxed = true)
-        newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
+        newAnimal = AnimalFactory.sampleNew()
         expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
         animalService = AnimalServiceImpl(animalRepositoryMock)
     }
@@ -138,7 +138,7 @@ class AnimalServiceTest{
     @Test
     fun `when register an animal with blank name and other fields filled correctly, should expect ValidationException with message 'invalid Name the name cannot be blank or contain numbers'`(){
         //given
-        val newAnimalWithInvalidName=NewAnimal("", newAnimal.age, newAnimal.timeUnit, newAnimal.specie, "")
+        val newAnimalWithInvalidName=AnimalFactory.sampleNew(name = "")
 
         //when
         expectedEx.expect(ValidationException::class.java)
@@ -152,7 +152,7 @@ class AnimalServiceTest{
     @Test
     fun `when register an animal with null specie and other fields filled correctly, should expect ValidationException with message 'Invalid specie the specie must be cat or dog'`(){
         //given
-        val newAnimalWithInvalidSpecie=NewAnimal(newAnimal.name, newAnimal.age, newAnimal.timeUnit, null, "")
+        val newAnimalWithInvalidSpecie=AnimalFactory.sampleNew(specie = null)
 
         //when
         expectedEx.expect(ValidationException::class.java)
@@ -167,7 +167,7 @@ class AnimalServiceTest{
     @Test
     fun `when register an animal with null age, valid timeUnit and other fields filled correctly, should register the animal with age and timeUnit with null`(){
         //given
-        val newAnimalWithAgeNullAndTimeUnitValid=NewAnimal(newAnimal.name, null, newAnimal.timeUnit, Specie.CAT, newAnimal.description)
+        val newAnimalWithAgeNullAndTimeUnitValid=AnimalFactory.sampleNew(age = null)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
             null,
             expectedAnimalDTO.name,
@@ -191,7 +191,7 @@ class AnimalServiceTest{
     @Test
     fun `when register an animal with valid age, null timeUnit and other fields filled correctly, should register the animal with specified age and timeUnit in years`(){
         //given
-        val newAnimalWithValidAgeAndTimeUnitNull=NewAnimal(newAnimal.name, 3, null, Specie.CAT, newAnimal.description)
+        val newAnimalWithValidAgeAndTimeUnitNull=AnimalFactory.sampleNew(timeUnit = null)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
             null,
             expectedAnimalDTO.name,

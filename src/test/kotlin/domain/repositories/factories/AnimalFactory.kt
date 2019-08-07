@@ -1,20 +1,26 @@
 package domain.repositories.factories
 
-import domain.entities.AnimalDTO
-import domain.entities.AnimalStatus
-import domain.entities.Specie
-import domain.entities.TimeUnit
+import domain.entities.*
 import org.joda.time.DateTime
 
 object AnimalFactory{
-    fun sampleDTO(id:Int = 1, name:String = "animal", age: Int? = 3, timeUnit: TimeUnit? = TimeUnit.MONTH, creationDate: DateTime? = DateTime.now(), modificationDate: DateTime? = DateTime.now(), specie:Specie=Specie.CAT, status:AnimalStatus=AnimalStatus.AVAILABLE): AnimalDTO {
+    fun sampleNew(name:String = "animal", age: Int? = 3, timeUnit: TimeUnit? = TimeUnit.MONTH, specie:Specie?=Specie.CAT, description:String="An animal that needs attention"):NewAnimal{
+        return NewAnimal(
+            name,
+            age,
+            timeUnit,
+            specie,
+            description
+        )
+    }
+    fun sampleDTO(id:Int = 1, name:String = "animal", age: Int? = 3, timeUnit: TimeUnit? = TimeUnit.MONTH, creationDate: DateTime? = DateTime.now(), modificationDate: DateTime? = DateTime.now(), specie:Specie=Specie.CAT, status:AnimalStatus=AnimalStatus.AVAILABLE, description: String = "An animal that needs attention"): AnimalDTO {
         return AnimalDTO(
             id,
             name,
             age,
             timeUnit,
             specie,
-            "An animal that needs attention",
+            description,
             creationDate,
             modificationDate,
             status

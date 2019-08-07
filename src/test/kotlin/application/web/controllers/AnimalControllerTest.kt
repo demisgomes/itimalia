@@ -27,7 +27,7 @@ class AnimalControllerTest {
         contextMock = mockk(relaxed = true)
         actualDateTime = DateTime.now()
 
-        newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
+        newAnimal = AnimalFactory.sampleNew()
         expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
     }
 
@@ -48,7 +48,7 @@ class AnimalControllerTest {
     fun `when an admin tries to register a valid animal with name, age (can be null), specie null, and description, should expect ValidationException and return BAD request with status 400`() {
         //given
         val validationException= ValidationException(hashMapOf("specie" to mutableListOf("Invalid specie. You must choose cat or dog.")))
-        val newAnimalWithInvalidSpecie=NewAnimal(newAnimal.name, newAnimal.age, newAnimal.timeUnit, null, "")
+        val newAnimalWithInvalidSpecie=AnimalFactory.sampleNew(specie = null)
 
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithInvalidSpecie)
@@ -64,7 +64,7 @@ class AnimalControllerTest {
     fun `when an admin tries to register a valid animal with blank name, age (can be null), specie, and description, should expect ValidationException and return BAD request with status 400`() {
         //given
         val validationException = ValidationException(hashMapOf("name" to mutableListOf("Invalid name. Only accept names with letters.")))
-        val newAnimalWithInvalidName=NewAnimal("", newAnimal.age, newAnimal.timeUnit, newAnimal.specie, "")
+        val newAnimalWithInvalidName=AnimalFactory.sampleNew(name = "")
 
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithInvalidName)
@@ -78,7 +78,7 @@ class AnimalControllerTest {
     @Test
     fun `when an admin tries to register an animal with name, age null, time unit non null, specie, and description, should return the created animal with null age and time unit with status 201 CREATED`(){
         //given newAnimal
-        val newAnimalWithNullAge=NewAnimal("Name", null, newAnimal.timeUnit, newAnimal.specie, "An animal that needs attention")
+        val newAnimalWithNullAge=AnimalFactory.sampleNew(age = null, timeUnit = TimeUnit.YEAR)
         val expectedAnimalWithNullAgeAndTimeUnitDTO = AnimalFactory.sampleDTO(age = null, timeUnit = null, creationDate = actualDateTime, modificationDate = actualDateTime)
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithNullAge)
@@ -93,7 +93,7 @@ class AnimalControllerTest {
     @Test
     fun `when an admin tries to register an animal with name, valid age, time unit null, specie, and description, should return the created animal with time unit in years with status 201 CREATED`(){
         //given newAnimal
-        val newAnimalWithNullTimeUnit=NewAnimal("Name", 3, null, newAnimal.specie, "An animal that needs attention")
+        val newAnimalWithNullTimeUnit=AnimalFactory.sampleNew(timeUnit = null)
         val expectedAnimalWithTimeUnitInYears = AnimalFactory.sampleDTO(age = 3, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithNullTimeUnit)
