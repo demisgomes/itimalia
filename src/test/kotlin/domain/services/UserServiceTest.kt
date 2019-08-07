@@ -4,6 +4,7 @@ import domain.entities.*
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
+import domain.repositories.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -23,7 +24,7 @@ class UserServiceTest{
     private lateinit var newUserDTO: UserDTO
     private lateinit var expectedUserDTO:UserDTO
     private lateinit var expectedAdminModifiedUserDTO:UserDTO
-    private lateinit var dateTime: DateTime
+    private lateinit var birthDate: DateTime
     private lateinit var jwtUtils: JWTUtils
     private lateinit var actualDateTime: DateTime
     private lateinit var invalidUserLogin: UserLogin
@@ -39,97 +40,20 @@ class UserServiceTest{
     @Before
     fun setup() {
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
-        dateTime=formatter.parseDateTime("01/01/1990")
+        birthDate=formatter.parseDateTime("01/01/1990")
         mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
 
+        newUserDTO = UserFactory.sampleDTO(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        expectedUserDTO = newUserDTO.copy(id = 1, token = "token_test")
+        expectedModifiedUserDTO = expectedUserDTO.copy(password = expectedUserDTO.password+"123")
+        updatedUserDTO = expectedUserDTO.copy(password = expectedUserDTO.password+"123")
+        expectedAdminModifiedUserDTO = expectedUserDTO.copy(role = Roles.ADMIN)
+        updatedAdminUserDTO=expectedUserDTO.copy(role = Roles.ADMIN)
 
-        updatedAdminUserDTO=UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
+        invalidUserLogin= UserFactory.sampleLogin(email = "myemail.com")
 
-        updatedUserDTO=UserDTO(
-            1,
-            "newUser@domain.com",
-            "password123",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
-
-        newUserDTO = UserDTO(
-            null,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
-        expectedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
-
-        expectedModifiedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password123",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
-
-        expectedAdminModifiedUserDTO = UserDTO(
-            1,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.ADMIN,
-            actualDateTime,
-            actualDateTime,
-            "token_test"
-        )
-
-        invalidUserLogin= UserLogin("myemail.com", "password")
-
-        validUserLogin= UserLogin("newUser@domain.com", "password")
+        validUserLogin= UserFactory.sampleLogin()
 
         userRepositoryMock= mockk(relaxed = true)
 
@@ -141,22 +65,14 @@ class UserServiceTest{
 
     @Test
     fun `when a valid user without admin permissions request a sign up, register it`(){
-        val user = NewUser(
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183"
-        )
-
+        val user = UserFactory.sampleNew(birthDate = birthDate)
         every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
-        every { jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5) }.returns("token_test")
+        every { jwtUtils.sign(newUserDTO.email, Roles.USER, 5) }.returns("token_test")
 
-        every { userRepositoryMock.add(newUserDTO)  }.returns(expectedUserDTO)
+        every { userRepositoryMock.add(newUserDTO.copy(role = Roles.USER, token = "token_test"))  }.returns(expectedUserDTO)
 
         val userDTO=userService.add(user)
 
@@ -168,7 +84,7 @@ class UserServiceTest{
         val user = NewUser(
             "newUser@domain.com",
             "password",
-            dateTime,
+            birthDate,
             Gender.MASC,
             "New User",
             "81823183183"
@@ -356,7 +272,7 @@ class UserServiceTest{
         val newUser = NewUser(
             "newUser@domain.com",
             "password",
-            dateTime,
+            birthDate,
             null,
             "New User",
             "81823183183"
@@ -389,19 +305,7 @@ class UserServiceTest{
 
     @Test
     fun `when a user with valid id was requested, return it`(){
-        val expectedUserDTO = UserDTO(
-            56415,
-            "newUser@domain.com",
-            "password",
-            dateTime,
-            Gender.MASC,
-            "New User",
-            "81823183183",
-            Roles.USER,
-            dateTime,
-            DateTime.now(),
-            null
-        )
+        val expectedUserDTO = UserFactory.sampleDTO(id = 56415)
 
         every { userRepositoryMock.get(56415)  }.returns(expectedUserDTO)
         assertEquals(expectedUserDTO, userService.get(56415))
