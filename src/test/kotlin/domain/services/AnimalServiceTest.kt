@@ -23,7 +23,7 @@ class AnimalServiceTest{
     private lateinit var newAnimal: NewAnimal
     private lateinit var animalService : AnimalService
 
-    private val animalsList = listOf(AnimalFactory.sample(), AnimalFactory.sample(name = "Lala", specie = Specie.DOG), AnimalFactory.sample(specie = Specie.CAT, status = AnimalStatus.ADOPTED), AnimalFactory.sample(specie = Specie.DOG, status = AnimalStatus.GONE))
+    private val animalsList = listOf(AnimalFactory.sampleDTO(), AnimalFactory.sampleDTO(name = "Lala", specie = Specie.DOG), AnimalFactory.sampleDTO(specie = Specie.CAT, status = AnimalStatus.ADOPTED), AnimalFactory.sampleDTO(specie = Specie.DOG, status = AnimalStatus.GONE))
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -34,16 +34,7 @@ class AnimalServiceTest{
         mockkStatic(DateTime::class)
         animalRepositoryMock= mockk(relaxed = true)
         newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
-        expectedAnimalDTO = AnimalDTO(
-            "animal",
-            3,
-            TimeUnit.MONTH,
-            Specie.CAT,
-            "An animal that needs attention",
-            actualDateTime,
-            actualDateTime,
-            AnimalStatus.AVAILABLE
-        )
+        expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
         animalService = AnimalServiceImpl(animalRepositoryMock)
     }
 
@@ -136,7 +127,7 @@ class AnimalServiceTest{
         //given newAnimal, expectedAnimalDTO
 
         //when
-        every { animalRepositoryMock.add(expectedAnimalDTO) }.returns(expectedAnimalDTO)
+        every { animalRepositoryMock.add(expectedAnimalDTO.copy(id = null)) }.returns(expectedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
         val animalDTO= animalService.add(newAnimal)
 
@@ -178,6 +169,7 @@ class AnimalServiceTest{
         //given
         val newAnimalWithAgeNullAndTimeUnitValid=NewAnimal(newAnimal.name, null, newAnimal.timeUnit, Specie.CAT, newAnimal.description)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
+            null,
             expectedAnimalDTO.name,
             null,
             null,
@@ -201,6 +193,7 @@ class AnimalServiceTest{
         //given
         val newAnimalWithValidAgeAndTimeUnitNull=NewAnimal(newAnimal.name, 3, null, Specie.CAT, newAnimal.description)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=AnimalDTO(
+            null,
             expectedAnimalDTO.name,
             3,
             TimeUnit.YEAR,
@@ -225,6 +218,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -250,6 +244,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -272,6 +267,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             "",
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -299,6 +295,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val modifiedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -353,6 +350,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -379,6 +377,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -403,6 +402,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val expectedDeadAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,
@@ -427,6 +427,7 @@ class AnimalServiceTest{
         //given
         val id=1
         val expectedGoneAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,

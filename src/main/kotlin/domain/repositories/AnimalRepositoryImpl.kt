@@ -34,6 +34,7 @@ class AnimalRepositoryImpl:AnimalRepository{
 
     private fun buildAnimalDTO(resultRow: ResultRow): AnimalDTO {
         return AnimalDTO(
+            id = resultRow[AnimalMap.id],
             name = resultRow[AnimalMap.name],
             age = resultRow[AnimalMap.age],
             timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },

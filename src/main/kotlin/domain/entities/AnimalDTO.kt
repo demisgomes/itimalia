@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
 
 data class AnimalDTO(
+    val id: Int?,
     val name: String,
     val age: Int?,
     val timeUnit : TimeUnit?,

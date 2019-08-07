@@ -2,6 +2,7 @@ package application.web.controllers
 
 import domain.entities.*
 import domain.exceptions.*
+import domain.repositories.factories.AnimalFactory
 import domain.services.AnimalService
 import io.javalin.Context
 import io.mockk.every
@@ -27,17 +28,7 @@ class AnimalControllerTest {
         actualDateTime = DateTime.now()
 
         newAnimal = NewAnimal("animal", 3, TimeUnit.MONTH, Specie.CAT, "An animal that needs attention")
-        expectedAnimalDTO = AnimalDTO(
-            "animal",
-            3,
-            TimeUnit.MONTH,
-            Specie.CAT,
-            "An animal that needs attention",
-            actualDateTime,
-            actualDateTime,
-            AnimalStatus.AVAILABLE
-        )
-
+        expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
     }
 
     @Test
@@ -88,16 +79,7 @@ class AnimalControllerTest {
     fun `when an admin tries to register an animal with name, age null, time unit non null, specie, and description, should return the created animal with null age and time unit with status 201 CREATED`(){
         //given newAnimal
         val newAnimalWithNullAge=NewAnimal("Name", null, newAnimal.timeUnit, newAnimal.specie, "An animal that needs attention")
-        val expectedAnimalWithNullAgeAndTimeUnitDTO = AnimalDTO(
-            "animal",
-            null,
-            null,
-            Specie.CAT,
-            "An animal that needs attention",
-            actualDateTime,
-            actualDateTime,
-            AnimalStatus.AVAILABLE
-        )
+        val expectedAnimalWithNullAgeAndTimeUnitDTO = AnimalFactory.sampleDTO(age = null, timeUnit = null, creationDate = actualDateTime, modificationDate = actualDateTime)
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithNullAge)
         every { animalServiceMock.add(newAnimalWithNullAge) }.returns(expectedAnimalWithNullAgeAndTimeUnitDTO)
@@ -112,16 +94,7 @@ class AnimalControllerTest {
     fun `when an admin tries to register an animal with name, valid age, time unit null, specie, and description, should return the created animal with time unit in years with status 201 CREATED`(){
         //given newAnimal
         val newAnimalWithNullTimeUnit=NewAnimal("Name", 3, null, newAnimal.specie, "An animal that needs attention")
-        val expectedAnimalWithTimeUnitInYears = AnimalDTO(
-            "animal",
-            3,
-            TimeUnit.YEAR,
-            Specie.CAT,
-            "An animal that needs attention",
-            actualDateTime,
-            actualDateTime,
-            AnimalStatus.AVAILABLE
-        )
+        val expectedAnimalWithTimeUnitInYears = AnimalFactory.sampleDTO(age = 3, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
         //when
         every { contextMock.body<NewAnimal>() }.returns(newAnimalWithNullTimeUnit)
         every { animalServiceMock.add(newAnimalWithNullTimeUnit) }.returns(expectedAnimalWithTimeUnitInYears)
@@ -161,8 +134,8 @@ class AnimalControllerTest {
     @Test
     fun `when an admin tries modify an animal that exists with valid fields, should return the modified animal with status 200 OK`(){
         //given id =1
-        val updatedAnimal=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
-        val expectedModifiedAnimalDTO=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, actualDateTime, expectedAnimalDTO.status)
+        val updatedAnimal=AnimalDTO(1,expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+        val expectedModifiedAnimalDTO=AnimalDTO(1,expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, actualDateTime, expectedAnimalDTO.status)
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
@@ -180,7 +153,7 @@ class AnimalControllerTest {
     fun `when an admin tries modify an animal that not exists with valid fields, should expect AnimalNotFoundException and return status 404 NOT FOUND`(){
         //given id =1
         val animalNotFoundException=AnimalNotFoundException()
-        val updatedAnimal=AnimalDTO(expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+        val updatedAnimal=AnimalDTO(1, expectedAnimalDTO.name, expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
@@ -197,7 +170,7 @@ class AnimalControllerTest {
     fun `when an admin tries to modify a animal with blank name, age (can be null), specie, and description, should expect ValidationException and return BAD request with status 400`() {
         //given
         val validationException = ValidationException(hashMapOf("name" to mutableListOf("Invalid name. Only accept names with letters.")))
-        val updatedAnimalWithBlankName=AnimalDTO("", expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
+        val updatedAnimalWithBlankName=AnimalDTO(1,"", expectedAnimalDTO.age!!+1, expectedAnimalDTO.timeUnit, expectedAnimalDTO.specie, expectedAnimalDTO.description, expectedAnimalDTO.creationDate, expectedAnimalDTO.modificationDate, expectedAnimalDTO.status)
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
@@ -245,6 +218,7 @@ class AnimalControllerTest {
         //given id=1
         val id=1
         val expectedAdoptedAnimalDTO=AnimalDTO(
+            expectedAnimalDTO.id,
             expectedAnimalDTO.name,
             expectedAnimalDTO.age,
             expectedAnimalDTO.timeUnit,

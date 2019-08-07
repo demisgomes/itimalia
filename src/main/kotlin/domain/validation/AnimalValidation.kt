@@ -16,6 +16,7 @@ class AnimalValidation{
 
         if(animalDTO.age==null && animalDTO.timeUnit!=null){
             validatedAnimalDTO= AnimalDTO(
+                animalDTO.id,
                 animalDTO.name,
                 null,
                 null,
@@ -29,6 +30,7 @@ class AnimalValidation{
 
         else if (animalDTO.age!=null && animalDTO.timeUnit==null){
             validatedAnimalDTO= AnimalDTO(
+                animalDTO.id,
                 animalDTO.name,
                 animalDTO.age,
                 TimeUnit.YEAR,

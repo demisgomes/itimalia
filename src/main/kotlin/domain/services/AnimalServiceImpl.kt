@@ -36,6 +36,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
         when {
             animalToBeAdopted.status==AnimalStatus.AVAILABLE -> {
                 val animalAdopted=AnimalDTO(
+                    animalToBeAdopted.id,
                     animalToBeAdopted.name,
                     animalToBeAdopted.age,
                     animalToBeAdopted.timeUnit,
@@ -60,6 +61,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
 
     override fun add(newAnimal: NewAnimal): AnimalDTO {
         var animalToBeAddedDTO = AnimalDTO(
+            null,
             newAnimal.name,
             newAnimal.age,
             newAnimal.timeUnit,
@@ -77,6 +79,7 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
     override fun update(id:Int, updatedAnimalDTO: AnimalDTO): AnimalDTO {
         val animalInDatabase=get(id)
         var animalToBeModifiedDTO = AnimalDTO(
+            updatedAnimalDTO.id,
             updatedAnimalDTO.name,
             updatedAnimalDTO.age,
             updatedAnimalDTO.timeUnit,

@@ -21,7 +21,7 @@ class AnimalRepositoryTest{
     @Before
     fun setup(){
         actualDateTime= DateTime.now()
-        expectedAnimalDTO = AnimalFactory.sample()
+        expectedAnimalDTO = AnimalFactory.sampleDTO()
         DatabaseHolder.tearDown()
     }
 
@@ -65,9 +65,9 @@ class AnimalRepositoryTest{
     @Test
     fun `when add many animals in database, should return all via getAll()`(){
         //given
-        val mia = AnimalFactory.sample(name = "Mia")
-        val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR)
-        val emy = AnimalFactory.sample(name = "Emy", age = 5, timeUnit = TimeUnit.YEAR)
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", age = 8, timeUnit = TimeUnit.YEAR)
+        val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", age = 5, timeUnit = TimeUnit.YEAR)
 
         animalRepository.add(mia)
         animalRepository.add(lala)
@@ -107,8 +107,8 @@ class AnimalRepositoryTest{
     @Test
     fun `when updates a previous animal should return the animal`(){
         //given
-        val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
-        val lala = AnimalFactory.sample(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val mia = AnimalFactory.sampleDTO(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
 
         //when
         animalRepository.add(mia)
@@ -127,7 +127,7 @@ class AnimalRepositoryTest{
     @Test(expected = AnimalNotFoundException::class)
     fun `when remove an existent animal, remove it`(){
         //given
-        val mia = AnimalFactory.sample(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
+        val mia = AnimalFactory.sampleDTO(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
         animalRepository.add(mia)
 
         //when
