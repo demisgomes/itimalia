@@ -1,8 +1,8 @@
 package domain.services
 
-import domain.entities.NewUser
+import domain.entities.user.NewUser
 import domain.entities.Roles
-import domain.entities.UserDTO
+import domain.entities.user.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
 import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UserNotFoundException
@@ -22,7 +22,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
         }
         catch (exception: UserNotFoundException){
             val actualDate = DateTime.now()
-            val newUserDTO=UserDTO(
+            val newUserDTO= UserDTO(
                 null,
                 newUser.email,
                 newUser.password,
@@ -33,7 +33,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 Roles.ADMIN,
                 actualDate,
                 actualDate,
-                jwtUtils.sign(newUser.email, Roles.ADMIN,5)
+                jwtUtils.sign(newUser.email, Roles.ADMIN, 5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)

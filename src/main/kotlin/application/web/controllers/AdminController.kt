@@ -1,7 +1,7 @@
 package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import domain.entities.NewUser
+import domain.entities.user.NewUser
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.AdminService

@@ -1,10 +1,10 @@
 package domain.validation
-import domain.entities.UserDTO
+import domain.entities.user.UserDTO
 import domain.exceptions.ValidationException
 
 class UserValidation{
 
-    fun validate(userDTO:UserDTO){
+    fun validate(userDTO: UserDTO){
         val validations = mutableListOf<Validation<*>>()
 
         validations.add(Validation("email",userDTO.email).validEmail())

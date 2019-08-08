@@ -1,6 +1,7 @@
 package application.web.controllers
 
 import domain.entities.*
+import domain.entities.user.*
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.repositories.factories.UserFactory
@@ -20,8 +21,8 @@ import java.util.*
 class UserControllerTest{
     lateinit var userServiceMock: UserService
     lateinit var contextMock: Context
-    lateinit var returnedUser:UserDTO
-    lateinit var newUser:NewUser
+    lateinit var returnedUser: UserDTO
+    lateinit var newUser: NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
     lateinit var actualDateTime:DateTime
@@ -31,9 +32,8 @@ class UserControllerTest{
         userServiceMock = mockk(relaxed=true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
-        mockkStatic(Calendar::class)
         actualDateTime= DateTime.now()
-
+        mockkStatic(UserSearched::class)
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         val birthDate=formatter.parseDateTime("01/01/1990")
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
@@ -49,7 +49,8 @@ class UserControllerTest{
 
         UserController(userServiceMock, jwtAccessManagerMock).findUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { contextMock.json(any<UserSearched>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
     }
 
     @Test

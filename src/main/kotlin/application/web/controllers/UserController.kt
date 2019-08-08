@@ -1,9 +1,7 @@
 package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import domain.entities.NewUser
-import domain.entities.UserDTO
-import domain.entities.UserLogin
+import domain.entities.user.*
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.UserService
@@ -16,7 +14,8 @@ class UserController(private val userService: UserService, private val jwtAccess
         try{
             val id:Int=context.pathParam("id").toInt()
             val user=userService.get(id)
-            context.json(user).status(HttpStatus.OK_200)
+            context.json(user.toUserSearched())
+            context.status(HttpStatus.OK_200)
         }
         catch (exception: UserNotFoundException){
             context.json(exception.createErrorResponse()).status(exception.httpStatus())
@@ -102,10 +101,4 @@ class UserController(private val userService: UserService, private val jwtAccess
             return
         }
     }
-
-//    private fun updateCallByAdmin(context:Context, id:Int, modifiedUser:UserDTO){
-//        val returnedUser=userService.update(id,modifiedUser, Roles.ADMIN, jwtAccessManager.)
-//        context.json(returnedUser).status(HttpStatus.OK_200)
-//    }
-
 }

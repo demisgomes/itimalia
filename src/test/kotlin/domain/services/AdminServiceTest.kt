@@ -1,8 +1,8 @@
 package domain.services
 
-import domain.entities.NewUser
+import domain.entities.user.NewUser
 import domain.entities.Roles
-import domain.entities.UserDTO
+import domain.entities.user.UserDTO
 import domain.exceptions.EmailAlreadyExistsException
 import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UserNotFoundException
@@ -25,7 +25,7 @@ class AdminServiceTest{
     private lateinit var birthDate: DateTime
     private lateinit var actualDateTime: DateTime
     private lateinit var jwtUtils: JWTUtils
-    private lateinit var expectedUserDTO:UserDTO
+    private lateinit var expectedUserDTO: UserDTO
     private lateinit var adminService: AdminService
     private lateinit var newUser: NewUser
 

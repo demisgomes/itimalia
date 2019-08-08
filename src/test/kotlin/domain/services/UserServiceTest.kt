@@ -1,6 +1,9 @@
 package domain.services
 
 import domain.entities.*
+import domain.entities.user.NewUser
+import domain.entities.user.UserDTO
+import domain.entities.user.UserLogin
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
@@ -22,16 +25,16 @@ class UserServiceTest{
 
     private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: UserDTO
-    private lateinit var expectedUserDTO:UserDTO
-    private lateinit var expectedAdminModifiedUserDTO:UserDTO
+    private lateinit var expectedUserDTO: UserDTO
+    private lateinit var expectedAdminModifiedUserDTO: UserDTO
     private lateinit var birthDate: DateTime
     private lateinit var jwtUtils: JWTUtils
     private lateinit var actualDateTime: DateTime
     private lateinit var invalidUserLogin: UserLogin
-    private lateinit var updatedAdminUserDTO:UserDTO
-    private lateinit var expectedModifiedUserDTO:UserDTO
+    private lateinit var updatedAdminUserDTO: UserDTO
+    private lateinit var expectedModifiedUserDTO: UserDTO
     private lateinit var validUserLogin: UserLogin
-    private lateinit var updatedUserDTO:UserDTO
+    private lateinit var updatedUserDTO: UserDTO
     private lateinit var userService: UserService
 
     @get:Rule

@@ -1,6 +1,7 @@
-package domain.entities
+package domain.entities.user
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import domain.entities.Gender
 import org.joda.time.DateTime
 
 data class NewUser(
@@ -8,6 +9,6 @@ data class NewUser(
     val password:String,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val birthDate: DateTime?,
-    val gender:Gender?,
+    val gender: Gender?,
     val name: String,
     val phone: String)

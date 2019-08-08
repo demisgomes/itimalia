@@ -1,6 +1,6 @@
 package domain.validation
 
-import domain.entities.UserLogin
+import domain.entities.user.UserLogin
 import domain.exceptions.ValidationException
 
 class UserLoginValidation{

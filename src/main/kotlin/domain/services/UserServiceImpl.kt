@@ -1,9 +1,9 @@
 package domain.services
 
-import domain.entities.NewUser
+import domain.entities.user.NewUser
 import domain.entities.Roles
-import domain.entities.UserDTO
-import domain.entities.UserLogin
+import domain.entities.user.UserDTO
+import domain.entities.user.UserLogin
 import domain.exceptions.*
 import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
@@ -71,7 +71,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         }
         catch (exception:UserNotFoundException){
             val actualDate= DateTime.now()
-            val newUserDTO=UserDTO(
+            val newUserDTO= UserDTO(
                 null,
                 newUser.email,
                 newUser.password,
@@ -82,7 +82,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 Roles.USER,
                 actualDate,
                 actualDate,
-                jwtUtils.sign(newUser.email,Roles.USER, 5)
+                jwtUtils.sign(newUser.email, Roles.USER, 5)
             )
             UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
@@ -106,13 +106,13 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         return userRepository.get(id)
     }
 
-    private fun updateCall(newUserDTO:UserDTO, userToBeModified:UserDTO, id:Int):UserDTO{
+    private fun updateCall(newUserDTO: UserDTO, userToBeModified: UserDTO, id:Int): UserDTO {
         if(newUserDTO == userToBeModified){
             throw UnmodifiedUserException()
         }
 
         val actualDate=DateTime.now()
-        val modifiedUserDTO=UserDTO(
+        val modifiedUserDTO= UserDTO(
             userToBeModified.id,
             newUserDTO.email,
             newUserDTO.password,

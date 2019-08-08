@@ -1,6 +1,9 @@
 package application.web.controllers
 
 import domain.entities.*
+import domain.entities.user.NewUser
+import domain.entities.user.UserDTO
+import domain.entities.user.UserLogin
 import domain.jwt.JWTAccessManager
 import domain.repositories.factories.UserFactory
 import domain.services.AdminService
