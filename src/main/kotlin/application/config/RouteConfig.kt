@@ -6,7 +6,7 @@ import application.web.controllers.UserController
 import domain.entities.Roles
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
-import io.javalin.security.SecurityUtil.roles
+import io.javalin.core.security.SecurityUtil.roles
 
 
 class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController){

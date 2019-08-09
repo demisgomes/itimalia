@@ -2,11 +2,12 @@ package application.web
 
 import application.config.DatabaseConfig
 import application.config.RouteConfig
+import application.web.swagger.SwaggerConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import commons.koin.*
 import domain.jwt.JWTAccessManager
 import io.javalin.Javalin
-import io.javalin.json.JavalinJackson
+import io.javalin.plugin.json.JavalinJackson
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.StandAloneContext
 import org.koin.standalone.inject
@@ -31,9 +32,10 @@ class ItimaliaApplication : KoinComponent {
         )
 
         val app = Javalin
-            .create()
-            .accessManager(jwtAccessManager)
-            .start(getHerokuAssignedPort())
+            .create { config ->
+                SwaggerConfig.registerPlugin(config)
+                config.accessManager(jwtAccessManager)
+            }.start(getHerokuAssignedPort())
 
         JavalinJackson.configure(objectMapper)
         routeConfig.register(app)

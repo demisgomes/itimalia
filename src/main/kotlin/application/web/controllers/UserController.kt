@@ -1,16 +1,19 @@
 package application.web.controllers
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import domain.entities.user.*
+import domain.entities.user.NewUser
+import domain.entities.user.UserDTO
+import domain.entities.user.UserLogin
+import domain.entities.user.toUserSearched
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.UserService
-import io.javalin.Context
+import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
 class UserController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager){
 
-    fun findUser(context:Context){
+    fun findUser(context: Context){
         try{
             val id:Int=context.pathParam("id").toInt()
             val user=userService.get(id)

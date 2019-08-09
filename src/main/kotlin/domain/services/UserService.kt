@@ -3,7 +3,7 @@ package domain.services
 import domain.entities.user.NewUser
 import domain.entities.user.UserDTO
 import domain.entities.user.UserLogin
-import io.javalin.security.Role
+import io.javalin.core.security.Role
 
 interface UserService{
     fun add(newUser: NewUser) : UserDTO

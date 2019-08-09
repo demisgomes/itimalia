@@ -6,10 +6,10 @@ import domain.entities.Roles
 import domain.exceptions.InvalidTokenException
 import domain.exceptions.UnauthorizedAdminRoleException
 import domain.exceptions.UnauthorizedUserRoleException
-import io.javalin.Context
-import io.javalin.Handler
-import io.javalin.security.AccessManager
-import io.javalin.security.Role
+import io.javalin.core.security.AccessManager
+import io.javalin.core.security.Role
+import io.javalin.http.Context
+import io.javalin.http.Handler
 import java.util.*
 
 
@@ -18,6 +18,29 @@ class JWTAccessManager(
     private val rolesMapping: Map<String, Roles>,
     private val defaultRole: Roles
 ) : AccessManager {
+
+    override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<Role>) {
+        //if token has been expired and this handler requires admin or user permissions, return invalid token exception
+        //add and find does not requires token (Roles.ANYONE)
+        if(!verifyDate(ctx) && !permittedRoles.contains(defaultRole)){
+            ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
+            return
+        }
+
+        val role = extractRole(ctx)
+
+        if (permittedRoles.contains(role)) {
+            handler.handle(ctx)
+        } else {
+            if(permittedRoles.contains(Roles.ADMIN)){
+                ctx.json(UnauthorizedAdminRoleException().createErrorResponse()).status(UnauthorizedAdminRoleException().httpStatus())
+            }
+            else{
+                ctx.json(UnauthorizedUserRoleException().createErrorResponse()).status(UnauthorizedUserRoleException().httpStatus())
+            }
+        }
+
+    }
 
     fun extractRole(context: Context): Roles {
         val string = getTokenFromHeader(context)
@@ -52,29 +75,6 @@ class JWTAccessManager(
         val decodedJWT=JWT.decode(string.get())
 
         return decodedJWT.getClaim("email").asString()
-    }
-
-    override fun manage(handler: Handler, context: Context, permittedRoles: Set<Role>) {
-
-        //if token has been expired and this handler requires admin or user permissions, return invalid token exception
-        //add and find does not requires token (Roles.ANYONE)
-        if(!verifyDate(context) && !permittedRoles.contains(defaultRole)){
-            context.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
-            return
-        }
-
-        val role = extractRole(context)
-
-        if (permittedRoles.contains(role)) {
-            handler.handle(context)
-        } else {
-            if(permittedRoles.contains(Roles.ADMIN)){
-                context.json(UnauthorizedAdminRoleException().createErrorResponse()).status(UnauthorizedAdminRoleException().httpStatus())
-            }
-            else{
-                context.json(UnauthorizedUserRoleException().createErrorResponse()).status(UnauthorizedUserRoleException().httpStatus())
-            }
-        }
     }
 
     private fun getTokenFromHeader(context: Context): Optional<String> {

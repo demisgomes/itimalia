@@ -1,7 +1,7 @@
 package domain.services
 
-import domain.entities.user.NewUser
 import domain.entities.Roles
+import domain.entities.user.NewUser
 import domain.entities.user.UserDTO
 import domain.entities.user.UserLogin
 import domain.exceptions.*
@@ -9,7 +9,7 @@ import domain.jwt.JWTUtils
 import domain.repositories.UserRepository
 import domain.validation.UserLoginValidation
 import domain.validation.UserValidation
-import io.javalin.security.Role
+import io.javalin.core.security.Role
 import org.joda.time.DateTime
 
 class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{

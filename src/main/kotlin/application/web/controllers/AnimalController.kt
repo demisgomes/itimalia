@@ -6,7 +6,7 @@ import domain.entities.NewAnimal
 import domain.entities.Specie
 import domain.exceptions.*
 import domain.services.AnimalService
-import io.javalin.Context
+import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
 class AnimalController(private val animalService: AnimalService) {

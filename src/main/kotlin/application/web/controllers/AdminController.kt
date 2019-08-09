@@ -5,7 +5,7 @@ import domain.entities.user.NewUser
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.services.AdminService
-import io.javalin.Context
+import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
 class AdminController(private val adminService: AdminService, private val jwtAccessManager: JWTAccessManager){

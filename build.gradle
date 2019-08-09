@@ -1,5 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.3.11'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
     id "com.heroku.sdk.heroku-gradle" version "1.0.4"
 }
 
@@ -17,7 +17,7 @@ dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
     //javalin
-    compile 'io.javalin:javalin:2.6.0'
+    compile 'io.javalin:javalin:3.0.0'
     compile 'org.slf4j:slf4j-simple:1.7.25'
 
 
@@ -48,11 +48,9 @@ dependencies {
     // H2
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
 
-
-    //deploy into heroku
-    // https://mvnrepository.com/artifact/com.heroku.sdk/heroku-maven-plugin
-    //compile group: 'com.heroku.sdk', name: 'heroku-maven-plugin', version: '2.0.6'
-
+    // Swagger
+    compile group: 'io.swagger.core.v3', name: 'swagger-models', version: '2.0.8'
+    compile group: 'cc.vileda', name: 'kotlin-openapi3-dsl', version: '0.20.1'
 }
 
 compileKotlin {

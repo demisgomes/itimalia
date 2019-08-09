@@ -2,7 +2,7 @@ package domain.jwt
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import io.javalin.security.Role
+import io.javalin.core.security.Role
 import java.util.*
 
 

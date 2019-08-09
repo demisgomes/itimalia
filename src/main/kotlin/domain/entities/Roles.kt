@@ -1,9 +1,9 @@
 package domain.entities
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import io.javalin.security.Role
+import io.javalin.core.security.Role
 
-enum class Roles:Role {
+enum class Roles: Role {
     @JsonProperty(value = "anyone")
     ANYONE,
     @JsonProperty(value = "user")
