@@ -1,12 +1,15 @@
 package application.web.controllers
 
-import domain.entities.*
-import domain.entities.user.*
+import domain.entities.Roles
+import domain.entities.user.NewUser
+import domain.entities.user.UserDTO
+import domain.entities.user.UserLogin
+import domain.entities.user.UserSearched
 import domain.exceptions.*
 import domain.jwt.JWTAccessManager
 import domain.repositories.factories.UserFactory
 import domain.services.UserService
-import io.javalin.Context
+import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -16,7 +19,6 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
-import java.util.*
 
 class UserControllerTest{
     lateinit var userServiceMock: UserService

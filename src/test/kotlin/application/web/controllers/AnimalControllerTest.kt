@@ -1,10 +1,13 @@
 package application.web.controllers
 
-import domain.entities.*
+import domain.entities.AnimalDTO
+import domain.entities.AnimalStatus
+import domain.entities.NewAnimal
+import domain.entities.TimeUnit
 import domain.exceptions.*
 import domain.repositories.factories.AnimalFactory
 import domain.services.AnimalService
-import io.javalin.Context
+import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

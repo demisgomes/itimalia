@@ -43,7 +43,7 @@ class ItimaliaApplication : KoinComponent {
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     try{
         ItimaliaApplication().startServer()
     }

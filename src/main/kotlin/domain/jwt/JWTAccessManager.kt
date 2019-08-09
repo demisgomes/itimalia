@@ -23,8 +23,14 @@ class JWTAccessManager(
         //if token has been expired and this handler requires admin or user permissions, return invalid token exception
         //add and find does not requires token (Roles.ANYONE)
         if(!verifyDate(ctx) && !permittedRoles.contains(defaultRole)){
-            ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
-            return
+            if(ctx.matchedPath() == "/swagger"){
+                handler.handle(ctx)
+                return
+            }
+            else{
+                ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
+                return
+            }
         }
 
         val role = extractRole(ctx)

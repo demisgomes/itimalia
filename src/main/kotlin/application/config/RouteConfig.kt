@@ -4,20 +4,27 @@ import application.web.controllers.AdminController
 import application.web.controllers.AnimalController
 import application.web.controllers.UserController
 import domain.entities.Roles
+import domain.entities.user.NewUser
+import domain.entities.user.UserDTO
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.core.security.SecurityUtil.roles
+import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
+import io.javalin.plugin.openapi.dsl.documented
 
 
 class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController){
     fun register(app: Javalin) {
 
-
         app.get("/") { ctx -> ctx.json(mapOf("message" to " starting server")) }
+
+        val createUserDocumentation = OpenApiDocumentation()
+            .body<NewUser>("application/json")
+            .json("200", UserDTO::class.java)
 
         app.routes {
             ApiBuilder.path("users") {
-                ApiBuilder.post(userController::addUser, roles(Roles.ANYONE))
+                ApiBuilder.post(documented(createUserDocumentation, userController::addUser), roles(Roles.ANYONE))
                 ApiBuilder.path(":id"){
                     ApiBuilder.get(userController::findUser,roles(Roles.ANYONE))
                     ApiBuilder.put(userController::updateUser,roles(Roles.USER, Roles.ADMIN))

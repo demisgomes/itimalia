@@ -5,6 +5,7 @@ import io.javalin.core.JavalinConfig
 import io.javalin.core.security.SecurityUtil.roles
 import io.javalin.plugin.openapi.OpenApiOptions
 import io.javalin.plugin.openapi.OpenApiPlugin
+import io.javalin.plugin.openapi.ui.SwaggerOptions
 import io.swagger.v3.oas.models.info.Info
 
 object SwaggerConfig{
@@ -16,9 +17,10 @@ object SwaggerConfig{
     private fun getOpenApiOptions(): OpenApiOptions {
         val applicationInfo = Info()
             .version("1.0")
-            .description("My Application")
+            .description("Itimalia Application")
         return OpenApiOptions(applicationInfo)
-            .path("/docs")
+            .path("/swagger-docs")
+            .swagger(SwaggerOptions("/swagger"))
             .roles(roles(Roles.ANYONE))
     }
 }

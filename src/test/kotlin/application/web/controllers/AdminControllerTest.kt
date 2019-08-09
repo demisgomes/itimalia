@@ -1,13 +1,13 @@
 package application.web.controllers
 
-import domain.entities.*
+import domain.entities.Roles
 import domain.entities.user.NewUser
 import domain.entities.user.UserDTO
 import domain.entities.user.UserLogin
 import domain.jwt.JWTAccessManager
 import domain.repositories.factories.UserFactory
 import domain.services.AdminService
-import io.javalin.Context
+import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
