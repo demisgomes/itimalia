@@ -6,6 +6,7 @@ import application.web.controllers.UserController
 import domain.entities.Roles
 import domain.entities.user.NewUser
 import domain.entities.user.UserDTO
+import domain.entities.user.UserSearched
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.core.security.SecurityUtil.roles
@@ -18,17 +19,30 @@ class RouteConfig(private val userController: UserController, private val adminC
 
         app.get("/") { ctx -> ctx.json(mapOf("message" to " starting server")) }
 
+        val getDocumentation = OpenApiDocumentation()
+            .pathParam("id", String::class.java)
+            .json("200", UserSearched::class.java)
+
         val createUserDocumentation = OpenApiDocumentation()
             .body<NewUser>("application/json")
             .json("200", UserDTO::class.java)
+
+        val updateUserDocumentation = OpenApiDocumentation()
+            .pathParam("id", String::class.java)
+            .body<UserDTO>("application/json")
+            .json("200", UserDTO::class.java)
+
+        val deleteUserDocumentation = OpenApiDocumentation()
+            .pathParam("id", String::class.java)
+            .result("204", null)
 
         app.routes {
             ApiBuilder.path("users") {
                 ApiBuilder.post(documented(createUserDocumentation, userController::addUser), roles(Roles.ANYONE))
                 ApiBuilder.path(":id"){
-                    ApiBuilder.get(userController::findUser,roles(Roles.ANYONE))
-                    ApiBuilder.put(userController::updateUser,roles(Roles.USER, Roles.ADMIN))
-                    ApiBuilder.delete(userController::deleteUser, roles(Roles.USER, Roles.ADMIN))
+                    ApiBuilder.get(documented(getDocumentation,userController::findUser),roles(Roles.ANYONE))
+                    ApiBuilder.put(documented(updateUserDocumentation,userController::updateUser),roles(Roles.USER, Roles.ADMIN))
+                    ApiBuilder.delete(documented(deleteUserDocumentation, userController::deleteUser), roles(Roles.USER, Roles.ADMIN))
 
                 }
             }

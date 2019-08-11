@@ -50,7 +50,7 @@ dependencies {
 
     // Swagger
     compile group: 'cc.vileda', name: 'kotlin-openapi3-dsl', version: '0.20.1'
-    compile group: 'org.webjars', name: 'swagger-ui', version: '3.23.4'
+    compile group: 'org.webjars', name: 'swagger-ui', version: '3.22.2'
 
 }
 
