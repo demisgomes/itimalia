@@ -6,12 +6,12 @@ import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 
 object SwaggerAnimalDocumentation{
     fun createAnimalDocumentation() = OpenApiDocumentation()
-        .body<NewAnimal>("com/abrigo/itimalia/application/json")
+        .body<NewAnimal>(CONTENT_TYPE)
         .json("200", AnimalDTO::class.java)
 
     fun updateAnimalDocumentation() = OpenApiDocumentation()
         .pathParam("id", String::class.java)
-        .body<AnimalDTO>("com/abrigo/itimalia/application/json")
+        .body<AnimalDTO>(CONTENT_TYPE)
         .json("200", AnimalDTO::class.java)
 
     fun deleteAnimalDocumentation() = OpenApiDocumentation()

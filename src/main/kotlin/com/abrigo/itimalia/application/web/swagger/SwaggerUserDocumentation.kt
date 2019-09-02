@@ -13,12 +13,12 @@ object SwaggerUserDocumentation{
         .json("200", UserSearched::class.java)
 
     fun createUserDocumentation() = OpenApiDocumentation()
-        .body<NewUser>("com/abrigo/itimalia/application/json")
+        .body<NewUser>(CONTENT_TYPE)
         .json("200", UserDTO::class.java)
 
     fun updateUserDocumentation() = OpenApiDocumentation()
         .pathParam("id", String::class.java)
-        .body<UserDTO>("com/abrigo/itimalia/application/json")
+        .body<UserDTO>(CONTENT_TYPE)
         .json("200", UserDTO::class.java)
 
     fun deleteUserDocumentation() = OpenApiDocumentation()
@@ -26,10 +26,10 @@ object SwaggerUserDocumentation{
         .result("204", null)
 
     fun loginUserDocumentation() = OpenApiDocumentation()
-        .body<UserLogin>("com/abrigo/itimalia/application/json")
+        .body<UserLogin>(CONTENT_TYPE)
         .result("200",UserDTO::class.java)
 
     fun createAdminDocumentation()= OpenApiDocumentation()
-        .body<NewUser>("com/abrigo/itimalia/application/json")
+        .body<NewUser>(CONTENT_TYPE)
         .json("200", UserDTO::class.java)
 }

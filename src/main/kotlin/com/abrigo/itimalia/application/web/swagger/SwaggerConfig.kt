@@ -8,6 +8,8 @@ import io.javalin.plugin.openapi.OpenApiPlugin
 import io.javalin.plugin.openapi.ui.SwaggerOptions
 import io.swagger.v3.oas.models.info.Info
 
+const val CONTENT_TYPE = "application/json"
+
 object SwaggerConfig{
 
     fun registerPlugin(config: JavalinConfig): JavalinConfig {
