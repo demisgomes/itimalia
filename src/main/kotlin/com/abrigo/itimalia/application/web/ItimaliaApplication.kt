@@ -2,6 +2,7 @@ package com.abrigo.itimalia.application.web
 
 import com.abrigo.itimalia.application.config.DatabaseConfig
 import com.abrigo.itimalia.application.config.RouteConfig
+import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import com.abrigo.itimalia.application.web.swagger.SwaggerConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.abrigo.itimalia.commons.koin.*
@@ -16,6 +17,7 @@ class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
     private val jwtAccessManager: JWTAccessManager by inject()
     private val objectMapper:ObjectMapper by inject()
+    private val errorHandler:ErrorHandler by inject()
 
     fun startServer() {
 
@@ -35,7 +37,11 @@ class ItimaliaApplication : KoinComponent {
             .create { config ->
                 SwaggerConfig.registerPlugin(config)
                 config.accessManager(jwtAccessManager)
-            }.start(getHerokuAssignedPort())
+            }
+            .exception(Exception::class.java){ exception, ctx ->
+                errorHandler.handle(exception, ctx)
+            }
+            .start(getHerokuAssignedPort())
 
         JavalinJackson.configure(objectMapper)
         routeConfig.register(app)
@@ -43,7 +49,7 @@ class ItimaliaApplication : KoinComponent {
     }
 }
 
-fun main(args : Array<String>) {
+fun main() {
     try{
         ItimaliaApplication().startServer()
     }
