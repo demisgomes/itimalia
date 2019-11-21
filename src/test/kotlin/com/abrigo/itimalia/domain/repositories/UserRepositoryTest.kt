@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.repositories
 
+import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
@@ -76,8 +77,8 @@ class UserRepositoryTest{
         assertEquals(userDTO, user)
     }
 
-    @Test(expected = UserNotFoundException::class)
-    fun `given an valid user in database, when did not find by credentials, should return UserNotFoundException`(){
+    @Test(expected = InvalidCredentialsException::class)
+    fun `given an valid user in database, when did not find by credentials, should return InvalidCredentialsException`(){
         //given userDTO
         val userDTO = UserFactory.sampleDTO(email = email, password = password)
         userRepository.add(userDTO)

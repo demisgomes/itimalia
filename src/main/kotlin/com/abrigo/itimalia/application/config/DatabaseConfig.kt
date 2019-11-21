@@ -1,15 +1,15 @@
 package com.abrigo.itimalia.application.config
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import com.abrigo.itimalia.domain.entities.Gender
 import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.resources.storage.entities.AnimalMap
+import com.abrigo.itimalia.resources.storage.entities.UserMap
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import com.abrigo.itimalia.resources.storage.entities.AnimalMap
-import com.abrigo.itimalia.resources.storage.entities.UserMap
 
 object DatabaseConfig{
 
