@@ -5,10 +5,10 @@ import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
+import com.abrigo.itimalia.resources.storage.entities.UserMap
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import com.abrigo.itimalia.resources.storage.entities.UserMap
 
 class UserRepositoryImpl:UserRepository{
     override fun findByEmail(email: String): UserDTO {

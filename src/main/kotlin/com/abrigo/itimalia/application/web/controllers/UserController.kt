@@ -1,11 +1,11 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
-import com.abrigo.itimalia.domain.exceptions.*
+import com.abrigo.itimalia.domain.exceptions.ApiError
+import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.BadRequestResponse
@@ -28,8 +28,7 @@ class UserController(private val userService: UserService, private val jwtAccess
             context.json(addedUser).status(HttpStatus.CREATED_201)
         }
         catch (exception:BadRequestResponse){
-            val invalidGenderException=InvalidGenderException()
-            context.json(invalidGenderException.createErrorResponse()).status(invalidGenderException.httpStatus())
+            context.json(ErrorResponse(ApiError.BAD_REQUEST, exception.localizedMessage, emptyMap())).status(HttpStatus.BAD_REQUEST_400)
         }
     }
 

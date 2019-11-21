@@ -1,11 +1,11 @@
 package com.abrigo.itimalia.domain.jwt
 
 
-import com.auth0.jwt.JWT
 import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedUserRoleException
+import com.auth0.jwt.JWT
 import io.javalin.core.security.AccessManager
 import io.javalin.core.security.Role
 import io.javalin.http.Context

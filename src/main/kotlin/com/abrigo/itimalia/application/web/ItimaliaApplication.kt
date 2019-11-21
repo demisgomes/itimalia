@@ -4,9 +4,9 @@ import com.abrigo.itimalia.application.config.DatabaseConfig
 import com.abrigo.itimalia.application.config.RouteConfig
 import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import com.abrigo.itimalia.application.web.swagger.SwaggerConfig
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.abrigo.itimalia.commons.koin.*
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.plugin.json.JavalinJackson
 import org.koin.standalone.KoinComponent
