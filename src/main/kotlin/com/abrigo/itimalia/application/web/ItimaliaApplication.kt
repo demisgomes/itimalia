@@ -5,9 +5,11 @@ import com.abrigo.itimalia.application.config.RouteConfig
 import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import com.abrigo.itimalia.application.web.swagger.SwaggerConfig
 import com.abrigo.itimalia.commons.koin.*
+import com.abrigo.itimalia.domain.exceptions.ApiException
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
+import io.javalin.http.BadRequestResponse
 import io.javalin.plugin.json.JavalinJackson
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.StandAloneContext
@@ -38,8 +40,17 @@ class ItimaliaApplication : KoinComponent {
                 SwaggerConfig.registerPlugin(config)
                 config.accessManager(jwtAccessManager)
             }
+            .exception(ApiException::class.java){ exception, ctx ->
+                errorHandler.handleApiException(exception, ctx)
+            }
             .exception(Exception::class.java){ exception, ctx ->
-                errorHandler.handle(exception, ctx)
+                errorHandler.handleGenericException(exception, ctx)
+            }
+            .exception(BadRequestResponse::class.java){ exception, ctx ->
+                errorHandler.handleBadRequestResponse(exception, ctx)
+            }
+            .exception(IllegalArgumentException::class.java){ exception, ctx ->
+                errorHandler.handleIllegalArgumentException(exception, ctx)
             }
             .start(getHerokuAssignedPort())
 

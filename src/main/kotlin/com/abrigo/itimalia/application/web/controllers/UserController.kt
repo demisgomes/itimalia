@@ -4,11 +4,8 @@ import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
-import com.abrigo.itimalia.domain.exceptions.ApiError
-import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
-import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
@@ -22,14 +19,9 @@ class UserController(private val userService: UserService, private val jwtAccess
     }
 
     fun addUser(context: Context){
-        try{
-            val newUser=context.body<NewUser>()
-            val addedUser=userService.add(newUser)
-            context.json(addedUser).status(HttpStatus.CREATED_201)
-        }
-        catch (exception:BadRequestResponse){
-            context.json(ErrorResponse(ApiError.BAD_REQUEST, exception.localizedMessage, emptyMap())).status(HttpStatus.BAD_REQUEST_400)
-        }
+        val newUser=context.body<NewUser>()
+        val addedUser=userService.add(newUser)
+        context.json(addedUser).status(HttpStatus.CREATED_201)
     }
 
     fun updateUser(context: Context){
