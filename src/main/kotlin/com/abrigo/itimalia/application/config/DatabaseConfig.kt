@@ -37,7 +37,7 @@ object DatabaseConfig{
                 email = "admin@itimalia.org",
                 password = "admin",
                 birthDate = DateTime.now(),
-                gender = Gender.UNDEFINED,
+                gender = Gender.NOT_DECLARED,
                 name = "Admin",
                 phone = "8199999999",
                 role = Roles.ADMIN,

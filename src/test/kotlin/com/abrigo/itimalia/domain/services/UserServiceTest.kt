@@ -89,7 +89,7 @@ class UserServiceTest{
             "newUser@com.abrigo.itimalia.domain.com",
             "password",
             birthDate,
-            Gender.MASC,
+            Gender.MALE,
             "New User",
             "81823183183"
         )
@@ -296,7 +296,7 @@ class UserServiceTest{
             "newUser@com.abrigo.itimalia.domain.com",
             "password",
             null,
-            Gender.MASC,
+            Gender.MALE,
             "New User",
             "81823183183"
         )

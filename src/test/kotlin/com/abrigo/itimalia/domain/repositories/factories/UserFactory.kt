@@ -14,7 +14,7 @@ object UserFactory{
             email = email,
             password = password,
             birthDate = birthDate,
-            gender = Gender.UNDEFINED,
+            gender = Gender.NOT_DECLARED,
             name = "Usuario",
             phone = "8199999999",
             role = role,
@@ -29,7 +29,7 @@ object UserFactory{
             email = email,
             password = password,
             birthDate = birthDate,
-            gender = Gender.UNDEFINED,
+            gender = Gender.NOT_DECLARED,
             name = "Usuario",
             phone = "8199999999"
         )

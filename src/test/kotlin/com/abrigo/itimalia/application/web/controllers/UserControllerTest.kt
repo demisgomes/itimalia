@@ -1,13 +1,11 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.domain.entities.Roles
-import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.entities.user.UserSearched
+import com.abrigo.itimalia.domain.entities.user.*
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
 import com.abrigo.itimalia.domain.services.UserService
+import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
@@ -27,10 +25,13 @@ class UserControllerTest{
     private lateinit var newLoginUser: UserLogin
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
+    private lateinit var validator: Validator<NewUserRequest>
+    private lateinit var userController: UserController
 
     @Before
     fun setup(){
         userServiceMock = mockk(relaxed=true)
+        validator = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
         actualDateTime= DateTime.now()
@@ -40,6 +41,7 @@ class UserControllerTest{
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = UserFactory.sampleNew()
         newLoginUser = UserFactory.sampleLogin()
+        userController = UserController(userServiceMock, jwtAccessManagerMock, validator)
     }
 
     @Test
@@ -48,7 +50,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        UserController(userServiceMock, jwtAccessManagerMock).findUser(contextMock)
+        userController.findUser(contextMock)
 
         verify { contextMock.json(any<UserSearched>()) }
         verify { contextMock.status(HttpStatus.OK_200) }
@@ -60,7 +62,7 @@ class UserControllerTest{
 
         every { contextMock.body<NewUser>() }.returns(newUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
+        userController.addUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.CREATED_201) }
     }
@@ -77,7 +79,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
     }
@@ -94,7 +96,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -113,7 +115,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -131,7 +133,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -147,7 +149,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
     }
@@ -162,7 +164,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -178,7 +180,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -194,7 +196,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -207,7 +209,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserLogin>() }.returns(newLoginUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).loginUser(contextMock)
+        userController.loginUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 

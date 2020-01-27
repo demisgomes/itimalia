@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.validation
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 
-class UserValidation{
+class UserValidator{
 
     fun validate(userDTO: UserDTO){
         val validations = mutableListOf<Validation<*>>()

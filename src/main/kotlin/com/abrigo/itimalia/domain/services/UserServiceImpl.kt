@@ -7,8 +7,8 @@ import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.exceptions.*
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.UserLoginValidation
-import com.abrigo.itimalia.domain.validation.UserValidation
+import com.abrigo.itimalia.domain.validation.UserLoginValidator
+import com.abrigo.itimalia.domain.validation.UserValidator
 import io.javalin.core.security.Role
 import org.joda.time.DateTime
 
@@ -56,7 +56,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
-        UserLoginValidation().validate(newUserLogin)
+        UserLoginValidator().validate(newUserLogin)
         val user = userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
         val token = jwtUtils.sign(user.email, user.role, 5)
         val loggedUser = user.copy(token = token)
@@ -84,7 +84,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 actualDate,
                 jwtUtils.sign(newUser.email, Roles.USER, 5)
             )
-            UserValidation().validate(newUserDTO)
+            //UserValidator().validate(newUserDTO)
             return userRepository.add(newUserDTO)
         }
 
@@ -126,7 +126,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5)
         )
 
-        UserValidation().validate(newUserDTO)
+        UserValidator().validate(newUserDTO)
         return userRepository.update(id, modifiedUserDTO)
     }
 

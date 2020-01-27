@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 enum class Gender(val description:String){
     @JsonProperty("male")
-    MASC("male"),
+    MALE("male"),
     @JsonProperty("female")
-    FEM("female"),
-    @JsonProperty("undefined")
-    UNDEFINED("undefined")
+    FEMALE("female"),
+    @JsonProperty("not_declared")
+    NOT_DECLARED("not_declared")
 }

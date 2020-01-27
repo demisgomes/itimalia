@@ -8,7 +8,7 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.UserValidation
+import com.abrigo.itimalia.domain.validation.UserValidator
 import org.joda.time.DateTime
 
 class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):AdminService{
@@ -35,7 +35,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 actualDate,
                 jwtUtils.sign(newUser.email, Roles.ADMIN, 5)
             )
-            UserValidation().validate(newUserDTO)
+            UserValidator().validate(newUserDTO)
             return userRepository.add(newUserDTO)
         }
     }

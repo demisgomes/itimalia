@@ -1,15 +1,14 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.entities.user.toUserSearched
+import com.abrigo.itimalia.domain.entities.user.*
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
+import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
-class UserController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager){
+
+class UserController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager, private val validator: Validator<NewUserRequest>){
 
     fun findUser(context: Context){
         val id:Int=context.pathParam("id").toInt()
@@ -19,7 +18,20 @@ class UserController(private val userService: UserService, private val jwtAccess
     }
 
     fun addUser(context: Context){
-        val newUser=context.body<NewUser>()
+        //(context.body<Any>() as LinkedHashMap<String, String>)["email"]
+        //context.bodyValidator<NewUser>().check({ it.email != null }).get()
+        val newUserRequest= context.body<NewUserRequest>()
+        validator.validate(newUserRequest)
+
+        val newUser = NewUser(
+            newUserRequest.email!!,
+            newUserRequest.password!!,
+            newUserRequest.birthDate,
+            newUserRequest.gender,
+            newUserRequest.name!!,
+            newUserRequest.phone!!
+        )
+
         val addedUser=userService.add(newUser)
         context.json(addedUser).status(HttpStatus.CREATED_201)
     }
