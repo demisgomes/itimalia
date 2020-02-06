@@ -1,9 +1,11 @@
-package com.abrigo.itimalia.domain.validation
+package com.abrigo.itimalia.resources.validation.hibernate
 
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.exceptions.ValidationException
+import com.abrigo.itimalia.domain.validation.Validator
 
-class NewUserValidator(private val validation: javax.validation.Validator): Validator<NewUserRequest> {
+class NewUserRequestValidator(private val validation: javax.validation.Validator):
+    Validator<NewUserRequest> {
     override fun validate(t: NewUserRequest) {
         val constraints = validation.validate(t)
         if(constraints.size>0){

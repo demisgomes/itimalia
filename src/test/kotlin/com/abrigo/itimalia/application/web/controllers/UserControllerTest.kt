@@ -23,6 +23,7 @@ class UserControllerTest{
     private lateinit var returnedUser: UserDTO
     private lateinit var newUser: NewUser
     private lateinit var newLoginUser: UserLogin
+    private lateinit var newUserRequest: NewUserRequest
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
     private lateinit var validator: Validator<NewUserRequest>
@@ -40,6 +41,7 @@ class UserControllerTest{
         val birthDate=formatter.parseDateTime("01/01/1990")
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = UserFactory.sampleNew()
+        newUserRequest = UserFactory.sampleNewRequest()
         newLoginUser = UserFactory.sampleLogin()
         userController = UserController(userServiceMock, jwtAccessManagerMock, validator)
     }
@@ -60,7 +62,7 @@ class UserControllerTest{
     fun `when add a valid user should return the user with status 201`(){
         every{ userServiceMock.add(newUser)}.returns(returnedUser)
 
-        every { contextMock.body<NewUser>() }.returns(newUser)
+        every { contextMock.body<NewUserRequest>() }.returns(newUserRequest)
 
         userController.addUser(contextMock)
 

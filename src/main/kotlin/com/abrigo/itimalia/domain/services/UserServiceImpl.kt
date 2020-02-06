@@ -84,7 +84,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 actualDate,
                 jwtUtils.sign(newUser.email, Roles.USER, 5)
             )
-            //UserValidator().validate(newUserDTO)
             return userRepository.add(newUserDTO)
         }
 

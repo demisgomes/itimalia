@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.domain.validation.hibernate
+package com.abrigo.itimalia.resources.validation.hibernate
 
 import javax.validation.Validation
 import javax.validation.Validator

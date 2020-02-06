@@ -3,6 +3,7 @@ package com.abrigo.itimalia.domain.repositories.factories
 import com.abrigo.itimalia.domain.entities.Gender
 import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import org.joda.time.DateTime
@@ -26,6 +27,17 @@ object UserFactory{
 
     fun sampleNew(email:String = "myemail@email.com", password: String = "myPassword", birthDate:DateTime = DateTime.now() ): NewUser {
         return NewUser(
+            email = email,
+            password = password,
+            birthDate = birthDate,
+            gender = Gender.NOT_DECLARED,
+            name = "Usuario",
+            phone = "8199999999"
+        )
+    }
+
+    fun sampleNewRequest(email:String = "myemail@email.com", password: String = "myPassword", birthDate:DateTime = DateTime.now() ): NewUserRequest {
+        return NewUserRequest(
             email = email,
             password = password,
             birthDate = birthDate,

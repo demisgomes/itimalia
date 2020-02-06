@@ -18,8 +18,6 @@ class UserController(private val userService: UserService, private val jwtAccess
     }
 
     fun addUser(context: Context){
-        //(context.body<Any>() as LinkedHashMap<String, String>)["email"]
-        //context.bodyValidator<NewUser>().check({ it.email != null }).get()
         val newUserRequest= context.body<NewUserRequest>()
         validator.validate(newUserRequest)
 
