@@ -1,7 +1,7 @@
 package resources.validation.hibernate
 
 import com.abrigo.itimalia.domain.entities.Gender
-import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.resources.validation.hibernate.entities.NewUserRequestModel
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
 import org.junit.Test
@@ -10,11 +10,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class NewUserRequestValidatorTest{
-    private val validator = Validation.buildDefaultValidatorFactory().validator!!
+    private val validator = Validation.buildDefaultValidatorFactory().validator
     private val underMinimumDateTime = LocalDate.now().minusYears(12).toDateTime(LocalTime())
     private val validDateTime = LocalDate.now().minusYears(16).toDateTime(LocalTime())
 
-    private val validNewUserRequest = NewUserRequest("email@email.com", "password", validDateTime, Gender.FEMALE, "name", "81")
+    private val validNewUserRequest = NewUserRequestModel("email@email.com", "password", validDateTime, Gender.FEMALE, "name", "81")
 
     @Test
     fun `given an user with null email, should return one constraint with message 'please fill with an email'`(){

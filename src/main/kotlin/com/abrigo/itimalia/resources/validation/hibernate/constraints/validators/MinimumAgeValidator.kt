@@ -11,7 +11,9 @@ private const val MINIMUM_AGE = 13
 internal class MinimumAgeValidator : ConstraintValidator<MinimumAge, DateTime>{
     override fun isValid(value: DateTime?, context: ConstraintValidatorContext?): Boolean {
         val lastValidBirthDate = LocalDate.now().minusYears(MINIMUM_AGE).toDateTime(LocalTime())
-        if(value == null) return false
+        if(value == null){
+            return false
+        }
         return (value.isBefore(lastValidBirthDate) )
     }
 
