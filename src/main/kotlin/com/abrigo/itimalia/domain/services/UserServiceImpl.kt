@@ -4,7 +4,11 @@ import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.exceptions.*
+import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
+import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
+import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
+import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
+import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.domain.validation.UserLoginValidator

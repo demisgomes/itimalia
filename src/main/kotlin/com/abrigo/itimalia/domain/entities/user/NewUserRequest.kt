@@ -10,3 +10,12 @@ data class NewUserRequest(
     val gender: Gender?,
     val name: String?,
     val phone: String?)
+
+fun NewUserRequest.toNewUser() = NewUser(
+    email!!,
+    password!!,
+    birthDate,
+    gender,
+    name!!,
+    phone!!
+)

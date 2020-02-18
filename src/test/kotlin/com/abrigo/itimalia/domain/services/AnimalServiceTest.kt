@@ -1,7 +1,15 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.*
-import com.abrigo.itimalia.domain.exceptions.*
+import com.abrigo.itimalia.domain.entities.AnimalDTO
+import com.abrigo.itimalia.domain.entities.AnimalStatus
+import com.abrigo.itimalia.domain.entities.NewAnimal
+import com.abrigo.itimalia.domain.entities.Specie
+import com.abrigo.itimalia.domain.entities.TimeUnit
+import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
+import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
+import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
+import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
 import io.mockk.every

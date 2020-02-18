@@ -1,7 +1,13 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.domain.entities.Roles
-import com.abrigo.itimalia.domain.entities.user.*
+import com.abrigo.itimalia.domain.entities.user.NewUser
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserLogin
+import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserSearched
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
 import com.abrigo.itimalia.domain.services.UserService
@@ -23,16 +29,22 @@ class UserControllerTest{
     private lateinit var returnedUser: UserDTO
     private lateinit var newUser: NewUser
     private lateinit var newLoginUser: UserLogin
+    private lateinit var newLoginRequest: UserLoginRequest
     private lateinit var newUserRequest: NewUserRequest
+    private lateinit var userDTORequest: UserDTORequest
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
-    private lateinit var validator: Validator<NewUserRequest>
+    private lateinit var validatorNewUser: Validator<NewUserRequest>
+    private lateinit var validatorUserDTO: Validator<UserDTORequest>
+    private lateinit var validatorUserLogin: Validator<UserLoginRequest>
     private lateinit var userController: UserController
 
     @Before
     fun setup(){
         userServiceMock = mockk(relaxed=true)
-        validator = mockk(relaxed = true)
+        validatorNewUser = mockk(relaxed = true)
+        validatorUserDTO = mockk(relaxed = true)
+        validatorUserLogin = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
         actualDateTime= DateTime.now()
@@ -42,8 +54,10 @@ class UserControllerTest{
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = UserFactory.sampleNew()
         newUserRequest = UserFactory.sampleNewRequest()
+        userDTORequest = UserFactory.sampleDTORequest(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newLoginUser = UserFactory.sampleLogin()
-        userController = UserController(userServiceMock, jwtAccessManagerMock, validator)
+        newLoginRequest = UserFactory.sampleLoginRequest()
+        userController = UserController(userServiceMock, jwtAccessManagerMock, validatorNewUser, validatorUserDTO, validatorUserLogin)
     }
 
     @Test
@@ -79,7 +93,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
         userController.updateUser(contextMock)
 
@@ -96,7 +110,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
         userController.updateUser(contextMock)
 
@@ -115,7 +129,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
         userController.updateUser(contextMock)
 
@@ -133,7 +147,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
         userController.updateUser(contextMock)
 
@@ -209,7 +223,7 @@ class UserControllerTest{
     fun `when a user with valid credentials log in, should return the logged user with status 200`(){
         every { userServiceMock.login(newLoginUser) }.returns(returnedUser)
 
-        every { contextMock.body<UserLogin>() }.returns(newLoginUser)
+        every { contextMock.body<UserLoginRequest>() }.returns(newLoginRequest)
 
         userController.loginUser(contextMock)
 

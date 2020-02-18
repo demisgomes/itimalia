@@ -1,6 +1,10 @@
 package com.abrigo.itimalia.domain.repositories.factories
 
-import com.abrigo.itimalia.domain.entities.*
+import com.abrigo.itimalia.domain.entities.AnimalDTO
+import com.abrigo.itimalia.domain.entities.AnimalStatus
+import com.abrigo.itimalia.domain.entities.NewAnimal
+import com.abrigo.itimalia.domain.entities.Specie
+import com.abrigo.itimalia.domain.entities.TimeUnit
 import org.joda.time.DateTime
 
 object AnimalFactory{
