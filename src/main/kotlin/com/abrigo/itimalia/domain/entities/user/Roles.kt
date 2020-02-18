@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.domain.entities
+package com.abrigo.itimalia.domain.entities.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.javalin.core.security.Role

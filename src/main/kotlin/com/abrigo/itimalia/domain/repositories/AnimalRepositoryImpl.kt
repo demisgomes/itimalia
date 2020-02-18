@@ -1,9 +1,9 @@
 package com.abrigo.itimalia.domain.repositories
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.AnimalStatus
-import com.abrigo.itimalia.domain.entities.Specie
-import com.abrigo.itimalia.domain.entities.TimeUnit
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.Specie
+import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.resources.storage.entities.AnimalMap
 import org.jetbrains.exposed.sql.ResultRow
@@ -51,7 +51,7 @@ class AnimalRepositoryImpl:AnimalRepository{
         )
     }
 
-    private fun getByCreationDate(creationDate: DateTime): AnimalDTO{
+    private fun getByCreationDate(creationDate: DateTime): AnimalDTO {
         try{
             return transaction {
                 (AnimalMap).select{ AnimalMap.creationDate eq creationDate }.map { resultRow ->

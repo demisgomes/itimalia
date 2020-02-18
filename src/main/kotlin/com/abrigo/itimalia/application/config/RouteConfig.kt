@@ -14,7 +14,7 @@ import com.abrigo.itimalia.application.web.swagger.SwaggerUserDocumentation.dele
 import com.abrigo.itimalia.application.web.swagger.SwaggerUserDocumentation.getUserDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerUserDocumentation.loginUserDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerUserDocumentation.updateUserDocumentation
-import com.abrigo.itimalia.domain.entities.Roles
+import com.abrigo.itimalia.domain.entities.user.Roles
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.core.security.SecurityUtil.roles

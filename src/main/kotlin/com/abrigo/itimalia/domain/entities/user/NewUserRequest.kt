@@ -1,6 +1,5 @@
 package com.abrigo.itimalia.domain.entities.user
 
-import com.abrigo.itimalia.domain.entities.Gender
 import org.joda.time.DateTime
 
 data class NewUserRequest(

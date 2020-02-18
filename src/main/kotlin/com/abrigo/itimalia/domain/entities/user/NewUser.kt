@@ -1,6 +1,5 @@
 package com.abrigo.itimalia.domain.entities.user
 
-import com.abrigo.itimalia.domain.entities.Gender
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
 import javax.validation.constraints.Email

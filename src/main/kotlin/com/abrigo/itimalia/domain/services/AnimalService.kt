@@ -1,12 +1,12 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.AnimalStatus
-import com.abrigo.itimalia.domain.entities.NewAnimal
-import com.abrigo.itimalia.domain.entities.Specie
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.Specie
 
 interface AnimalService {
-    fun add(newAnimal: NewAnimal): AnimalDTO
+    fun add(newAnimal: NewAnimalRequest): AnimalDTO
     fun get(id:Int): AnimalDTO
     fun update(id: Int, updatedAnimalDTO: AnimalDTO): AnimalDTO
     fun delete(id: Int)

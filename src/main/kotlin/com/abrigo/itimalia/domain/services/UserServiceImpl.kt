@@ -1,6 +1,6 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.Roles
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
@@ -11,8 +11,6 @@ import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.UserLoginValidator
-import com.abrigo.itimalia.domain.validation.UserValidator
 import io.javalin.core.security.Role
 import org.joda.time.DateTime
 
@@ -60,7 +58,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     }
 
     override fun login(newUserLogin: UserLogin): UserDTO {
-        UserLoginValidator().validate(newUserLogin)
         val user = userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
         val token = jwtUtils.sign(user.email, user.role, 5)
         val loggedUser = user.copy(token = token)
@@ -96,7 +93,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     override fun delete(id:Int, role:Role, email:String){
         val userToBeDeleted=userRepository.get(id)
 
-        if(role==Roles.ADMIN) {
+        if(role== Roles.ADMIN) {
             return userRepository.delete(id)
         }
         if(userToBeDeleted.email == email){
@@ -128,8 +125,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             actualDate,
             jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5)
         )
-
-        UserValidator().validate(newUserDTO)
         return userRepository.update(id, modifiedUserDTO)
     }
 

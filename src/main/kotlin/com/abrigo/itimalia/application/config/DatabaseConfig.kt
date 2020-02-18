@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.application.config
 
-import com.abrigo.itimalia.domain.entities.Gender
-import com.abrigo.itimalia.domain.entities.Roles
+import com.abrigo.itimalia.domain.entities.user.Gender
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.resources.storage.entities.AnimalMap
 import com.abrigo.itimalia.resources.storage.entities.UserMap
