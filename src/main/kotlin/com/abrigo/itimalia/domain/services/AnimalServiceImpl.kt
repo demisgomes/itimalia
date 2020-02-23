@@ -13,7 +13,11 @@ import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.validation.Validator
 import org.joda.time.DateTime
 
-class AnimalServiceImpl(private val animalRepository: AnimalRepository, private val newAnimalValidator: Validator<NewAnimalRequest>, private val animalDTOValidator:Validator<AnimalDTORequest>):AnimalService {
+class AnimalServiceImpl(
+    private val animalRepository: AnimalRepository,
+    private val newAnimalValidator: Validator<NewAnimalRequest>,
+    private val animalDTOValidator:Validator<AnimalDTORequest>):AnimalService {
+
     override fun getBySpecie(specie: Specie): List<AnimalDTO>{
         val allAnimals=animalRepository.getAll()
         return allAnimals.filter { it.specie==specie }

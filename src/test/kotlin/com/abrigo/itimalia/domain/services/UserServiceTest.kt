@@ -1,10 +1,12 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.Gender
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserLogin
+import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.toUserDTO
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
@@ -14,6 +16,7 @@ import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
+import com.abrigo.itimalia.domain.validation.Validator
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -36,45 +39,67 @@ class UserServiceTest{
     private lateinit var birthDate: DateTime
     private lateinit var jwtUtils: JWTUtils
     private lateinit var actualDateTime: DateTime
-    private lateinit var invalidUserLogin: UserLogin
+    private lateinit var invalidUserLogin: UserLoginRequest
     private lateinit var updatedAdminUserDTO: UserDTO
     private lateinit var expectedModifiedUserDTO: UserDTO
-    private lateinit var validUserLogin: UserLogin
+    private lateinit var validUserLogin: UserLoginRequest
     private lateinit var updatedUserDTO: UserDTO
+    private lateinit var expectedModifiedUserDTORequest: UserDTORequest
+    private lateinit var expectedUserDTORequest: UserDTORequest
+    private lateinit var updatedAdminUserDTORequest: UserDTORequest
+    private lateinit var expectedAdminModifiedUserDTORequest: UserDTORequest
+    private lateinit var newUserDTORequest: UserDTORequest
+    private lateinit var updatedUserDTORequest: UserDTORequest
     private lateinit var userService: UserService
+    private lateinit var validatorNewUser: Validator<NewUserRequest>
+    private lateinit var validatorUserDTO: Validator<UserDTORequest>
+    private lateinit var validatorUserLogin: Validator<UserLoginRequest>
 
     @get:Rule
     val expectedEx = ExpectedException.none()
 
     @Before
     fun setup() {
+
+        validatorNewUser = mockk(relaxed = true)
+        validatorUserDTO = mockk(relaxed = true)
+        validatorUserLogin = mockk(relaxed = true)
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         birthDate=formatter.parseDateTime("01/01/1990")
         mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
 
-        newUserDTO = UserFactory.sampleDTO(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
-        expectedUserDTO = newUserDTO.copy(id = 1, token = "token_test")
-        expectedModifiedUserDTO = expectedUserDTO.copy(password = expectedUserDTO.password+"123")
-        updatedUserDTO = expectedUserDTO.copy(password = expectedUserDTO.password+"123")
-        expectedAdminModifiedUserDTO = expectedUserDTO.copy(role = Roles.ADMIN)
-        updatedAdminUserDTO=expectedUserDTO.copy(role = Roles.ADMIN)
+        newUserDTORequest = UserFactory.sampleDTORequest(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        newUserDTO = newUserDTORequest.toUserDTO()
+        expectedUserDTORequest = newUserDTORequest.copy(id = 1, token = "token_test")
+        expectedUserDTO = expectedUserDTORequest.toUserDTO()
+        updatedUserDTORequest = expectedUserDTORequest.copy(password = expectedUserDTO.password+"123")
+        updatedUserDTO = updatedUserDTORequest.toUserDTO()
+        expectedAdminModifiedUserDTORequest = expectedUserDTORequest.copy(role = Roles.ADMIN)
+        expectedAdminModifiedUserDTO = expectedAdminModifiedUserDTORequest.toUserDTO()
+        expectedModifiedUserDTORequest = expectedUserDTORequest.copy(password = expectedUserDTORequest.password+"123")
+        expectedModifiedUserDTO = expectedUserDTORequest.toUserDTO()
 
-        invalidUserLogin= UserFactory.sampleLogin(email = "myemail.com")
+        updatedAdminUserDTORequest = expectedUserDTORequest.copy(role = Roles.ADMIN)
+        updatedAdminUserDTO=expectedUserDTORequest.toUserDTO()
 
-        validUserLogin= UserFactory.sampleLogin()
+        invalidUserLogin= UserFactory.sampleLoginRequest(email = "myemail.com")
+
+        validUserLogin= UserFactory.sampleLoginRequest()
+
+
 
         userRepositoryMock= mockk(relaxed = true)
 
         jwtUtils= mockk(relaxed = true)
 
-        userService = UserServiceImpl(userRepositoryMock, jwtUtils)
+        userService = UserServiceImpl(userRepositoryMock, jwtUtils, validatorNewUser, validatorUserDTO, validatorUserLogin)
     }
 
 
     @Test
     fun `when a valid user without admin permissions request a sign up, register it`(){
-        val user = UserFactory.sampleNew(birthDate = birthDate)
+        val userRequest = UserFactory.sampleNewRequest(birthDate = birthDate)
         every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
@@ -83,14 +108,14 @@ class UserServiceTest{
 
         every { userRepositoryMock.add(newUserDTO.copy(role = Roles.USER, token = "token_test"))  }.returns(expectedUserDTO)
 
-        val userDTO=userService.add(user)
+        val userDTO=userService.add(userRequest)
 
         assertEquals(expectedUserDTO,userDTO)
     }
 
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`(){
-        val user = NewUser(
+        val newUserRequest = NewUserRequest(
             "newUser@com.abrigo.itimalia.domain.com",
             "password",
             birthDate,
@@ -105,7 +130,7 @@ class UserServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
-        userService.add(user)
+        userService.add(newUserRequest)
     }
 
     @Test
@@ -121,7 +146,7 @@ class UserServiceTest{
         every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
 
 
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, Roles.USER, updatedUserDTO.email)
+        val userDTO= userService.update(1,updatedUserDTORequest, Roles.USER, updatedUserDTO.email)
 
         assertEquals(expectedModifiedUserDTO,userDTO)
     }
@@ -139,7 +164,7 @@ class UserServiceTest{
         every { userRepositoryMock.update(1,updatedUserDTO) }.returns(expectedModifiedUserDTO)
 
 
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedUserDTO, Roles.USER, updatedUserDTO.email)
+        val userDTO=userService.update(1,updatedUserDTORequest, Roles.USER, updatedUserDTO.email)
 
         assertEquals(expectedModifiedUserDTO,userDTO)
     }
@@ -158,7 +183,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(updatedAdminUserDTO.email) }.throws(UserNotFoundException())
 
         //when
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.ADMIN, updatedAdminUserDTO.email+"A")
+        val userDTO=userService.update(1,updatedAdminUserDTORequest, Roles.ADMIN, updatedAdminUserDTO.email+"A")
 
         //then
         assertEquals(expectedAdminModifiedUserDTO,userDTO)
@@ -177,7 +202,7 @@ class UserServiceTest{
 
 
         //when
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.USER, updatedAdminUserDTO.email+"A")
+        val userDTO=userService.update(1,updatedAdminUserDTORequest, Roles.USER, updatedAdminUserDTO.email+"A")
 
         //then
         assertEquals(expectedAdminModifiedUserDTO,userDTO)
@@ -198,7 +223,7 @@ class UserServiceTest{
 
 
         //when
-        val userDTO=UserServiceImpl(userRepositoryMock,jwtUtils).update(1,updatedAdminUserDTO, Roles.USER, updatedAdminUserDTO.email)
+        val userDTO= userService.update(1,updatedAdminUserDTORequest, Roles.USER, updatedAdminUserDTO.email)
 
         //then
         assertEquals(expectedAdminModifiedUserDTO,userDTO)
@@ -216,7 +241,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(expectedUserDTO.email) }.throws(UserNotFoundException())
 
         //when
-        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.USER, expectedUserDTO.email)
+        userService.update(1,expectedUserDTORequest, Roles.USER, expectedUserDTO.email)
 
         //then expect UnmodifiedUserException
     }
@@ -232,7 +257,7 @@ class UserServiceTest{
         val usedEmailUser = expectedUserDTO.copy(id = 2, email = expectedUserDTO.email+"A")
         every { userRepositoryMock.findByEmail(expectedUserDTO.email) }.returns(usedEmailUser)
 
-        val modifiedUserDTO = expectedUserDTO.copy(email = expectedUserDTO.email+"A")
+        val modifiedUserDTO = expectedUserDTORequest.copy(email = expectedUserDTO.email+"A")
 
         //when
         userService.update(1,modifiedUserDTO, Roles.USER, expectedUserDTO.email)
@@ -252,7 +277,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(updatedAdminUserDTO.email) }.throws(UserNotFoundException())
 
         //when
-        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedAdminModifiedUserDTO, Roles.ADMIN, expectedAdminModifiedUserDTO.email)
+        userService.update(1,expectedAdminModifiedUserDTORequest, Roles.ADMIN, expectedAdminModifiedUserDTO.email)
 
         //then
         //assertEquals(expectedAdminModifiedUserDTO,userDTO)
@@ -271,7 +296,7 @@ class UserServiceTest{
         every { userRepositoryMock.findByEmail(updatedAdminUserDTO.email) }.throws(UserNotFoundException())
 
         //when
-        UserServiceImpl(userRepositoryMock,jwtUtils).update(1,expectedUserDTO, Roles.ADMIN, updatedAdminUserDTO.email)
+        userService.update(1,expectedUserDTORequest, Roles.ADMIN, updatedAdminUserDTO.email)
 
         //then return exception
     }
@@ -334,7 +359,7 @@ class UserServiceTest{
         val userException=UserNotFoundException()
         every { userRepositoryMock.get(844)  }.throws(userException)
 
-        userService.update(844, expectedModifiedUserDTO, Roles.ADMIN, expectedModifiedUserDTO.email)
+        userService.update(844, expectedModifiedUserDTORequest, Roles.ADMIN, expectedModifiedUserDTO.email)
     }
 
     @Test(expected = UserNotFoundException::class)
@@ -347,8 +372,9 @@ class UserServiceTest{
 
     @Test
     fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
+        every { validatorUserLogin.validate(invalidUserLogin) } throws ValidationException(hashMapOf("email: myemail.com" to mutableListOf("please fill with a valid email")))
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {email=[invalid email]}")
+        expectedEx.expectMessage("The validation does not successful in following field(s): {email: myemail.com=[please fill with a valid email]}")
         userService.login(invalidUserLogin)
     }
 
@@ -357,8 +383,8 @@ class UserServiceTest{
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.returns(expectedUserDTO)
-        every { jwtUtils.sign(validUserLogin.email, Roles.USER, 5) }.returns("token_updated")
+        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.returns(expectedUserDTO)
+        every { jwtUtils.sign(validUserLogin.email!!, Roles.USER, 5) }.returns("token_updated")
         val updatedTokenUser = expectedUserDTO.copy(token = "token_updated")
         every { userRepositoryMock.update(expectedUserDTO.id!!, updatedTokenUser) }.returns(updatedTokenUser)
         every { userRepositoryMock.get(expectedUserDTO.id!!) }.returns(updatedTokenUser)
@@ -374,7 +400,7 @@ class UserServiceTest{
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email, validUserLogin.password) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.throws(UserNotFoundException())
         userService.login(validUserLogin)
 
         //then UserNotFoundException
@@ -398,7 +424,7 @@ class UserServiceTest{
     fun `when an user without admin permission tries to delete another account should expect UnauthorizedDifferentUserChangeException`(){
         every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
 
-        UserServiceImpl(userRepositoryMock,jwtUtils).delete(1, expectedUserDTO.role, expectedUserDTO.email+"A")
+        userService.delete(1, expectedUserDTO.role, expectedUserDTO.email+"A")
     }
 
 }

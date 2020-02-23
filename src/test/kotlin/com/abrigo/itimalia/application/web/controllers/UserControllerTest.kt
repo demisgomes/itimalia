@@ -34,17 +34,11 @@ class UserControllerTest{
     private lateinit var userDTORequest: UserDTORequest
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
-    private lateinit var validatorNewUser: Validator<NewUserRequest>
-    private lateinit var validatorUserDTO: Validator<UserDTORequest>
-    private lateinit var validatorUserLogin: Validator<UserLoginRequest>
     private lateinit var userController: UserController
 
     @Before
     fun setup(){
         userServiceMock = mockk(relaxed=true)
-        validatorNewUser = mockk(relaxed = true)
-        validatorUserDTO = mockk(relaxed = true)
-        validatorUserLogin = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
         actualDateTime= DateTime.now()
@@ -57,7 +51,7 @@ class UserControllerTest{
         userDTORequest = UserFactory.sampleDTORequest(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newLoginUser = UserFactory.sampleLogin()
         newLoginRequest = UserFactory.sampleLoginRequest()
-        userController = UserController(userServiceMock, jwtAccessManagerMock, validatorNewUser, validatorUserDTO, validatorUserLogin)
+        userController = UserController(userServiceMock, jwtAccessManagerMock)
     }
 
     @Test
@@ -74,7 +68,7 @@ class UserControllerTest{
 
     @Test
     fun `when add a valid user should return the user with status 201`(){
-        every{ userServiceMock.add(newUser)}.returns(returnedUser)
+        every{ userServiceMock.add(newUserRequest)}.returns(returnedUser)
 
         every { contextMock.body<NewUserRequest>() }.returns(newUserRequest)
 
@@ -89,7 +83,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, returnedUser.role, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -106,7 +100,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -125,7 +119,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -143,7 +137,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, Roles.USER, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.USER, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -221,7 +215,7 @@ class UserControllerTest{
 
     @Test
     fun `when a user with valid credentials log in, should return the logged user with status 200`(){
-        every { userServiceMock.login(newLoginUser) }.returns(returnedUser)
+        every { userServiceMock.login(newLoginRequest) }.returns(returnedUser)
 
         every { contextMock.body<UserLoginRequest>() }.returns(newLoginRequest)
 

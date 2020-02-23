@@ -17,10 +17,7 @@ val controllerModule = module {
     single {
         UserController(
             get(),
-            get(),
-            NewUserRequestValidator(get()),
-            UserDTORequestValidator(get()),
-            UserLoginRequestValidator(get())
+            get()
         )
     }
     single { AdminController(get(),get()) }
