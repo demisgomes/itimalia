@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserDTORequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
@@ -11,7 +11,6 @@ import com.abrigo.itimalia.domain.entities.user.UserSearched
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
 import com.abrigo.itimalia.domain.services.UserService
-import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk

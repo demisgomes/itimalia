@@ -3,13 +3,9 @@ package com.abrigo.itimalia.application.web.controllers
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.UserDTORequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
-import com.abrigo.itimalia.domain.entities.user.toNewUser
-import com.abrigo.itimalia.domain.entities.user.toUserDTO
-import com.abrigo.itimalia.domain.entities.user.toUserLogin
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
-import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 

@@ -81,7 +81,7 @@ class UserServiceTest{
         expectedModifiedUserDTO = expectedUserDTORequest.toUserDTO()
 
         updatedAdminUserDTORequest = expectedUserDTORequest.copy(role = Roles.ADMIN)
-        updatedAdminUserDTO=expectedUserDTORequest.toUserDTO()
+        updatedAdminUserDTO=updatedAdminUserDTORequest.toUserDTO()
 
         invalidUserLogin= UserFactory.sampleLoginRequest(email = "myemail.com")
 
