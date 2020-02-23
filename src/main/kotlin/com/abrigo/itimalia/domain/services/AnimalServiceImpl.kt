@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
-import com.abrigo.itimalia.domain.entities.animal.NewAnimal
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
@@ -13,7 +13,7 @@ import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.validation.Validator
 import org.joda.time.DateTime
 
-class AnimalServiceImpl(private val animalRepository: AnimalRepository, private val newAnimalValidator: Validator<NewAnimalRequest>):AnimalService {
+class AnimalServiceImpl(private val animalRepository: AnimalRepository, private val newAnimalValidator: Validator<NewAnimalRequest>, private val animalDTOValidator:Validator<AnimalDTORequest>):AnimalService {
     override fun getBySpecie(specie: Specie): List<AnimalDTO>{
         val allAnimals=animalRepository.getAll()
         return allAnimals.filter { it.specie==specie }
@@ -86,7 +86,8 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository, private 
         } else animalDTO
     }
 
-    override fun update(id:Int, updatedAnimalDTO: AnimalDTO): AnimalDTO {
+    override fun update(id:Int, updatedAnimalDTO: AnimalDTORequest): AnimalDTO {
+        animalDTOValidator.validate(updatedAnimalDTO)
         val animalInDatabase= get(id)
 
         val animalToBeModifiedDTO = AnimalDTO(

@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.domain.repositories
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.TimeUnit
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
 import com.abrigo.itimalia.holder.DatabaseHolder

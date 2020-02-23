@@ -1,6 +1,6 @@
 package resources.validation.hibernate
 
-import com.abrigo.itimalia.domain.entities.Gender
+import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.resources.validation.hibernate.entities.NewUserRequestModel
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
