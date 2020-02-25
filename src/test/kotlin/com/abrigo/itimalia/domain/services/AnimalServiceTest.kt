@@ -225,7 +225,7 @@ class AnimalServiceTest{
         every { DateTime.now() }.returns(actualDateTime)
         //when
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {name: =[please fill with a name]}")
+        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {name: =[please fill with a name]}")
 
 
        animalService.update(id,modifiedAnimalDTORequest)
@@ -239,7 +239,7 @@ class AnimalServiceTest{
 
         //when
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {specie: null=[please fill with a valid specie: cat or dog]}")
+        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {specie: null=[please fill with a valid specie: cat or dog]}")
 
         every { animalDTOValidator.validate(modifiedAnimalDTORequest) } throws ValidationException(hashMapOf("specie: null" to mutableListOf("please fill with a valid specie: cat or dog")))
         every { DateTime.now() }.returns(actualDateTime)

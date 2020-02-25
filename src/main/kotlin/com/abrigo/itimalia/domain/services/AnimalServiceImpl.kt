@@ -96,11 +96,11 @@ class AnimalServiceImpl(
 
         val animalToBeModifiedDTO = AnimalDTO(
             updatedAnimalDTO.id,
-            updatedAnimalDTO.name,
+            updatedAnimalDTO.name!!,
             updatedAnimalDTO.age,
             updatedAnimalDTO.timeUnit,
             updatedAnimalDTO.specie,
-            updatedAnimalDTO.description,
+            updatedAnimalDTO.description!!,
             animalInDatabase.creationDate,
             DateTime.now(),
             updatedAnimalDTO.status

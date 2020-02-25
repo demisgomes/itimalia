@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
 data class NewAnimalRequestModel(
-    @field:NotBlank(message = "please fill with an email following the pattern: email@email.com")
+    @field:NotBlank(message = "please fill with a name")
     val name: String?,
     val age: Int?,
     val timeUnit : TimeUnit?,

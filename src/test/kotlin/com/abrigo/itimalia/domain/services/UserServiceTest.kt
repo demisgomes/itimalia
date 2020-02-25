@@ -315,7 +315,7 @@ class UserServiceTest{
 //        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
 //
 //        expectedEx.expect(ValidationException::class.java)
-//        expectedEx.expectMessage("The validation does not successful in following field(s): {gender=[invalid gender]}")
+//        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {gender=[invalid gender]}")
 //
 //        userService.add(newUser)
 //    }
@@ -333,7 +333,7 @@ class UserServiceTest{
 //        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
 //
 //        expectedEx.expect(ValidationException::class.java)
-//        expectedEx.expectMessage("The validation does not successful in following field(s): {birthDate=[invalid birthDate]}")
+//        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {birthDate=[invalid birthDate]}")
 //        userService.add(newUser)
 //    }
 
@@ -374,7 +374,7 @@ class UserServiceTest{
     fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
         every { validatorUserLogin.validate(invalidUserLogin) } throws ValidationException(hashMapOf("email: myemail.com" to mutableListOf("please fill with a valid email")))
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {email: myemail.com=[please fill with a valid email]}")
+        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {email: myemail.com=[please fill with a valid email]}")
         userService.login(invalidUserLogin)
     }
 
