@@ -1,17 +1,23 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.AnimalStatus
-import com.abrigo.itimalia.domain.entities.NewAnimal
-import com.abrigo.itimalia.domain.entities.Specie
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.Specie
+import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
-import com.abrigo.itimalia.domain.validation.AnimalValidation
+import com.abrigo.itimalia.domain.validation.Validator
 import org.joda.time.DateTime
 
-class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalService {
+class AnimalServiceImpl(
+    private val animalRepository: AnimalRepository,
+    private val newAnimalValidator: Validator<NewAnimalRequest>,
+    private val animalDTOValidator:Validator<AnimalDTORequest>):AnimalService {
+
     override fun getBySpecie(specie: Specie): List<AnimalDTO>{
         val allAnimals=animalRepository.getAll()
         return allAnimals.filter { it.specie==specie }
@@ -34,8 +40,8 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
     override fun adopt(id: Int): AnimalDTO {
         val animalToBeAdopted=get(id)
         when {
-            animalToBeAdopted.status==AnimalStatus.AVAILABLE -> {
-                val animalAdopted=AnimalDTO(
+            animalToBeAdopted.status== AnimalStatus.AVAILABLE -> {
+                val animalAdopted= AnimalDTO(
                     animalToBeAdopted.id,
                     animalToBeAdopted.name,
                     animalToBeAdopted.age,
@@ -48,8 +54,8 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
                 )
                 return animalRepository.update(id,animalAdopted)
             }
-            animalToBeAdopted.status==AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
-            animalToBeAdopted.status==AnimalStatus.DEAD -> throw AnimalDeadException()
+            animalToBeAdopted.status== AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
+            animalToBeAdopted.status== AnimalStatus.DEAD -> throw AnimalDeadException()
             else -> throw AnimalGoneException()
         }
 
@@ -59,38 +65,47 @@ class AnimalServiceImpl(private val animalRepository: AnimalRepository):AnimalSe
         return animalRepository.get(id)
     }
 
-    override fun add(newAnimal: NewAnimal): AnimalDTO {
-        var animalToBeAddedDTO = AnimalDTO(
+    override fun add(newAnimal: NewAnimalRequest): AnimalDTO {
+        newAnimalValidator.validate(newAnimal)
+
+        val animalToBeAddedDTO = AnimalDTO(
             null,
-            newAnimal.name,
+            newAnimal.name!!,
             newAnimal.age,
             newAnimal.timeUnit,
             newAnimal.specie,
-            newAnimal.description,
+            newAnimal.description!!,
             DateTime.now(),
             DateTime.now(),
             AnimalStatus.AVAILABLE
         )
-
-        animalToBeAddedDTO=AnimalValidation().validate(animalToBeAddedDTO)
-        return animalRepository.add(animalToBeAddedDTO)
+        return animalRepository.add(normalizeAge(animalToBeAddedDTO))
     }
 
-    override fun update(id:Int, updatedAnimalDTO: AnimalDTO): AnimalDTO {
-        val animalInDatabase=get(id)
-        var animalToBeModifiedDTO = AnimalDTO(
+    private fun normalizeAge(animalDTO: AnimalDTO):AnimalDTO{
+        return if(animalDTO.age==null && animalDTO.timeUnit!=null){
+            animalDTO.copy(age = null, timeUnit = null)
+        } else if (animalDTO.age!=null && animalDTO.timeUnit==null){
+            animalDTO.copy(timeUnit = TimeUnit.YEAR)
+        } else animalDTO
+    }
+
+    override fun update(id:Int, updatedAnimalDTO: AnimalDTORequest): AnimalDTO {
+        animalDTOValidator.validate(updatedAnimalDTO)
+        val animalInDatabase= get(id)
+
+        val animalToBeModifiedDTO = AnimalDTO(
             updatedAnimalDTO.id,
-            updatedAnimalDTO.name,
+            updatedAnimalDTO.name!!,
             updatedAnimalDTO.age,
             updatedAnimalDTO.timeUnit,
             updatedAnimalDTO.specie,
-            updatedAnimalDTO.description,
+            updatedAnimalDTO.description!!,
             animalInDatabase.creationDate,
             DateTime.now(),
             updatedAnimalDTO.status
         )
-        animalToBeModifiedDTO=AnimalValidation().validate(animalToBeModifiedDTO)
-        return animalRepository.update(id,animalToBeModifiedDTO)
+        return animalRepository.update(id,normalizeAge(animalToBeModifiedDTO))
     }
 
     override fun delete(id: Int) {

@@ -1,13 +1,18 @@
 package com.abrigo.itimalia.domain.repositories
 
-import com.abrigo.itimalia.domain.entities.Gender
-import com.abrigo.itimalia.domain.entities.Roles
+import com.abrigo.itimalia.domain.entities.user.Gender
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.resources.storage.entities.UserMap
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class UserRepositoryImpl:UserRepository{

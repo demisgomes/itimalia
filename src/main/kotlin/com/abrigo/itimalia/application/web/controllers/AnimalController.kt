@@ -1,16 +1,16 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.AnimalStatus
-import com.abrigo.itimalia.domain.entities.NewAnimal
-import com.abrigo.itimalia.domain.entities.Specie
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.services.AnimalService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
 class AnimalController(private val animalService: AnimalService) {
     fun addAnimal(context: Context) {
-        val newAnimal=context.body<NewAnimal>()
+        val newAnimal=context.body<NewAnimalRequest>()
         val newAnimalDTO=animalService.add(newAnimal)
         context.json(newAnimalDTO).status(HttpStatus.CREATED_201)
     }
@@ -23,8 +23,8 @@ class AnimalController(private val animalService: AnimalService) {
 
     fun updateAnimal(context: Context){
         val id:Int=context.pathParam("id").toInt()
-        val animalToBeUpdated = context.body<AnimalDTO>()
-
+        val animalToBeUpdated = context.body<AnimalDTORequest>()
+        //tirar esse get
         animalService.get(id)
         val updatedAnimal=animalService.update(id, animalToBeUpdated)
         context.json(updatedAnimal).status(HttpStatus.OK_200)

@@ -1,13 +1,17 @@
 package com.abrigo.itimalia.application.config
 
-import com.abrigo.itimalia.domain.entities.Gender
-import com.abrigo.itimalia.domain.entities.Roles
+import com.abrigo.itimalia.domain.entities.user.Gender
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.resources.storage.entities.AnimalMap
 import com.abrigo.itimalia.resources.storage.entities.UserMap
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
@@ -37,7 +41,7 @@ object DatabaseConfig{
                 email = "admin@itimalia.org",
                 password = "admin",
                 birthDate = DateTime.now(),
-                gender = Gender.UNDEFINED,
+                gender = Gender.NOT_DECLARED,
                 name = "Admin",
                 phone = "8199999999",
                 role = Roles.ADMIN,

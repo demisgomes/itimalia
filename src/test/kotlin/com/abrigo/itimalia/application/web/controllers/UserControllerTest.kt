@@ -1,9 +1,12 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserDTORequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
+import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserSearched
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.repositories.factories.UserFactory
@@ -25,8 +28,12 @@ class UserControllerTest{
     private lateinit var returnedUser: UserDTO
     private lateinit var newUser: NewUser
     private lateinit var newLoginUser: UserLogin
+    private lateinit var newLoginRequest: UserLoginRequest
+    private lateinit var newUserRequest: NewUserRequest
+    private lateinit var userDTORequest: UserDTORequest
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
+    private lateinit var userController: UserController
 
     @Before
     fun setup(){
@@ -39,7 +46,11 @@ class UserControllerTest{
         val birthDate=formatter.parseDateTime("01/01/1990")
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = UserFactory.sampleNew()
+        newUserRequest = UserFactory.sampleNewRequest()
+        userDTORequest = UserFactory.sampleDTORequest(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newLoginUser = UserFactory.sampleLogin()
+        newLoginRequest = UserFactory.sampleLoginRequest()
+        userController = UserController(userServiceMock, jwtAccessManagerMock)
     }
 
     @Test
@@ -48,7 +59,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        UserController(userServiceMock, jwtAccessManagerMock).findUser(contextMock)
+        userController.findUser(contextMock)
 
         verify { contextMock.json(any<UserSearched>()) }
         verify { contextMock.status(HttpStatus.OK_200) }
@@ -56,11 +67,11 @@ class UserControllerTest{
 
     @Test
     fun `when add a valid user should return the user with status 201`(){
-        every{ userServiceMock.add(newUser)}.returns(returnedUser)
+        every{ userServiceMock.add(newUserRequest)}.returns(returnedUser)
 
-        every { contextMock.body<NewUser>() }.returns(newUser)
+        every { contextMock.body<NewUserRequest>() }.returns(newUserRequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).addUser(contextMock)
+        userController.addUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.CREATED_201) }
     }
@@ -71,13 +82,13 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, returnedUser.role, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, returnedUser.role, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
     }
@@ -88,13 +99,13 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -107,13 +118,13 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -125,13 +136,13 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, returnedUser, Roles.USER, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userDTORequest, Roles.USER, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).updateUser(contextMock)
+        userController.updateUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 
@@ -147,7 +158,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
     }
@@ -162,7 +173,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -178,7 +189,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -194,7 +205,7 @@ class UserControllerTest{
 
         every { contextMock.body<UserDTO>() }.returns(returnedUser)
 
-        UserController(userServiceMock, jwtAccessManagerMock).deleteUser(contextMock)
+        userController.deleteUser(contextMock)
 
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
 
@@ -203,11 +214,11 @@ class UserControllerTest{
 
     @Test
     fun `when a user with valid credentials log in, should return the logged user with status 200`(){
-        every { userServiceMock.login(newLoginUser) }.returns(returnedUser)
+        every { userServiceMock.login(newLoginRequest) }.returns(returnedUser)
 
-        every { contextMock.body<UserLogin>() }.returns(newLoginUser)
+        every { contextMock.body<UserLoginRequest>() }.returns(newLoginRequest)
 
-        UserController(userServiceMock, jwtAccessManagerMock).loginUser(contextMock)
+        userController.loginUser(contextMock)
 
         verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
 

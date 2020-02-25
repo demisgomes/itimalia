@@ -1,7 +1,5 @@
 package com.abrigo.itimalia.domain.entities.user
 
-import com.abrigo.itimalia.domain.entities.Gender
-import com.abrigo.itimalia.domain.entities.Roles
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
 

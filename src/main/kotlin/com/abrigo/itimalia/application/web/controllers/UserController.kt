@@ -1,15 +1,18 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserLogin
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 
-class UserController(private val userService: UserService, private val jwtAccessManager: JWTAccessManager){
+
+class UserController(
+    private val userService: UserService,
+    private val jwtAccessManager: JWTAccessManager){
 
     fun findUser(context: Context){
         val id:Int=context.pathParam("id").toInt()
@@ -19,15 +22,15 @@ class UserController(private val userService: UserService, private val jwtAccess
     }
 
     fun addUser(context: Context){
-        val newUser=context.body<NewUser>()
-        val addedUser=userService.add(newUser)
+        val newUserRequest= context.body<NewUserRequest>()
+        val addedUser=userService.add(newUserRequest)
         context.json(addedUser).status(HttpStatus.CREATED_201)
     }
 
     fun updateUser(context: Context){
         val id:Int=context.pathParam("id").toInt()
-        val modifiedUser=context.body<UserDTO>()
-        val returnedUser=userService.update(id,modifiedUser, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
+        val modifiedUserRequest= context.body<UserDTORequest>()
+        val returnedUser=userService.update(id, modifiedUserRequest, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
         context.json(returnedUser).status(HttpStatus.OK_200)
     }
 
@@ -38,8 +41,8 @@ class UserController(private val userService: UserService, private val jwtAccess
     }
 
     fun loginUser(context: Context){
-        val newUserLogin=context.body<UserLogin>()
-        val userLogged=userService.login(newUserLogin)
+        val newUserLoginRequest=context.body<UserLoginRequest>()
+        val userLogged=userService.login(newUserLoginRequest)
         context.json(userLogged).status(HttpStatus.OK_200)
     }
 }

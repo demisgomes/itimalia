@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.application.web.swagger
 
-import com.abrigo.itimalia.domain.entities.AnimalDTO
-import com.abrigo.itimalia.domain.entities.NewAnimal
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.NewAnimal
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 
 object SwaggerAnimalDocumentation{

@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.Roles
 import com.abrigo.itimalia.domain.entities.user.NewUser
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.jwt.JWTAccessManager

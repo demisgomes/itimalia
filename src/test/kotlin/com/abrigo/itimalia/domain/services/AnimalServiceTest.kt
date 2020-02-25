@@ -1,9 +1,20 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.*
-import com.abrigo.itimalia.domain.exceptions.*
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.NewAnimal
+import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.Specie
+import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
+import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
+import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
+import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
+import com.abrigo.itimalia.domain.validation.Validator
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -21,7 +32,11 @@ class AnimalServiceTest{
     private lateinit var actualDateTime: DateTime
     private lateinit var expectedAnimalDTO: AnimalDTO
     private lateinit var newAnimal: NewAnimal
+    private lateinit var newAnimalRequest: NewAnimalRequest
     private lateinit var animalService : AnimalService
+    private lateinit var newAnimalValidator: Validator<NewAnimalRequest>
+    private lateinit var animalDTOValidator: Validator<AnimalDTORequest>
+    private lateinit var expectedAnimalDTORequest: AnimalDTORequest
 
     private val animalsList = listOf(AnimalFactory.sampleDTO(), AnimalFactory.sampleDTO(name = "Lala", specie = Specie.DOG), AnimalFactory.sampleDTO(specie = Specie.CAT, status = AnimalStatus.ADOPTED), AnimalFactory.sampleDTO(specie = Specie.DOG, status = AnimalStatus.GONE))
 
@@ -33,9 +48,13 @@ class AnimalServiceTest{
         actualDateTime= DateTime.now()
         mockkStatic(DateTime::class)
         animalRepositoryMock= mockk(relaxed = true)
+        newAnimalValidator = mockk(relaxed = true)
+        animalDTOValidator = mockk(relaxed = true)
         newAnimal = AnimalFactory.sampleNew()
+        newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
-        animalService = AnimalServiceImpl(animalRepositoryMock)
+        expectedAnimalDTORequest = AnimalFactory.sampleDTORequest(creationDate = actualDateTime, modificationDate = actualDateTime)
+        animalService = AnimalServiceImpl(animalRepositoryMock, newAnimalValidator, animalDTOValidator)
     }
 
     //GET METHOD TESTS
@@ -129,45 +148,16 @@ class AnimalServiceTest{
         //when
         every { animalRepositoryMock.add(expectedAnimalDTO.copy(id = null)) }.returns(expectedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO= animalService.add(newAnimal)
+        val animalDTO= animalService.add(newAnimalRequest)
 
         //then
         assertEquals(expectedAnimalDTO,animalDTO)
     }
 
     @Test
-    fun `when register an animal with blank name and other fields filled correctly, should expect ValidationException with message 'invalid Name the name cannot be blank or contain numbers'`(){
-        //given
-        val newAnimalWithInvalidName=AnimalFactory.sampleNew(name = "")
-
-        //when
-        expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {name=[Invalid name. The name cannot be blank or contain numbers]}")
-
-        animalService.add(newAnimalWithInvalidName)
-
-        //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
-    }
-
-    @Test
-    fun `when register an animal with null specie and other fields filled correctly, should expect ValidationException with message 'Invalid specie the specie must be cat or dog'`(){
-        //given
-        val newAnimalWithInvalidSpecie=AnimalFactory.sampleNew(specie = null)
-
-        //when
-        expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
-
-        animalService.add(newAnimalWithInvalidSpecie)
-
-        //then expect ValidationException with message:The validation does not successful in following field(s): {name=[Invalid Name. The name cannot be blank or contain numbers]
-
-    }
-
-    @Test
     fun `when register an animal with null age, valid timeUnit and other fields filled correctly, should register the animal with age and timeUnit with null`(){
         //given
-        val newAnimalWithAgeNullAndTimeUnitValid=AnimalFactory.sampleNew(age = null)
+        val newAnimalWithAgeNullAndTimeUnitValid=AnimalFactory.sampleNewRequest(age = null)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=expectedAnimalDTO.copy(id = null, age = null, timeUnit = null)
 
         //when
@@ -182,7 +172,7 @@ class AnimalServiceTest{
     @Test
     fun `when register an animal with valid age, null timeUnit and other fields filled correctly, should register the animal with specified age and timeUnit in years`(){
         //given
-        val newAnimalWithValidAgeAndTimeUnitNull=AnimalFactory.sampleNew(timeUnit = null)
+        val newAnimalWithValidAgeAndTimeUnitNull=AnimalFactory.sampleNewRequest(timeUnit = null)
         val expectedAnimalWithAgeNullAndTimeUnitValidDTO=expectedAnimalDTO.copy(id = null, age = 3, timeUnit = TimeUnit.YEAR)
         //when
         every { animalRepositoryMock.add(expectedAnimalWithAgeNullAndTimeUnitValidDTO) }.returns(expectedAnimalWithAgeNullAndTimeUnitValidDTO)
@@ -199,12 +189,13 @@ class AnimalServiceTest{
         //given
         val id=1
         val modifiedAnimalDTO=expectedAnimalDTO.copy(description = "An animal that needs more attention")
+        val modifiedAnimalDTORequest=expectedAnimalDTORequest.copy(description = "An animal that needs more attention")
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
         every { animalRepositoryMock.update(id,modifiedAnimalDTO) }.returns(modifiedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=animalService.update(id,modifiedAnimalDTO)
+        val animalDTO=animalService.update(id,modifiedAnimalDTORequest)
 
         //then
         assertEquals(modifiedAnimalDTO, animalDTO)
@@ -214,7 +205,7 @@ class AnimalServiceTest{
     fun `when an animal with valid fields and it not exists requests a modification, should expect a AnimalNotFoundException`(){
         //given
         val id=1
-        val modifiedAnimalDTO=expectedAnimalDTO
+        val modifiedAnimalDTO=expectedAnimalDTORequest
 
         //when
         every { animalRepositoryMock.get(id) }.throws(AnimalNotFoundException())
@@ -227,36 +218,32 @@ class AnimalServiceTest{
     fun `when an animal with invalid name, other fields OK, it exists, and requests a modification, should expect a ValidationException with message 'Invalid name the name cannot be blank or contain numbers'`(){
         //given
         val id=1
-        val modifiedAnimalDTO=expectedAnimalDTO.copy(name = "")
+        val modifiedAnimalDTORequest= expectedAnimalDTORequest.copy(name = "")
 
+
+        every { animalDTOValidator.validate(modifiedAnimalDTORequest) } throws ValidationException(hashMapOf("name: " to mutableListOf("please fill with a name")))
+        every { DateTime.now() }.returns(actualDateTime)
         //when
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {name=[Invalid name. The name cannot be blank or contain numbers]}")
+        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {name: =[please fill with a name]}")
 
-        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
-        every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=animalService.update(id,modifiedAnimalDTO)
 
-        //then
-        assertEquals(modifiedAnimalDTO, animalDTO)
+       animalService.update(id,modifiedAnimalDTORequest)
     }
 
     @Test
     fun `when an animal with invalid specie, other fields OK, it exists, and requests a modification, should expect ValidationException with message 'Invalid specie the specie must be cat or dog'`(){
         //given
         val id=1
-        val modifiedAnimalDTO=expectedAnimalDTO.copy(specie = null)
+        val modifiedAnimalDTORequest=expectedAnimalDTORequest.copy(specie = null)
 
         //when
         expectedEx.expect(ValidationException::class.java)
-        expectedEx.expectMessage("The validation does not successful in following field(s): {specie=[Invalid specie. The specie must be cat or dog]}")
+        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {specie: null=[please fill with a valid specie: cat or dog]}")
 
-        every { animalRepositoryMock.get(id) }.returns(expectedAnimalDTO)
+        every { animalDTOValidator.validate(modifiedAnimalDTORequest) } throws ValidationException(hashMapOf("specie: null" to mutableListOf("please fill with a valid specie: cat or dog")))
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO=animalService.update(id,modifiedAnimalDTO)
-
-        //then
-        assertEquals(modifiedAnimalDTO, animalDTO)
+        animalService.update(id,modifiedAnimalDTORequest)
     }
 
     //DELETE METHODS

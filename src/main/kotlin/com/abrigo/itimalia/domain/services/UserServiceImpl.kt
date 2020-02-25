@@ -1,20 +1,35 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.Roles
-import com.abrigo.itimalia.domain.entities.user.NewUser
+import com.abrigo.itimalia.domain.entities.user.NewUserRequest
+import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.exceptions.*
+import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.toNewUser
+import com.abrigo.itimalia.domain.entities.user.toUserDTO
+import com.abrigo.itimalia.domain.entities.user.toUserLogin
+import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
+import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
+import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
+import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
+import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.UserLoginValidation
-import com.abrigo.itimalia.domain.validation.UserValidation
+import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.core.security.Role
 import org.joda.time.DateTime
 
-class UserServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):UserService{
-    override fun update(id: Int, userDTO: UserDTO, role: Role, email:String): UserDTO {
+class UserServiceImpl(
+    private val userRepository: UserRepository,
+    private val jwtUtils: JWTUtils,
+    private val validatorNewUser: Validator<NewUserRequest>,
+    private val validatorUserDTO: Validator<UserDTORequest>,
+    private val validatorUserLogin: Validator<UserLoginRequest>):UserService{
+
+    override fun update(id: Int, userDTORequest: UserDTORequest, role: Role, email:String): UserDTO {
+        validatorUserDTO.validate(userDTORequest)
         val userToBeModified = userRepository.get(id)
+        val userDTO = userDTORequest.toUserDTO()
         try{
             val user = userRepository.findByEmail(userDTO.email)
             //if found an email in another user, cannot update the email to other that exists
@@ -55,8 +70,9 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
 
     }
 
-    override fun login(newUserLogin: UserLogin): UserDTO {
-        UserLoginValidation().validate(newUserLogin)
+    override fun login(userLoginRequest: UserLoginRequest): UserDTO {
+        validatorUserLogin.validate(userLoginRequest)
+        val newUserLogin = userLoginRequest.toUserLogin()
         val user = userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
         val token = jwtUtils.sign(user.email, user.role, 5)
         val loggedUser = user.copy(token = token)
@@ -64,7 +80,9 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
         return userRepository.get(loggedUser.id!!)
     }
 
-    override fun add(newUser: NewUser): UserDTO {
+    override fun add(newUserRequest: NewUserRequest): UserDTO {
+        validatorNewUser.validate(newUserRequest)
+        val newUser = newUserRequest.toNewUser()
         try{
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
@@ -84,7 +102,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
                 actualDate,
                 jwtUtils.sign(newUser.email, Roles.USER, 5)
             )
-            UserValidation().validate(newUserDTO)
             return userRepository.add(newUserDTO)
         }
 
@@ -93,7 +110,7 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
     override fun delete(id:Int, role:Role, email:String){
         val userToBeDeleted=userRepository.get(id)
 
-        if(role==Roles.ADMIN) {
+        if(role== Roles.ADMIN) {
             return userRepository.delete(id)
         }
         if(userToBeDeleted.email == email){
@@ -125,8 +142,6 @@ class UserServiceImpl(private val userRepository: UserRepository, private val jw
             actualDate,
             jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5)
         )
-
-        UserValidation().validate(newUserDTO)
         return userRepository.update(id, modifiedUserDTO)
     }
 
