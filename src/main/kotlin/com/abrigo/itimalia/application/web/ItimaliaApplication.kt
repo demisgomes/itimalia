@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.application.web
 
 import com.abrigo.itimalia.application.config.DatabaseConfig
+import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.application.config.RouteConfig
 import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import com.abrigo.itimalia.application.web.swagger.SwaggerConfig
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.BadRequestResponse
 import io.javalin.plugin.json.JavalinJackson
+import org.apache.logging.log4j.LogManager
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.StandAloneContext
 import org.koin.standalone.inject
@@ -23,8 +25,12 @@ import org.koin.standalone.inject
 class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
     private val jwtAccessManager: JWTAccessManager by inject()
-    private val objectMapper:ObjectMapper by inject()
-    private val errorHandler:ErrorHandler by inject()
+    private val objectMapper: ObjectMapper by inject()
+    private val errorHandler: ErrorHandler by inject()
+
+    companion object {
+        private val logger = LogManager.getLogger()
+    }
 
     fun startServer() {
 
@@ -44,31 +50,33 @@ class ItimaliaApplication : KoinComponent {
                 SwaggerConfig.registerPlugin(config)
                 config.accessManager(jwtAccessManager)
             }
-            .exception(ApiException::class.java){ exception, ctx ->
+            .exception(ApiException::class.java) { exception, ctx ->
                 errorHandler.handleApiException(exception, ctx)
             }
-            .exception(Exception::class.java){ exception, ctx ->
+            .exception(Exception::class.java) { exception, ctx ->
                 errorHandler.handleGenericException(exception, ctx)
             }
-            .exception(BadRequestResponse::class.java){ exception, ctx ->
+            .exception(BadRequestResponse::class.java) { exception, ctx ->
                 errorHandler.handleBadRequestResponse(exception, ctx)
             }
-            .exception(IllegalArgumentException::class.java){ exception, ctx ->
+            .exception(IllegalArgumentException::class.java) { exception, ctx ->
                 errorHandler.handleIllegalArgumentException(exception, ctx)
             }
             .start(getHerokuAssignedPort())
 
         JavalinJackson.configure(objectMapper)
         routeConfig.register(app)
+        logger.info("Connecting to DB")
         initDB()
+        logger.info("Connected with DB successfully")
+
     }
 }
 
 fun main() {
-    try{
+    try {
         ItimaliaApplication().startServer()
-    }
-    catch (exception:Exception){
+    } catch (exception: Exception) {
         exception.printStackTrace()
     }
 }
@@ -80,7 +88,11 @@ private fun getHerokuAssignedPort(): Int {
     } else 7000
 }
 
-private fun initDB(){
-    DatabaseConfig.connect( "jdbc:h2:mem:test;MODE=MySQL;", "sa", "")
+private fun initDB() {
+    DatabaseConfig.connect(
+        EnvironmentConfig.jdbcUrl(),
+        EnvironmentConfig.databaseUsername(),
+        EnvironmentConfig.databasePassword()
+    )
     DatabaseConfig.createTables()
 }
