@@ -35,6 +35,9 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.6"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4.1"
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.9.8'
+    
+    //log
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
 
     // Koin
     compile 'org.koin:koin-core:1.0.2'
@@ -53,6 +56,10 @@ dependencies {
 
     //Exposed
     compile group: 'org.jetbrains.exposed', name: 'exposed', version: '0.16.1'
+
+    //postgres
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
+
 
     // H2
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
