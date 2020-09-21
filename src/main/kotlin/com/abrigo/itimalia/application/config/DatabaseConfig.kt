@@ -53,11 +53,11 @@ object DatabaseConfig{
                 token = "initial token"
             )
 
-            var resultRow: ResultRow? = null;
+            var resultRow: ResultRow? = null
 
             try{
                 resultRow = UserMap.select{
-                    UserMap.id eq 1
+                    UserMap.email eq "admin@itimalia.org"
                 }.first()
 
             }catch (exception: NoSuchElementException){

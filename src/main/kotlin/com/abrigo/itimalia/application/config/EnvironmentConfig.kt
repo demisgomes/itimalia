@@ -7,15 +7,14 @@ object EnvironmentConfig {
     }
 
     private fun getenv(env: String, defaultValue: String): String {
-        return if (System.getenv(env) != null) System.getenv(env)
-        else defaultValue
+        return System.getenv(env) ?: defaultValue
     }
 
-    fun databaseUsername() : String{
+    fun databaseUsername(): String {
         return getenv("DATABASE_USERNAME", "sa")
     }
 
-    fun databasePassword() : String{
+    fun databasePassword(): String {
         return getenv("DATABASE_PASSWORD", "")
     }
 }
