@@ -1,6 +1,8 @@
 package com.abrigo.itimalia.domain.repositories
 
 import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
+import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
@@ -15,7 +17,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
-class AnimalRepositoryImpl:AnimalRepository{
+class AnimalRepositoryImpl : AnimalRepository {
     override fun getAll(): List<AnimalDTO> {
         return transaction {
             (AnimalMap).selectAll().map { resultRow ->
@@ -25,14 +27,13 @@ class AnimalRepositoryImpl:AnimalRepository{
     }
 
     override fun get(id: Int): AnimalDTO {
-        try{
+        try {
             return transaction {
-                (AnimalMap).select{ AnimalMap.id eq id }.map { resultRow ->
+                (AnimalMap).select { AnimalMap.id eq id }.map { resultRow ->
                     buildAnimalDTO(resultRow)
                 }.first()
             }
-        }
-        catch (exception:NoSuchElementException){
+        } catch (exception: NoSuchElementException) {
             throw AnimalNotFoundException()
         }
     }
@@ -47,19 +48,23 @@ class AnimalRepositoryImpl:AnimalRepository{
             creationDate = resultRow[AnimalMap.creationDate],
             modificationDate = resultRow[AnimalMap.modificationDate],
             description = resultRow[AnimalMap.description],
-            status = AnimalStatus.valueOf(resultRow[AnimalMap.status])
+            status = AnimalStatus.valueOf(resultRow[AnimalMap.status]),
+            deficiencies = emptyList(),
+            sex = resultRow[AnimalMap.sex].let { AnimalSex.valueOf(resultRow[AnimalMap.sex]) },
+            size = resultRow[AnimalMap.size].let { AnimalSize.valueOf(resultRow[AnimalMap.size]) },
+            castrated = resultRow[AnimalMap.castrated],
+            createdById = resultRow[AnimalMap.createdById]
         )
     }
 
     private fun getByCreationDate(creationDate: DateTime): AnimalDTO {
-        try{
+        try {
             return transaction {
-                (AnimalMap).select{ AnimalMap.creationDate eq creationDate }.map { resultRow ->
+                (AnimalMap).select { AnimalMap.creationDate eq creationDate }.map { resultRow ->
                     buildAnimalDTO(resultRow)
                 }.first()
             }
-        }
-        catch (exception:NoSuchElementException){
+        } catch (exception: NoSuchElementException) {
             throw AnimalNotFoundException()
         }
     }
@@ -75,6 +80,10 @@ class AnimalRepositoryImpl:AnimalRepository{
                 it[creationDate] = newAnimal.creationDate
                 it[modificationDate] = newAnimal.modificationDate
                 it[status] = newAnimal.status.toString()
+                it[sex] = newAnimal.sex.toString()
+                it[size] = newAnimal.size.toString()
+                it[castrated] = newAnimal.castrated
+                it[createdById] = newAnimal.createdById
 
             }
             commit()
@@ -85,13 +94,13 @@ class AnimalRepositoryImpl:AnimalRepository{
     override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
         val result = transaction {
             (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
-                resultRow[AnimalMap.name] = animalDTO.name
-                resultRow[AnimalMap.age] = animalDTO.age
-                resultRow[AnimalMap.timeUnit] = animalDTO.timeUnit?.toString()
-                resultRow[AnimalMap.specie] = animalDTO.specie?.toString()
-                resultRow[AnimalMap.modificationDate] = DateTime.now()
-                resultRow[AnimalMap.description] = animalDTO.description
-                resultRow[AnimalMap.status] = animalDTO.status.toString()
+                resultRow[name] = animalDTO.name
+                resultRow[age] = animalDTO.age
+                resultRow[timeUnit] = animalDTO.timeUnit?.toString()
+                resultRow[specie] = animalDTO.specie?.toString()
+                resultRow[modificationDate] = DateTime.now()
+                resultRow[description] = animalDTO.description
+                resultRow[status] = animalDTO.status.toString()
             }
         }
         result.let { res ->
