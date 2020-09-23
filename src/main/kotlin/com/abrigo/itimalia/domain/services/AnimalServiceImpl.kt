@@ -44,22 +44,6 @@ class AnimalServiceImpl(
             animalToBeAdopted.status == AnimalStatus.AVAILABLE -> {
                 val animalAdopted =
                     animalToBeAdopted.copy(modificationDate = DateTime.now(), status = AnimalStatus.ADOPTED)
-//                val animalAdopted= AnimalDTO(
-//                    animalToBeAdopted.id,
-//                    animalToBeAdopted.name,
-//                    animalToBeAdopted.age,
-//                    animalToBeAdopted.timeUnit,
-//                    animalToBeAdopted.specie,
-//                    animalToBeAdopted.description,
-//                    animalToBeAdopted.creationDate,
-//                    DateTime.now(),
-//                    AnimalStatus.ADOPTED,
-//                    animalToBeAdopted.deficiencies,
-//                    animalToBeAdopted.sex,
-//                    animalToBeAdopted.size,
-//                    animalToBeAdopted.castrated,
-//                    animalToBeAdopted.createdById
-//                )
                 return animalRepository.update(id, animalAdopted)
             }
             animalToBeAdopted.status == AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
