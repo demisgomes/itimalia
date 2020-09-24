@@ -95,7 +95,7 @@ class AnimalRepositoryImpl : AnimalRepository {
     override fun add(newAnimal: AnimalDTO): AnimalDTO {
         transaction {
 
-            val idsAnimalDeficiencies = getDeficienciesId(newAnimal)
+            val idsAnimalDeficiencies = getDeficienciesId(newAnimal.deficiencies)
 
             val idAnimal = insertAndGetId(newAnimal)
 
@@ -117,9 +117,9 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    private fun getDeficienciesId(newAnimal: AnimalDTO): List<EntityID<Int>> {
+    private fun getDeficienciesId(deficiencies: List<AnimalDeficiency>): List<EntityID<Int>> {
         return (AnimalDeficiencyMap).select {
-            AnimalDeficiencyMap.name inList newAnimal.deficiencies.map { animalDeficiency -> animalDeficiency.name }
+            AnimalDeficiencyMap.name inList deficiencies.map { animalDeficiency -> animalDeficiency.name }
         }.map { resultRow ->
             resultRow[AnimalDeficiencyMap.id]
         }
@@ -144,6 +144,10 @@ class AnimalRepositoryImpl : AnimalRepository {
 
     override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
         val result = transaction {
+            removeAnimalToDeficiency(id)
+            val idsAnimalDeficiencies = getDeficienciesId(animalDTO.deficiencies)
+            addAnimalToDeficiencyMap(idsAnimalDeficiencies, EntityID(id, AnimalMap))
+
             (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
                 resultRow[name] = animalDTO.name
                 resultRow[age] = animalDTO.age
@@ -152,6 +156,10 @@ class AnimalRepositoryImpl : AnimalRepository {
                 resultRow[modificationDate] = DateTime.now()
                 resultRow[description] = animalDTO.description
                 resultRow[status] = animalDTO.status.toString()
+                resultRow[sex] = animalDTO.sex.toString()
+                resultRow[size] = animalDTO.size.toString()
+                resultRow[castrated] = animalDTO.castrated
+                resultRow[createdById] = animalDTO.createdById
             }
         }
         result.let { res ->
@@ -162,8 +170,15 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
+    private fun removeAnimalToDeficiency(id: Int) {
+        AnimalToAnimalDeficiencyMap.deleteWhere {
+            AnimalToAnimalDeficiencyMap.animalId eq id
+        }
+    }
+
     override fun delete(id: Int) {
         val result = transaction {
+            removeAnimalToDeficiency(id)
             AnimalMap.deleteWhere { AnimalMap.id eq id }
         }
 

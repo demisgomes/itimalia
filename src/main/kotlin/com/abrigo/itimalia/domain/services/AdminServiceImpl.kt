@@ -10,18 +10,17 @@ import com.abrigo.itimalia.domain.jwt.JWTUtils
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import org.joda.time.DateTime
 
-class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils):AdminService{
+class AdminServiceImpl(private val userRepository: UserRepository, private val jwtUtils: JWTUtils) : AdminService {
     override fun add(newUser: NewUser, role: Roles): UserDTO {
-        if(role!= Roles.ADMIN){
+        if (role != Roles.ADMIN) {
             throw UnauthorizedAdminRoleException()
         }
-        try{
+        try {
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
-        }
-        catch (exception: UserNotFoundException){
+        } catch (exception: UserNotFoundException) {
             val actualDate = DateTime.now()
-            val newUserDTO= UserDTO(
+            val newUserDTO = UserDTO(
                 null,
                 newUser.email,
                 newUser.password,
