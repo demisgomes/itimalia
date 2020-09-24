@@ -11,10 +11,10 @@ object EnvironmentConfig {
     }
 
     fun databaseUsername(): String {
-        return getenv("DATABASE_USERNAME", "zhprkfrmzwkuzg")
+        return getenv("DATABASE_USERNAME", "sa")
     }
 
     fun databasePassword(): String {
-        return getenv("DATABASE_PASSWORD", "a8d4f5c48841b91202a095682df15124f979e9a20599e036a31c2d06636669ca")
+        return getenv("DATABASE_PASSWORD", "")
     }
 }

@@ -1,0 +1,1 @@
+INSERT INTO users (birth_date, creation_date, email, gender, modification_date, "name", "password", phone, "role", token) VALUES ('2020-09-24 19:05:18.487000', '2020-09-24 19:05:18.511000', 'admin@itimalia.org', 'NOT_DECLARED', '2020-09-24 19:05:18.511000', 'Admin', 'admin', '8199999999', 'ADMIN', 'initial token')

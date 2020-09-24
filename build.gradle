@@ -7,6 +7,9 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
+plugins {
+    id "org.flywaydb.flyway" version "6.5.7"
+}
 group 'com.abrigo'
 version '1.0-SNAPSHOT'
 apply plugin : 'kotlin'
@@ -61,6 +64,10 @@ dependencies {
 
     //postgres
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
+
+    //flyway
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
+
 
 
     // H2
