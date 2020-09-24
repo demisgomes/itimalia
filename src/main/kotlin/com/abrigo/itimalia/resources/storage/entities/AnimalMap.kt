@@ -1,10 +1,11 @@
 package com.abrigo.itimalia.resources.storage.entities
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.jodatime.datetime
 
 const val VARCHAR_LENGTH = 255
 
-object AnimalMap : Table("animals") {
-    val id = integer("id").autoIncrement().primaryKey()
+object AnimalMap : IntIdTable("animals") {
+    //val id = integer("id").autoIncrement().primaryKey()
     val name = varchar("name", VARCHAR_LENGTH)
     val age = integer("age").nullable()
     val timeUnit = varchar("time_unit", VARCHAR_LENGTH).nullable()

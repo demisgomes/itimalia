@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.domain.repositories
 
 import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
@@ -12,6 +13,7 @@ import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 class AnimalRepositoryTest{
     private lateinit var expectedAnimalDTO: AnimalDTO
@@ -48,6 +50,33 @@ class AnimalRepositoryTest{
 
         //then
         assertEquals(expectedAnimalDTO, animalDTO)
+    }
+
+    @Test
+    fun `when adds an animal in database with deficiency PARTIAL_BLIDNESS, return it with PARTIAL_BLINDESS deficiency`(){
+        //given expectedAnimalDTO
+        val animalWithTwoDeficiencies = expectedAnimalDTO.copy(deficiencies = listOf(AnimalDeficiency.PARTIAL_BLINDNESS))
+
+        //when
+        val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
+
+        //then
+        assertEquals(animalWithTwoDeficiencies, animalDTO)
+        assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.PARTIAL_BLINDNESS))
+    }
+
+    @Test
+    fun `when adds an animal in database with two deficiencies, return it with these two deficiencies`(){
+        //given expectedAnimalDTO
+        val animalWithTwoDeficiencies = expectedAnimalDTO.copy(deficiencies = listOf(AnimalDeficiency.DEAFNESS, AnimalDeficiency.PARALYSIS))
+
+        //when
+        val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
+
+        //then
+        assertEquals(animalWithTwoDeficiencies, animalDTO)
+        assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.DEAFNESS))
+        assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.PARALYSIS))
     }
 
     @Test

@@ -107,7 +107,7 @@ class UserRepositoryImpl:UserRepository{
 
     private fun buildUserDTO(resultRow: ResultRow): UserDTO {
         return UserDTO(
-            resultRow[UserMap.id],
+            resultRow[UserMap.id].value,
             resultRow[UserMap.email],
             resultRow[UserMap.password],
             resultRow[UserMap.birthDate],
