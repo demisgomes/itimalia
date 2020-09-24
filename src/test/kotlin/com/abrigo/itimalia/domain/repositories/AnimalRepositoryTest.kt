@@ -6,9 +6,6 @@ import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
-import com.abrigo.itimalia.resources.storage.entities.AnimalDeficiencyMap
-import com.abrigo.itimalia.resources.storage.entities.AnimalToAnimalDeficiencyMap
-import org.jetbrains.exposed.sql.select
 import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
