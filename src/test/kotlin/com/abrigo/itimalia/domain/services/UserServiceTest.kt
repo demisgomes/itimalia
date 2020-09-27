@@ -55,6 +55,8 @@ class UserServiceTest{
     private lateinit var validatorUserDTO: Validator<UserDTORequest>
     private lateinit var validatorUserLogin: Validator<UserLoginRequest>
 
+    private val defaultToken = "default_token"
+
     @get:Rule
     val expectedEx = ExpectedException.none()
 
@@ -301,42 +303,6 @@ class UserServiceTest{
         //then return exception
     }
 
-//    @Test
-//    fun `when a user without admin permissions with invalid gender tries sign in, expect ValidationException with fields gender = invalid gender`(){
-//        val newUser = NewUser(
-//            "newUser@com.abrigo.itimalia.domain.com",
-//            "password",
-//            birthDate,
-//            null,
-//            "New User",
-//            "81823183183"
-//        )
-//
-//        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
-//
-//        expectedEx.expect(ValidationException::class.java)
-//        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {gender=[invalid gender]}")
-//
-//        userService.add(newUser)
-//    }
-
-//    @Test
-//    fun `when a user without admin permissions with invalid birth date tries sign in, expect ValidationException with fields birthdate = invalid birthDate`(){
-//        val newUser = NewUser(
-//            "newUser@com.abrigo.itimalia.domain.com",
-//            "password",
-//            null,
-//            Gender.MALE,
-//            "New User",
-//            "81823183183"
-//        )
-//        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
-//
-//        expectedEx.expect(ValidationException::class.java)
-//        expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {birthDate=[invalid birthDate]}")
-//        userService.add(newUser)
-//    }
-
     @Test
     fun `when a user with valid id was requested, return it`(){
         val expectedUserDTO = UserFactory.sampleDTO(id = 56415)
@@ -425,6 +391,24 @@ class UserServiceTest{
         every { userRepositoryMock.get(1) }.returns(expectedUserDTO)
 
         userService.delete(1, expectedUserDTO.role, expectedUserDTO.email+"A")
+    }
+
+    @Test
+    fun `when an user has a token stored in database, should return their id when called getIdByToken metehod`(){
+        every { userRepositoryMock.getIdByToken(defaultToken) } returns 1
+
+        val id = userService.getIdByToken(defaultToken)
+
+        assertEquals(1, id)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when an user has not a token stored in database, should expect user not found exception when called getIdByToken metehod`(){
+        every { userRepositoryMock.getIdByToken(defaultToken) } throws  UserNotFoundException()
+
+        userService.getIdByToken(defaultToken)
+
+        //expect exception
     }
 
 }

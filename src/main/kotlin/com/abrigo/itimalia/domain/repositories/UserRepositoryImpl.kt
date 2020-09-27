@@ -16,6 +16,19 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class UserRepositoryImpl:UserRepository{
+    override fun getIdByToken(token: String): Int {
+        try{
+            return transaction {
+                UserMap.slice(UserMap.id).select { UserMap.token eq token }.map { resultRow ->
+                    resultRow[UserMap.id].value
+                }.first()
+            }
+        }
+        catch (exception:NoSuchElementException){
+            throw UserNotFoundException()
+        }
+    }
+
     override fun findByEmail(email: String): UserDTO {
         try{
             return transaction {
@@ -46,16 +59,16 @@ class UserRepositoryImpl:UserRepository{
     override fun add(userDTO: UserDTO): UserDTO {
         transaction {
             UserMap.insert {
-                it[UserMap.name] = userDTO.name
-                it[UserMap.birthDate] = userDTO.birthDate
-                it[UserMap.creationDate] = userDTO.creationDate
-                it[UserMap.email] = userDTO.email
-                it[UserMap.gender] = userDTO.gender.toString()
-                it[UserMap.password] = userDTO.password
-                it[UserMap.modificationDate] = userDTO.modificationDate
-                it[UserMap.phone] = userDTO.phone
-                it[UserMap.token] = userDTO.token!!
-                it[UserMap.role] = userDTO.role.toString()
+                it[name] = userDTO.name
+                it[birthDate] = userDTO.birthDate
+                it[creationDate] = userDTO.creationDate
+                it[email] = userDTO.email
+                it[gender] = userDTO.gender.toString()
+                it[password] = userDTO.password
+                it[modificationDate] = userDTO.modificationDate
+                it[phone] = userDTO.phone
+                it[token] = userDTO.token!!
+                it[role] = userDTO.role.toString()
             }
         }
         return findByEmail(userDTO.email)
@@ -64,15 +77,15 @@ class UserRepositoryImpl:UserRepository{
     override fun update(id: Int, userDTO: UserDTO): UserDTO {
         val result = transaction {
                 (UserMap).update({ UserMap.id eq id }) {
-                    it[UserMap.name] = userDTO.name
-                    it[UserMap.birthDate] = userDTO.birthDate
-                    it[UserMap.email] = userDTO.email
-                    it[UserMap.gender] = userDTO.gender.toString()
-                    it[UserMap.password] = userDTO.password
-                    it[UserMap.modificationDate] = DateTime.now()
-                    it[UserMap.phone] = userDTO.phone
-                    it[UserMap.token] = userDTO.token!!
-                    it[UserMap.role] = userDTO.role.toString()
+                    it[name] = userDTO.name
+                    it[birthDate] = userDTO.birthDate
+                    it[email] = userDTO.email
+                    it[gender] = userDTO.gender.toString()
+                    it[password] = userDTO.password
+                    it[modificationDate] = DateTime.now()
+                    it[phone] = userDTO.phone
+                    it[token] = userDTO.token!!
+                    it[role] = userDTO.role.toString()
                 }
             }
 

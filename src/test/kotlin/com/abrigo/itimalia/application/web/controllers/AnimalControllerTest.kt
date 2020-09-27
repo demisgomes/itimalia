@@ -24,6 +24,8 @@ class AnimalControllerTest {
     private lateinit var newAnimalRequest: NewAnimalRequest
     private lateinit var expectedAnimalDTO: AnimalDTO
 
+    private val defaultToken = "Bearer defaultToken"
+
     @Before
     fun setup() {
         animalServiceMock = mockk(relaxed = true)
@@ -32,6 +34,9 @@ class AnimalControllerTest {
 
         newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
+
+        every { contextMock.header("Authorization") } returns defaultToken
+
     }
 
     @Test
@@ -40,7 +45,7 @@ class AnimalControllerTest {
 
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalRequest)
-        every { animalServiceMock.add(newAnimalRequest) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.add(newAnimalRequest, any()) }.returns(expectedAnimalDTO)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then
@@ -59,7 +64,7 @@ class AnimalControllerTest {
         )
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalWithNullAge)
-        every { animalServiceMock.add(newAnimalWithNullAge) }.returns(expectedAnimalWithNullAgeAndTimeUnitDTO)
+        every { animalServiceMock.add(newAnimalWithNullAge, any()) }.returns(expectedAnimalWithNullAgeAndTimeUnitDTO)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then
@@ -78,7 +83,7 @@ class AnimalControllerTest {
         )
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalWithNullTimeUnit)
-        every { animalServiceMock.add(newAnimalWithNullTimeUnit) }.returns(expectedAnimalWithTimeUnitInYears)
+        every { animalServiceMock.add(newAnimalWithNullTimeUnit, any()) }.returns(expectedAnimalWithTimeUnitInYears)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then

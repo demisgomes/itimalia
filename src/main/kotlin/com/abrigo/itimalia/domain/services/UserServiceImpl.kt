@@ -24,23 +24,26 @@ class UserServiceImpl(
     private val jwtUtils: JWTUtils,
     private val validatorNewUser: Validator<NewUserRequest>,
     private val validatorUserDTO: Validator<UserDTORequest>,
-    private val validatorUserLogin: Validator<UserLoginRequest>):UserService{
+    private val validatorUserLogin: Validator<UserLoginRequest>
+) : UserService {
 
-    override fun update(id: Int, userDTORequest: UserDTORequest, role: Role, email:String): UserDTO {
+    override fun getIdByToken(token: String): Int {
+        return userRepository.getIdByToken(token)
+    }
+
+    override fun update(id: Int, userDTORequest: UserDTORequest, role: Role, email: String): UserDTO {
         validatorUserDTO.validate(userDTORequest)
         val userToBeModified = userRepository.get(id)
         val userDTO = userDTORequest.toUserDTO()
-        try{
+        try {
             val user = userRepository.findByEmail(userDTO.email)
             //if found an email in another user, cannot update the email to other that exists
-            if(user.id != id){
+            if (user.id != id) {
                 throw EmailAlreadyExistsException()
-            }
-            else{
+            } else {
                 throw UserNotFoundException()
             }
-        }
-        catch (exception:UserNotFoundException){
+        } catch (exception: UserNotFoundException) {
             val newUserDTO = UserDTO(
                 userToBeModified.id,
                 userDTO.email,
@@ -73,7 +76,7 @@ class UserServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): UserDTO {
         validatorUserLogin.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
-        val user = userRepository.findByCredentials(newUserLogin.email,newUserLogin.password)
+        val user = userRepository.findByCredentials(newUserLogin.email, newUserLogin.password)
         val token = jwtUtils.sign(user.email, user.role, 5)
         val loggedUser = user.copy(token = token)
         userRepository.update(loggedUser.id!!, loggedUser)
@@ -83,13 +86,12 @@ class UserServiceImpl(
     override fun add(newUserRequest: NewUserRequest): UserDTO {
         validatorNewUser.validate(newUserRequest)
         val newUser = newUserRequest.toNewUser()
-        try{
+        try {
             userRepository.findByEmail(newUser.email)
             throw EmailAlreadyExistsException()
-        }
-        catch (exception:UserNotFoundException){
-            val actualDate= DateTime.now()
-            val newUserDTO= UserDTO(
+        } catch (exception: UserNotFoundException) {
+            val actualDate = DateTime.now()
+            val newUserDTO = UserDTO(
                 null,
                 newUser.email,
                 newUser.password,
@@ -107,13 +109,13 @@ class UserServiceImpl(
 
     }
 
-    override fun delete(id:Int, role:Role, email:String){
-        val userToBeDeleted=userRepository.get(id)
+    override fun delete(id: Int, role: Role, email: String) {
+        val userToBeDeleted = userRepository.get(id)
 
-        if(role== Roles.ADMIN) {
+        if (role == Roles.ADMIN) {
             return userRepository.delete(id)
         }
-        if(userToBeDeleted.email == email){
+        if (userToBeDeleted.email == email) {
             return userRepository.delete(id)
         }
         throw UnauthorizedDifferentUserChangeException()
@@ -123,13 +125,13 @@ class UserServiceImpl(
         return userRepository.get(id)
     }
 
-    private fun updateCall(newUserDTO: UserDTO, userToBeModified: UserDTO, id:Int): UserDTO {
-        if(newUserDTO == userToBeModified){
+    private fun updateCall(newUserDTO: UserDTO, userToBeModified: UserDTO, id: Int): UserDTO {
+        if (newUserDTO == userToBeModified) {
             throw UnmodifiedUserException()
         }
 
-        val actualDate=DateTime.now()
-        val modifiedUserDTO= UserDTO(
+        val actualDate = DateTime.now()
+        val modifiedUserDTO = UserDTO(
             userToBeModified.id,
             newUserDTO.email,
             newUserDTO.password,

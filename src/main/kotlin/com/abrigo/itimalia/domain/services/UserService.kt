@@ -12,4 +12,5 @@ interface UserService{
     fun delete(id:Int, role: Role, email:String)
     fun login(userLoginRequest: UserLoginRequest): UserDTO
     fun update(id: Int, userDTORequest: UserDTORequest, role: Role, email:String): UserDTO
+    fun getIdByToken(token: String) : Int
 }
