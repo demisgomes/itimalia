@@ -7,6 +7,9 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
+plugins {
+    id "org.flywaydb.flyway" version "6.5.7"
+}
 group 'com.abrigo'
 version '1.0-SNAPSHOT'
 apply plugin : 'kotlin'
@@ -55,10 +58,16 @@ dependencies {
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
 
     //Exposed
-    compile group: 'org.jetbrains.exposed', name: 'exposed', version: '0.16.1'
+    compile group: 'org.jetbrains.exposed', name: 'exposed-core', version: '0.27.1'
+    compile group: 'org.jetbrains.exposed', name: 'exposed-jodatime', version: '0.27.1'
+    compile group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: '0.27.1'
 
     //postgres
     compile group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
+
+    //flyway
+    compile group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
+
 
 
     // H2

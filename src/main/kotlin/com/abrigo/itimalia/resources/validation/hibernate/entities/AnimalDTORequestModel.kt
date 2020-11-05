@@ -1,5 +1,8 @@
 package com.abrigo.itimalia.resources.validation.hibernate.entities
 
+import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
+import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
@@ -22,5 +25,14 @@ data class AnimalDTORequestModel(
     val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val modificationDate: DateTime?,
-    val status: AnimalStatus?
+    @field:NotNull(message = "please fill with a status: gone, dead, adopted, or available")
+    val status: AnimalStatus?,
+    val deficiencies: List<AnimalDeficiency>?,
+    @field:NotNull(message = "please fill with a sex: male or female")
+    val sex: AnimalSex?,
+    @field:NotNull(message = "please fill with a size: tiny, small, medium, or large")
+    val size: AnimalSize?,
+    @field:NotNull(message = "please fill castrated with true or false")
+    val castrated: Boolean?,
+    val createdById: Int
 )

@@ -14,5 +14,10 @@ data class AnimalDTO(
     val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val modificationDate: DateTime?,
-    val status: AnimalStatus
+    val status: AnimalStatus,
+    val deficiencies: List<AnimalDeficiency>,
+    val sex: AnimalSex,
+    val size: AnimalSize,
+    val castrated: Boolean,
+    val createdById: Int
 )

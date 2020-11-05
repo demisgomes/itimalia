@@ -22,12 +22,11 @@ class JWTAccessManager(
     override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<Role>) {
         //if token has been expired and this handler requires admin or user permissions, return invalid token exception
         //add and find does not requires token (Roles.ANYONE)
-        if(!verifyDate(ctx) && !permittedRoles.contains(defaultRole)){
-            if(ctx.matchedPath() == "/swagger"){
+        if (!verifyDate(ctx) && !permittedRoles.contains(defaultRole)) {
+            if (ctx.matchedPath() == "/swagger") {
                 handler.handle(ctx)
                 return
-            }
-            else{
+            } else {
                 ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
                 return
             }
@@ -38,11 +37,12 @@ class JWTAccessManager(
         if (permittedRoles.contains(role)) {
             handler.handle(ctx)
         } else {
-            if(permittedRoles.contains(Roles.ADMIN)){
-                ctx.json(UnauthorizedAdminRoleException().createErrorResponse()).status(UnauthorizedAdminRoleException().httpStatus())
-            }
-            else{
-                ctx.json(UnauthorizedUserRoleException().createErrorResponse()).status(UnauthorizedUserRoleException().httpStatus())
+            if (permittedRoles.contains(Roles.ADMIN)) {
+                ctx.json(UnauthorizedAdminRoleException().createErrorResponse())
+                    .status(UnauthorizedAdminRoleException().httpStatus())
+            } else {
+                ctx.json(UnauthorizedUserRoleException().createErrorResponse())
+                    .status(UnauthorizedUserRoleException().httpStatus())
             }
         }
 
@@ -50,35 +50,35 @@ class JWTAccessManager(
 
     fun extractRole(context: Context): Roles {
         val string = getTokenFromHeader(context)
-        if(string== Optional.empty<String>()){
+        if (string == Optional.empty<String>()) {
             return defaultRole
         }
 
-        val decodedJWT=JWT.decode(string.get())
+        val decodedJWT = JWT.decode(string.get())
 
         val userLevel = decodedJWT.getClaim(userRoleClaim).asString().toLowerCase()
 
         return Optional.ofNullable(rolesMapping[userLevel]).orElse(defaultRole)
     }
 
-    fun verifyDate(context:Context):Boolean {
+    private fun verifyDate(context: Context): Boolean {
         val string = getTokenFromHeader(context)
         if (string == Optional.empty<String>()) {
             return false
         }
 
-        val decodedJWT=JWT.decode(string.get())
+        val decodedJWT = JWT.decode(string.get())
 
         return decodedJWT.expiresAt.after(Date(Calendar.getInstance().timeInMillis))
     }
 
-    fun extractEmail(context: Context):String{
+    fun extractEmail(context: Context): String {
         val string = getTokenFromHeader(context)
         if (string == Optional.empty<String>()) {
             return ""
         }
 
-        val decodedJWT=JWT.decode(string.get())
+        val decodedJWT = JWT.decode(string.get())
 
         return decodedJWT.getClaim("email").asString()
     }

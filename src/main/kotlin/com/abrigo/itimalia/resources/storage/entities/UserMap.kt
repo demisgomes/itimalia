@@ -1,9 +1,9 @@
 package com.abrigo.itimalia.resources.storage.entities
 
-import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.jodatime.datetime
 
-object UserMap: Table("users") {
-    val id = integer("id").autoIncrement().primaryKey()
+object UserMap: IntIdTable("users") {
     val email = varchar("email", VARCHAR_LENGTH)
     val password = varchar("password", VARCHAR_LENGTH)
     val birthDate = datetime("birth_date").nullable()
