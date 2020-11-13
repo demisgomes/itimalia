@@ -65,12 +65,8 @@ class JWTServiceImpl : JWTService {
     }
 
     private fun convertToDate(minutes: Int): Date {
-        return Date(convertToLong(minutes))
-    }
-
-    private fun convertToLong(minutes: Int): Long {
         val calendar = Calendar.getInstance()
-        return calendar.timeInMillis + minutes * 60000
+        return Date(calendar.timeInMillis + minutes * 60000)
     }
 
 }
