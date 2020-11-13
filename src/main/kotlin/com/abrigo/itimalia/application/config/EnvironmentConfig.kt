@@ -17,4 +17,16 @@ object EnvironmentConfig {
     fun databasePassword(): String {
         return getenv("DATABASE_PASSWORD", "")
     }
+
+    fun issuer(): String {
+        return getenv("ISSUER", "")
+    }
+
+    fun jwtSecret(): String {
+        return getenv("JWT_SECRET", "")
+    }
+
+    fun jwtExpirationInMinutes(): String {
+        return getenv("JWT_EXPIRATION_MINUTES", "5")
+    }
 }

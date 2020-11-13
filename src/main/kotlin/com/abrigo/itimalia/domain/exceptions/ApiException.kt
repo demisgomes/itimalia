@@ -1,6 +1,6 @@
 package com.abrigo.itimalia.domain.exceptions
 
-abstract class ApiException: Exception{
+abstract class ApiException : Exception {
     constructor(cause: Throwable) : super(cause)
     constructor(message: String) : super(message)
 
@@ -14,6 +14,7 @@ abstract class ApiException: Exception{
         return ErrorResponse(
             apiError(),
             userResponseMessage(),
-            details())
+            details()
+        )
     }
 }

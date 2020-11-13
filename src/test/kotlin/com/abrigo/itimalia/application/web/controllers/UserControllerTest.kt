@@ -8,8 +8,8 @@ import com.abrigo.itimalia.domain.entities.user.UserDTORequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserSearched
-import com.abrigo.itimalia.domain.jwt.JWTAccessManager
-import com.abrigo.itimalia.domain.repositories.factories.UserFactory
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
+import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import io.mockk.every

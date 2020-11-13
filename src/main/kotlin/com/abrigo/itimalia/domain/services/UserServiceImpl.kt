@@ -13,7 +13,7 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeExce
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
 import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
-import com.abrigo.itimalia.domain.jwt.JWTUtils
+import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.domain.validation.Validator
 import io.javalin.core.security.Role
@@ -21,7 +21,7 @@ import org.joda.time.DateTime
 
 class UserServiceImpl(
     private val userRepository: UserRepository,
-    private val jwtUtils: JWTUtils,
+    private val jwtService: JWTService,
     private val validatorNewUser: Validator<NewUserRequest>,
     private val validatorUserDTO: Validator<UserDTORequest>,
     private val validatorUserLogin: Validator<UserLoginRequest>
@@ -77,7 +77,7 @@ class UserServiceImpl(
         validatorUserLogin.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
         val user = userRepository.findByCredentials(newUserLogin.email, newUserLogin.password)
-        val token = jwtUtils.sign(user.email, user.role, 5)
+        val token = jwtService.sign(user.email, user.role)
         val loggedUser = user.copy(token = token)
         userRepository.update(loggedUser.id!!, loggedUser)
         return userRepository.get(loggedUser.id!!)
@@ -102,7 +102,7 @@ class UserServiceImpl(
                 Roles.USER,
                 actualDate,
                 actualDate,
-                jwtUtils.sign(newUser.email, Roles.USER, 5)
+                jwtService.sign(newUser.email, Roles.USER)
             )
             return userRepository.add(newUserDTO)
         }
@@ -142,7 +142,7 @@ class UserServiceImpl(
             newUserDTO.role,
             userToBeModified.creationDate,
             actualDate,
-            jwtUtils.sign(newUserDTO.email, newUserDTO.role, 5)
+            jwtService.sign(newUserDTO.email, newUserDTO.role)
         )
         return userRepository.update(id, modifiedUserDTO)
     }

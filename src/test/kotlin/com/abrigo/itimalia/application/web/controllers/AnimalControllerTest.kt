@@ -5,7 +5,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
-import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
+import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.domain.services.AnimalService
 import io.javalin.http.Context
 import io.mockk.every

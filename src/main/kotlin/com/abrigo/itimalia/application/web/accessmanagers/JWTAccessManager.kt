@@ -1,11 +1,11 @@
-package com.abrigo.itimalia.domain.jwt
+package com.abrigo.itimalia.application.web.accessmanagers
 
 
 import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedUserRoleException
-import com.auth0.jwt.JWT
+import com.abrigo.itimalia.domain.jwt.JWTService
 import io.javalin.core.security.AccessManager
 import io.javalin.core.security.Role
 import io.javalin.http.Context
@@ -14,23 +14,35 @@ import java.util.*
 
 
 class JWTAccessManager(
-    private val userRoleClaim: String,
     private val rolesMapping: Map<String, Roles>,
-    private val defaultRole: Roles
+    private val defaultRole: Roles,
+    private val jwtService: JWTService
 ) : AccessManager {
+
+    companion object{
+        const val ROLE_FIELD = "role"
+        const val EMAIL_FIELD = "email"
+        const val AUTHORIZATION = "Authorization"
+        const val BEARER = "Bearer"
+    }
 
     override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<Role>) {
         //if token has been expired and this handler requires admin or user permissions, return invalid token exception
         //add and find does not requires token (Roles.ANYONE)
-        if (!verifyDate(ctx) && !permittedRoles.contains(defaultRole)) {
-            if (ctx.matchedPath() == "/swagger") {
-                handler.handle(ctx)
-                return
-            } else {
-                ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
-                return
-            }
+
+        if (ctx.matchedPath() == "/swagger") {
+            handler.handle(ctx)
+            return
         }
+//        if (!permittedRoles.contains(defaultRole)) {
+//            if (ctx.matchedPath() == "/swagger") {
+//                handler.handle(ctx)
+//                return
+//            } else {
+//                ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
+//                return
+//            }
+//        }
 
         val role = extractRole(ctx)
 
@@ -49,45 +61,33 @@ class JWTAccessManager(
     }
 
     fun extractRole(context: Context): Roles {
-        val string = getTokenFromHeader(context)
-        if (string == Optional.empty<String>()) {
+        val optToken = getTokenFromHeader(context)
+        if (optToken == Optional.empty<String>()) {
             return defaultRole
         }
 
-        val decodedJWT = JWT.decode(string.get())
-
-        val userLevel = decodedJWT.getClaim(userRoleClaim).asString().toLowerCase()
+        val decodedJWT = jwtService.decode(optToken.get())
+        val userLevel = decodedJWT[ROLE_FIELD]?.toLowerCase()
 
         return Optional.ofNullable(rolesMapping[userLevel]).orElse(defaultRole)
     }
 
-    private fun verifyDate(context: Context): Boolean {
-        val string = getTokenFromHeader(context)
-        if (string == Optional.empty<String>()) {
-            return false
-        }
-
-        val decodedJWT = JWT.decode(string.get())
-
-        return decodedJWT.expiresAt.after(Date(Calendar.getInstance().timeInMillis))
-    }
-
     fun extractEmail(context: Context): String {
-        val string = getTokenFromHeader(context)
-        if (string == Optional.empty<String>()) {
+        val optToken = getTokenFromHeader(context)
+        if (optToken == Optional.empty<String>()) {
             return ""
         }
 
-        val decodedJWT = JWT.decode(string.get())
+        val decodedJWT = jwtService.decode(optToken.get())
 
-        return decodedJWT.getClaim("email").asString()
+        return decodedJWT[EMAIL_FIELD] ?: throw InvalidTokenException()
     }
 
     private fun getTokenFromHeader(context: Context): Optional<String> {
-        return Optional.ofNullable(context.header("Authorization"))
+        return Optional.ofNullable(context.header(AUTHORIZATION))
             .flatMap { header ->
                 val split = header.split(" ")
-                if (split.size != 2 || split[0] != "Bearer") {
+                if (split.size != 2 || split[0] != BEARER) {
                     return@flatMap Optional.empty<String>()
                 }
                 return@flatMap Optional.of(split[1])

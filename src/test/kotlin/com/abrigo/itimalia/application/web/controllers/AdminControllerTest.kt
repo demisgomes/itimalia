@@ -4,8 +4,8 @@ import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.jwt.JWTAccessManager
-import com.abrigo.itimalia.domain.repositories.factories.UserFactory
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
+import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.domain.services.AdminService
 import io.javalin.http.Context
 import io.mockk.every

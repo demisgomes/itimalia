@@ -1,11 +1,12 @@
-package com.abrigo.itimalia.domain.repositories
+package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
-import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
+import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
+import com.abrigo.itimalia.resources.storage.exposed.gateways.AnimalRepositoryImpl
 import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
@@ -15,10 +16,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
-class AnimalRepositoryTest{
+class AnimalRepositoryImplTest{
     private lateinit var expectedAnimalDTO: AnimalDTO
     private lateinit var actualDateTime: DateTime
-    private val animalRepository = AnimalRepositoryImpl() 
+    private val animalRepository = AnimalRepositoryImpl()
 
     @Before
     fun setup(){

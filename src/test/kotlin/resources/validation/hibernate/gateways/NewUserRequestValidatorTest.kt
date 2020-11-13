@@ -1,4 +1,4 @@
-package resources.validation.hibernate
+package resources.validation.hibernate.gateways
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.resources.validation.hibernate.entities.NewUserRequestModel

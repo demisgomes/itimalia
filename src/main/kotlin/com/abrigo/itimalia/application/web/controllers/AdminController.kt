@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.exceptions.InvalidGenderException
-import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.AdminService
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import io.javalin.http.Context

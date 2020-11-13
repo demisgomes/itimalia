@@ -1,9 +1,10 @@
-package com.abrigo.itimalia.domain.repositories
+package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
-import com.abrigo.itimalia.domain.repositories.factories.UserFactory
+import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
+import com.abrigo.itimalia.resources.storage.exposed.gateways.UserRepositoryImpl
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -11,7 +12,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
-class UserRepositoryTest{
+class UserRepositorImplTest{
     lateinit var email:String
     lateinit var password: String
     private val userRepository = UserRepositoryImpl()

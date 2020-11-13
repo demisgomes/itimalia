@@ -13,10 +13,10 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
 import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
-import com.abrigo.itimalia.domain.jwt.JWTUtils
+import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.repositories.factories.UserFactory
 import com.abrigo.itimalia.domain.validation.Validator
+import com.abrigo.itimalia.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -37,7 +37,7 @@ class UserServiceTest{
     private lateinit var expectedUserDTO: UserDTO
     private lateinit var expectedAdminModifiedUserDTO: UserDTO
     private lateinit var birthDate: DateTime
-    private lateinit var jwtUtils: JWTUtils
+    private lateinit var jwtService: JWTService
     private lateinit var actualDateTime: DateTime
     private lateinit var invalidUserLogin: UserLoginRequest
     private lateinit var updatedAdminUserDTO: UserDTO
@@ -93,9 +93,9 @@ class UserServiceTest{
 
         userRepositoryMock= mockk(relaxed = true)
 
-        jwtUtils= mockk(relaxed = true)
+        jwtService= mockk(relaxed = true)
 
-        userService = UserServiceImpl(userRepositoryMock, jwtUtils, validatorNewUser, validatorUserDTO, validatorUserLogin)
+        userService = UserServiceImpl(userRepositoryMock, jwtService, validatorNewUser, validatorUserDTO, validatorUserLogin)
     }
 
 
@@ -106,7 +106,7 @@ class UserServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
-        every { jwtUtils.sign(newUserDTO.email, Roles.USER, 5) }.returns("token_test")
+        every { jwtService.sign(newUserDTO.email, Roles.USER) }.returns("token_test")
 
         every { userRepositoryMock.add(newUserDTO.copy(role = Roles.USER, token = "token_test"))  }.returns(expectedUserDTO)
 
@@ -140,7 +140,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(updatedUserDTO.email, updatedUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.findByEmail(updatedUserDTO.email) }.throws(UserNotFoundException())
@@ -158,7 +158,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(updatedUserDTO.email, updatedUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(updatedUserDTO.email, updatedUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.findByEmail(updatedUserDTO.email) }.returns(expectedUserDTO)
@@ -178,7 +178,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
@@ -197,7 +197,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.findByEmail(updatedAdminUserDTO.email) }.throws(UserNotFoundException())
@@ -216,7 +216,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(updatedAdminUserDTO.email, updatedAdminUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.findByEmail(expectedUserDTO.email) }.throws(UserNotFoundException())
@@ -237,7 +237,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(expectedUserDTO.email, expectedUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(expectedUserDTO.email, expectedUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         every { userRepositoryMock.findByEmail(expectedUserDTO.email) }.throws(UserNotFoundException())
@@ -273,7 +273,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
+        every { jwtService.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedAdminModifiedUserDTO)
         every { userRepositoryMock.findByEmail(updatedAdminUserDTO.email) }.throws(UserNotFoundException())
@@ -291,7 +291,7 @@ class UserServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        //every { jwtUtils.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
+        //every { jwtService.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
 
         every { userRepositoryMock.get(1)}.returns(expectedUserDTO)
         //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
@@ -350,7 +350,7 @@ class UserServiceTest{
 
         //when
         every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.returns(expectedUserDTO)
-        every { jwtUtils.sign(validUserLogin.email!!, Roles.USER, 5) }.returns("token_updated")
+        every { jwtService.sign(validUserLogin.email!!, Roles.USER) }.returns("token_updated")
         val updatedTokenUser = expectedUserDTO.copy(token = "token_updated")
         every { userRepositoryMock.update(expectedUserDTO.id!!, updatedTokenUser) }.returns(updatedTokenUser)
         every { userRepositoryMock.get(expectedUserDTO.id!!) }.returns(updatedTokenUser)

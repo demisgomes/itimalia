@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.resources.storage.entities
+package com.abrigo.itimalia.resources.storage.exposed.entities
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 
