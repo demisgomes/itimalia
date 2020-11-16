@@ -1,0 +1,70 @@
+package resources.jwt.auth0.gateways
+
+import com.abrigo.itimalia.application.config.EnvironmentConfig
+import com.abrigo.itimalia.domain.entities.user.Roles
+import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
+import com.abrigo.itimalia.factories.TokenFactory
+import com.abrigo.itimalia.resources.jwt.auth0.gateways.JWTServiceImpl
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.mockkStatic
+import jdk.nashorn.internal.parser.Token
+import org.junit.Before
+import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+
+class JWTServiceImplTest{
+
+    private val jwtService = JWTServiceImpl()
+
+    @Before
+    fun mockEnvironmentConfig(){
+        mockkObject(EnvironmentConfig)
+
+        every { EnvironmentConfig.jwtSecret() } returns "mysecret"
+        every { EnvironmentConfig.issuer() } returns "Itimalia-test"
+
+    }
+
+    @Test
+    fun `given a valid email and role, should sign the token`(){
+
+        val email = "user@itimalia.org"
+        val role = Roles.USER
+
+        val token = jwtService.sign(email, role)
+
+        assertNotNull(token)
+    }
+
+    @Test
+    fun `given a valid token, should decode the token and get email and role information`(){
+
+        val email = "user@itimalia.org"
+        val role = Roles.USER
+
+        val token = TokenFactory.build(email, role.toString())
+
+        val map = jwtService.decode(token)
+
+        assertNotNull(map)
+        assertEquals(email, map[JWTServiceImpl.EMAIL_CLAIM])
+        assertEquals(role.toString(), map[JWTServiceImpl.ROLE_CLAIM])
+    }
+
+    @Test(expected = InvalidTokenException::class)
+    fun `given an invalid token, should expect InvalidTokenException`(){
+        val token = TokenFactory.buildInvalid()
+
+        jwtService.decode(token)
+    }
+
+    @Test(expected = InvalidTokenException::class)
+    fun `given an expired token, should expect InvalidTokenException`(){
+        val token = TokenFactory.buildExpired()
+
+        jwtService.decode(token)
+    }
+}
