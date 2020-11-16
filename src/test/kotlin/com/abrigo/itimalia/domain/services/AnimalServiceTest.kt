@@ -11,11 +11,10 @@ import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
-import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
-import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.domain.validation.Validator
+import com.abrigo.itimalia.factories.AnimalFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -47,8 +46,8 @@ class AnimalServiceTest {
         AnimalFactory.sampleDTO(specie = Specie.DOG, status = AnimalStatus.GONE)
     )
 
-    private val defaultToken = "default_token"
-    private val invalidToken = "invalid_token"
+    private val defaultId = 1
+    private val invalidId = -959
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -66,18 +65,8 @@ class AnimalServiceTest {
         expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
         expectedAnimalRequest =
             AnimalFactory.sampleDTORequest(creationDate = actualDateTime, modificationDate = actualDateTime)
-        animalService = AnimalServiceImpl(animalRepositoryMock, newAnimalValidator, animalValidator, userServiceMock)
-
-        every {
-            userServiceMock.getIdByToken(defaultToken)
-        } returns 1
-
-        every {
-            userServiceMock.getIdByToken(invalidToken)
-        } throws UserNotFoundException()
+        animalService = AnimalServiceImpl(animalRepositoryMock, newAnimalValidator, animalValidator)
     }
-
-    //GET METHOD TESTS
 
     @Test
     fun `when request an animal where its id exists, should return the animal`() {
@@ -168,23 +157,10 @@ class AnimalServiceTest {
         //when
         every { animalRepositoryMock.add(expectedAnimal.copy(id = null)) }.returns(expectedAnimal)
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO = animalService.add(newAnimalRequest, defaultToken)
+        val animalDTO = animalService.add(newAnimalRequest, defaultId)
 
         //then
         assertEquals(expectedAnimal, animalDTO)
-    }
-
-    @Test(expected = UserNotFoundException::class)
-    fun `when try to register a valid animal with whole fields filled correctly but with a token not linked with a user, should return user not found exception`() {
-        //given newAnimal, expectedAnimalDTO
-
-        //when
-        every { animalRepositoryMock.add(expectedAnimal.copy(id = null)) }.returns(expectedAnimal)
-        every { DateTime.now() }.returns(actualDateTime)
-        animalService.add(newAnimalRequest, invalidToken)
-
-        //then
-        //expect user not found exception
     }
 
     @Test
@@ -199,7 +175,7 @@ class AnimalServiceTest {
             expectedAnimalWithAgeNullAndTimeUnitValidDTO
         )
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO = animalService.add(newAnimalWithAgeNullAndTimeUnitValid, defaultToken)
+        val animalDTO = animalService.add(newAnimalWithAgeNullAndTimeUnitValid, defaultId)
 
         //then
         assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)
@@ -216,7 +192,7 @@ class AnimalServiceTest {
             expectedAnimalWithAgeNullAndTimeUnitValidDTO
         )
         every { DateTime.now() }.returns(actualDateTime)
-        val animalDTO = animalService.add(newAnimalWithValidAgeAndTimeUnitNull, defaultToken)
+        val animalDTO = animalService.add(newAnimalWithValidAgeAndTimeUnitNull, defaultId)
 
         //then
         assertEquals(expectedAnimalWithAgeNullAndTimeUnitValidDTO, animalDTO)

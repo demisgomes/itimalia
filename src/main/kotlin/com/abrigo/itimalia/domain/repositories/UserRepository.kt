@@ -9,5 +9,4 @@ interface UserRepository{
     fun delete(id:Int)
     fun findByCredentials(email:String,password:String): User
     fun findByEmail(email: String): User
-    fun getIdByToken(token: String): Int
 }

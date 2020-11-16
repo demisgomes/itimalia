@@ -17,18 +17,6 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class UserRepositoryImpl: UserRepository {
-    override fun getIdByToken(token: String): Int {
-        try{
-            return transaction {
-                UserMap.slice(UserMap.id).select { UserMap.token eq token }.map { resultRow ->
-                    resultRow[UserMap.id].value
-                }.first()
-            }
-        }
-        catch (exception:NoSuchElementException){
-            throw UserNotFoundException()
-        }
-    }
 
     override fun findByEmail(email: String): User {
         try{

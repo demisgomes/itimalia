@@ -3,13 +3,12 @@ package com.abrigo.itimalia.factories
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.User
-import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import org.joda.time.DateTime
-import java.lang.IllegalArgumentException
 
 object UserFactory{
     fun sampleDTO(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now() ): User {

@@ -2,10 +2,10 @@ package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.User
-import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.toUser
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
@@ -392,24 +392,5 @@ class UserServiceTest{
 
         userService.delete(1, expectedUser.role, expectedUser.email+"A")
     }
-
-    @Test
-    fun `when an user has a token stored in database, should return their id when called getIdByToken metehod`(){
-        every { userRepositoryMock.getIdByToken(defaultToken) } returns 1
-
-        val id = userService.getIdByToken(defaultToken)
-
-        assertEquals(1, id)
-    }
-
-    @Test(expected = UserNotFoundException::class)
-    fun `when an user has not a token stored in database, should expect user not found exception when called getIdByToken metehod`(){
-        every { userRepositoryMock.getIdByToken(defaultToken) } throws  UserNotFoundException()
-
-        userService.getIdByToken(defaultToken)
-
-        //expect exception
-    }
-
 }
 

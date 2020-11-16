@@ -14,5 +14,5 @@ val controllerModule = module {
         )
     }
     single { AdminController(get(),get()) }
-    single { AnimalController(get()) }
+    single { AnimalController(get(), get(), get()) }
 }

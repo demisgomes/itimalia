@@ -134,30 +134,4 @@ class UserRepositorImplTest{
         userRepository.get(1)
         //throws exception
     }
-
-    @Test
-    fun `given a user that exists in database, when call getIdByToken method, should return their id`(){
-        //given userDTO
-        val userDTO = UserFactory.sampleDTO()
-        userRepository.add(userDTO)
-
-        //when
-        val id = userRepository.getIdByToken(userDTO.token)
-
-
-        //then
-        assertEquals(2, id)
-    }
-
-    @Test(expected = UserNotFoundException::class)
-    fun `given a user that not exists in database, when call a getIdByToken, should expect UserNotFoundException`(){
-        //given token
-        val defaultToken = "defaultToken"
-
-        //when
-        userRepository.getIdByToken(defaultToken)
-
-        //then
-        //throws exception
-    }
 }

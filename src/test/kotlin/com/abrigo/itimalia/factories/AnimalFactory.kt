@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.factories
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
-import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
+import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus

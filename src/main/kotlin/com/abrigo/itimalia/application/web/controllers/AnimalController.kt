@@ -1,19 +1,25 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.services.AnimalService
+import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
 import java.util.*
 
-class AnimalController(private val animalService: AnimalService) {
+class AnimalController(private val animalService: AnimalService,
+                       private val jwtAccessManager: JWTAccessManager,
+                       private val userService: UserService) {
+
     fun addAnimal(context: Context) {
         val newAnimal=context.body<NewAnimalRequest>()
-        val token = getTokenFromHeader(context).get()
-        val newAnimalDTO=animalService.add(newAnimal, token)
+        val email = jwtAccessManager.extractEmail(context)
+        val user = userService.findByEmail(email)
+        val newAnimalDTO=animalService.add(newAnimal, user.id ?: throw IllegalArgumentException())
         context.json(newAnimalDTO).status(HttpStatus.CREATED_201)
     }
 
