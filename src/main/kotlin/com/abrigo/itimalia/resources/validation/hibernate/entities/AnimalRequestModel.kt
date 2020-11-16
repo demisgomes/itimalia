@@ -11,7 +11,7 @@ import org.joda.time.DateTime
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-data class AnimalDTORequestModel(
+data class AnimalRequestModel(
     val id: Int?,
     @field:NotBlank(message = "please fill with a name")
     val name: String?,

@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.user.Gender
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -30,7 +30,7 @@ class UserRepositoryImpl: UserRepository {
         }
     }
 
-    override fun findByEmail(email: String): UserDTO {
+    override fun findByEmail(email: String): User {
         try{
             return transaction {
                 UserMap.select { UserMap.email eq email }.map { resultRow ->
@@ -44,7 +44,7 @@ class UserRepositoryImpl: UserRepository {
 
     }
 
-    override fun findByCredentials(email: String, password: String): UserDTO {
+    override fun findByCredentials(email: String, password: String): User {
         try{
             return transaction {
                 UserMap.select { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { resultRow ->
@@ -57,36 +57,36 @@ class UserRepositoryImpl: UserRepository {
         }
     }
 
-    override fun add(userDTO: UserDTO): UserDTO {
+    override fun add(user: User): User {
         transaction {
             UserMap.insert {
-                it[name] = userDTO.name
-                it[birthDate] = userDTO.birthDate
-                it[creationDate] = userDTO.creationDate
-                it[email] = userDTO.email
-                it[gender] = userDTO.gender.toString()
-                it[password] = userDTO.password
-                it[modificationDate] = userDTO.modificationDate
-                it[phone] = userDTO.phone
-                it[token] = userDTO.token!!
-                it[role] = userDTO.role.toString()
+                it[name] = user.name
+                it[birthDate] = user.birthDate
+                it[creationDate] = user.creationDate
+                it[email] = user.email
+                it[gender] = user.gender.toString()
+                it[password] = user.password
+                it[modificationDate] = user.modificationDate
+                it[phone] = user.phone
+                it[token] = user.token
+                it[role] = user.role.toString()
             }
         }
-        return findByEmail(userDTO.email)
+        return findByEmail(user.email)
     }
 
-    override fun update(id: Int, userDTO: UserDTO): UserDTO {
+    override fun update(id: Int, user: User): User {
         val result = transaction {
                 (UserMap).update({ UserMap.id eq id }) {
-                    it[name] = userDTO.name
-                    it[birthDate] = userDTO.birthDate
-                    it[email] = userDTO.email
-                    it[gender] = userDTO.gender.toString()
-                    it[password] = userDTO.password
+                    it[name] = user.name
+                    it[birthDate] = user.birthDate
+                    it[email] = user.email
+                    it[gender] = user.gender.toString()
+                    it[password] = user.password
                     it[modificationDate] = DateTime.now()
-                    it[phone] = userDTO.phone
-                    it[token] = userDTO.token!!
-                    it[role] = userDTO.role.toString()
+                    it[phone] = user.phone
+                    it[token] = user.token
+                    it[role] = user.role.toString()
                 }
             }
 
@@ -106,7 +106,7 @@ class UserRepositoryImpl: UserRepository {
         if (result == 0) throw UserNotFoundException()
     }
 
-    override fun get(id: Int): UserDTO {
+    override fun get(id: Int): User {
         try{
             return transaction {
                 UserMap.select { UserMap.id eq id }.map { resultRow ->
@@ -119,8 +119,8 @@ class UserRepositoryImpl: UserRepository {
         }
     }
 
-    private fun buildUserDTO(resultRow: ResultRow): UserDTO {
-        return UserDTO(
+    private fun buildUserDTO(resultRow: ResultRow): User {
+        return User(
             resultRow[UserMap.id].value,
             resultRow[UserMap.email],
             resultRow[UserMap.password],
@@ -128,7 +128,7 @@ class UserRepositoryImpl: UserRepository {
             Gender.valueOf(resultRow[UserMap.gender]),
             resultRow[UserMap.name],
             resultRow[UserMap.phone],
-            Roles.valueOf(resultRow[UserMap.role]),
+            UserRole.valueOf(resultRow[UserMap.role]),
             resultRow[UserMap.creationDate],
             resultRow[UserMap.modificationDate],
             resultRow[UserMap.token]

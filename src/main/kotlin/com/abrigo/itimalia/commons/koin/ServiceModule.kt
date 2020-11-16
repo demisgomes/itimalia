@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.commons.koin
 
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.services.AdminService
 import com.abrigo.itimalia.domain.services.AdminServiceImpl
@@ -39,7 +39,7 @@ val serviceModule = module{
             get(),
             get(),
             NewUserRequestValidator(NewUserRequestConstraintValidator(get(), get())) as Validator<NewUserRequest>,
-            UserDTORequestValidator(UserRequestConstraintValidator(get(), get())) as Validator<UserDTORequest>,
+            UserDTORequestValidator(UserRequestConstraintValidator(get(), get())) as Validator<UserRequest>,
             UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>
         ) as UserService
     }

@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.resources.jwt.auth0.gateways
 
 import com.abrigo.itimalia.application.config.EnvironmentConfig
-import com.abrigo.itimalia.domain.entities.user.Roles
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.auth0.jwt.JWT
@@ -19,7 +19,7 @@ class JWTServiceImpl : JWTService {
         const val ROLE_CLAIM = "role"
     }
 
-    override fun sign(email: String, role: Roles): String {
+    override fun sign(email: String, role: UserRole): String {
         val algorithm = Algorithm.HMAC256(EnvironmentConfig.jwtSecret())
 
         return JWT

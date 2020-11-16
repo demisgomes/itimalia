@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
@@ -21,11 +21,11 @@ import kotlin.test.assertEquals
 class AdminServiceTest{
 
     private lateinit var userRepositoryMock: UserRepository
-    private lateinit var newUserDTO: UserDTO
+    private lateinit var newUserDTO: User
     private lateinit var birthDate: DateTime
     private lateinit var actualDateTime: DateTime
     private lateinit var jwtService: JWTService
-    private lateinit var expectedUserDTO: UserDTO
+    private lateinit var expectedUser: User
     private lateinit var adminService: AdminService
     private lateinit var newUser: NewUser
 
@@ -36,7 +36,7 @@ class AdminServiceTest{
         mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
         newUserDTO = UserFactory.sampleDTO(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
-        expectedUserDTO = newUserDTO.copy(id = 1, token = "token_test")
+        expectedUser = newUserDTO.copy(id = 1, token = "token_test")
 
         newUser = UserFactory.sampleNew(birthDate = birthDate)
 
@@ -55,29 +55,29 @@ class AdminServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
-        every { jwtService.sign(newUserDTO.email, Roles.ADMIN) }.returns("token_test")
+        every { jwtService.sign(newUserDTO.email, UserRole.ADMIN) }.returns("token_test")
 
-        every { userRepositoryMock.add(newUserDTO.copy(role = Roles.ADMIN, token = "token_test"))  }.returns(expectedUserDTO)
+        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test"))  }.returns(expectedUser)
 
-        val userDTO=adminService.add(newUser, Roles.ADMIN)
+        val userDTO=adminService.add(newUser, UserRole.ADMIN)
 
-        assertEquals(expectedUserDTO,userDTO)
+        assertEquals(expectedUser,userDTO)
     }
 
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`(){
-        val unexpectedUserDTO = expectedUserDTO
+        val unexpectedUserDTO = expectedUser
 
         every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(unexpectedUserDTO)
 
-        adminService.add(newUser, Roles.ADMIN)
+        adminService.add(newUser, UserRole.ADMIN)
     }
 
     @Test(expected = UnauthorizedAdminRoleException::class)
     fun `when a valid user tries to register a new user but does not have admin permissions, should expect UnauthorizedAdminRoleException`(){
-        adminService.add(newUser, Roles.USER)
+        adminService.add(newUser, UserRole.USER)
     }
 
     @Test(expected = NoSuchElementException::class)

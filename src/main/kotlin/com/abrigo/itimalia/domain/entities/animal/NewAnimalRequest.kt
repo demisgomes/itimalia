@@ -1,5 +1,7 @@
 package com.abrigo.itimalia.domain.entities.animal
 
+import java.lang.IllegalArgumentException
+
 data class NewAnimalRequest(
     val name: String?,
     val age: Int?,
@@ -14,13 +16,13 @@ data class NewAnimalRequest(
 
 fun NewAnimalRequest.toNewAnimal() =
     NewAnimal(
-        name!!,
+        name ?: throw IllegalArgumentException(),
         age,
         timeUnit,
-        specie,
-        description!!,
-        deficiencies!!,
-        sex!!,
-        size!!,
-        castrated!!
+        specie ?: throw IllegalArgumentException(),
+        description ?: throw IllegalArgumentException(),
+        deficiencies ?: throw IllegalArgumentException(),
+        sex ?: throw IllegalArgumentException(),
+        size ?: throw IllegalArgumentException(),
+        castrated ?: throw IllegalArgumentException()
     )

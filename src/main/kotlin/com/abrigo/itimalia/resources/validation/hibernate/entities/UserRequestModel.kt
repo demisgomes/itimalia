@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.resources.validation.hibernate.entities
 
 import com.abrigo.itimalia.domain.entities.user.Gender
-import com.abrigo.itimalia.domain.entities.user.Roles
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.resources.validation.hibernate.constraints.MinimumAge
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
@@ -9,7 +9,7 @@ import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-data class UserDTORequestModel(
+data class UserRequestModel(
     var id: Int?,
     @field:Email(message = "please fill with an email following the pattern: email@email.com")
     @field:NotBlank(message = "please fill with an email")
@@ -26,7 +26,7 @@ data class UserDTORequestModel(
     @field:NotBlank(message = "please fill with a phone")
     val phone: String?,
     @field:NotNull(message = "please fill with a role: user or admin")
-    var role: Roles?,
+    var role: UserRole?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")

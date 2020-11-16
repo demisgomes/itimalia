@@ -2,7 +2,7 @@ package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
 import com.abrigo.itimalia.domain.services.UserService
@@ -30,7 +30,7 @@ class UserController(
 
     fun updateUser(context: Context){
         val id:Int=context.pathParam("id").toInt()
-        val modifiedUserRequest= context.body<UserDTORequest>()
+        val modifiedUserRequest= context.body<UserRequest>()
         val returnedUser=userService.update(id, modifiedUserRequest, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
         context.json(returnedUser).status(HttpStatus.OK_200)
     }

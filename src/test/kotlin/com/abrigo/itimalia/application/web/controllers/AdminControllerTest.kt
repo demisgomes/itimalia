@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.factories.UserFactory
@@ -22,7 +22,7 @@ import java.util.*
 class AdminControllerTest{
     lateinit var adminServiceMock: AdminService
     lateinit var contextMock: Context
-    lateinit var returnedAdminUser: UserDTO
+    lateinit var returnedAdminUser: User
     lateinit var newAdminUser: NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
@@ -40,7 +40,7 @@ class AdminControllerTest{
 
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         val birthDate=formatter.parseDateTime("01/01/1990")
-        returnedAdminUser= UserFactory.sampleDTO(role = Roles.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        returnedAdminUser= UserFactory.sampleDTO(role = UserRole.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newAdminUser = UserFactory.sampleNew()
         newLoginUser = UserFactory.sampleLogin()
     }
@@ -48,11 +48,11 @@ class AdminControllerTest{
     @Test
     fun `when add a valid user with admin permissions should return the user with status 201`(){
 
-        every{ adminServiceMock.add(newAdminUser, Roles.ADMIN)}.returns(returnedAdminUser)
+        every{ adminServiceMock.add(newAdminUser, UserRole.ADMIN)}.returns(returnedAdminUser)
 
         every { contextMock.body<NewUser>() }.returns(newAdminUser)
 
-        every { jwtAccessManagerMock.extractRole(contextMock) }.returns(Roles.ADMIN)
+        every { jwtAccessManagerMock.extractRole(contextMock) }.returns(UserRole.ADMIN)
 
         AdminController(adminServiceMock, jwtAccessManagerMock).addAdminUser(contextMock)
 

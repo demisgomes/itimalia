@@ -1,17 +1,16 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
-import io.javalin.core.security.Role
 
 interface UserService{
-    fun add(newUserRequest: NewUserRequest) : UserDTO
-    fun get(id:Int): UserDTO
-    fun delete(id:Int, role: Roles, email:String)
-    fun login(userLoginRequest: UserLoginRequest): UserDTO
-    fun update(id: Int, userDTORequest: UserDTORequest, role: Roles, email:String): UserDTO
+    fun add(newUserRequest: NewUserRequest) : User
+    fun get(id:Int): User
+    fun delete(id:Int, role: UserRole, email:String)
+    fun login(userLoginRequest: UserLoginRequest): User
+    fun update(id: Int, userRequest: UserRequest, role: UserRole, email:String): User
     fun getIdByToken(token: String) : Int
 }

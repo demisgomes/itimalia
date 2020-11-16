@@ -3,16 +3,17 @@ package com.abrigo.itimalia.factories
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import org.joda.time.DateTime
+import java.lang.IllegalArgumentException
 
 object UserFactory{
-    fun sampleDTO(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: Roles = Roles.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now() ): UserDTO {
-        return UserDTO(
+    fun sampleDTO(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now() ): User {
+        return User(
             id = id,
             email = email,
             password = password,
@@ -23,7 +24,7 @@ object UserFactory{
             role = role,
             creationDate = creationDate,
             modificationDate = modificationDate,
-            token = token
+            token = token ?: throw IllegalArgumentException()
         )
     }
 
@@ -63,8 +64,8 @@ object UserFactory{
         )
     }
 
-    fun sampleDTORequest(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: Roles = Roles.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now()): UserDTORequest {
-        return UserDTORequest(
+    fun sampleDTORequest(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now()): UserRequest {
+        return UserRequest(
             id = id,
             email = email,
             password = password,

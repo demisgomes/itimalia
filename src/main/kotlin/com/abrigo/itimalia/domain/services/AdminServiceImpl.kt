@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
@@ -11,8 +11,8 @@ import com.abrigo.itimalia.domain.repositories.UserRepository
 import org.joda.time.DateTime
 
 class AdminServiceImpl(private val userRepository: UserRepository, private val jwtService: JWTService) : AdminService {
-    override fun add(newUser: NewUser, role: Roles): UserDTO {
-        if (role != Roles.ADMIN) {
+    override fun add(newUser: NewUser, role: UserRole): User {
+        if (role != UserRole.ADMIN) {
             throw UnauthorizedAdminRoleException()
         }
         try {
@@ -20,7 +20,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             throw EmailAlreadyExistsException()
         } catch (exception: UserNotFoundException) {
             val actualDate = DateTime.now()
-            val newUserDTO = UserDTO(
+            val newUserDTO = User(
                 null,
                 newUser.email,
                 newUser.password,
@@ -28,16 +28,16 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
                 newUser.gender,
                 newUser.name,
                 newUser.phone,
-                Roles.ADMIN,
+                UserRole.ADMIN,
                 actualDate,
                 actualDate,
-                jwtService.sign(newUser.email, Roles.ADMIN)
+                jwtService.sign(newUser.email, UserRole.ADMIN)
             )
             return userRepository.add(newUserDTO)
         }
     }
 
-    override fun get(id: Int): UserDTO {
+    override fun get(id: Int): User {
         return userRepository.get(id)
     }
 

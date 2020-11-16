@@ -1,6 +1,5 @@
 package com.abrigo.itimalia.domain.entities.animal
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
 
 data class AnimalRequest(
@@ -10,9 +9,7 @@ data class AnimalRequest(
     val timeUnit : TimeUnit?,
     val specie: Specie?,
     val description: String?,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val creationDate: DateTime?,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val modificationDate: DateTime?,
     val status: AnimalStatus,
     val deficiencies: List<AnimalDeficiency>,
