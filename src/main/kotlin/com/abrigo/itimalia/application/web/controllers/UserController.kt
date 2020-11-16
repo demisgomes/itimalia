@@ -1,10 +1,10 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.UserDTORequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
-import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
@@ -12,7 +12,8 @@ import org.eclipse.jetty.http.HttpStatus
 
 class UserController(
     private val userService: UserService,
-    private val jwtAccessManager: JWTAccessManager){
+    private val jwtAccessManager: JWTAccessManager
+){
 
     fun findUser(context: Context){
         val id:Int=context.pathParam("id").toInt()

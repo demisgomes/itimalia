@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class InvalidTokenException:ApiException(message = "This token has expired or not exists") {
+class InvalidTokenException : ApiException(message = "This token has expired or not exists") {
     override fun httpStatus(): Int {
         return HttpStatus.UNAUTHORIZED_401
     }

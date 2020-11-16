@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.domain.repositories.factories
+package com.abrigo.itimalia.factories
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.NewUser

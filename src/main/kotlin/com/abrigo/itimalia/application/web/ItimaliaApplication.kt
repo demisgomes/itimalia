@@ -3,6 +3,7 @@ package com.abrigo.itimalia.application.web
 import com.abrigo.itimalia.application.config.DatabaseConfig
 import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.application.config.RouteConfig
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import com.abrigo.itimalia.application.web.swagger.SwaggerConfig
 import com.abrigo.itimalia.commons.koin.JWTModule
@@ -12,7 +13,6 @@ import com.abrigo.itimalia.commons.koin.controllerModule
 import com.abrigo.itimalia.commons.koin.repositoryModule
 import com.abrigo.itimalia.commons.koin.serviceModule
 import com.abrigo.itimalia.domain.exceptions.ApiException
-import com.abrigo.itimalia.domain.jwt.JWTAccessManager
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.BadRequestResponse

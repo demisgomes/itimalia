@@ -6,9 +6,9 @@ import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
-import com.abrigo.itimalia.domain.jwt.JWTUtils
+import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.repositories.factories.UserFactory
+import com.abrigo.itimalia.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -24,7 +24,7 @@ class AdminServiceTest{
     private lateinit var newUserDTO: UserDTO
     private lateinit var birthDate: DateTime
     private lateinit var actualDateTime: DateTime
-    private lateinit var jwtUtils: JWTUtils
+    private lateinit var jwtService: JWTService
     private lateinit var expectedUserDTO: UserDTO
     private lateinit var adminService: AdminService
     private lateinit var newUser: NewUser
@@ -42,9 +42,9 @@ class AdminServiceTest{
 
         userRepositoryMock= mockk(relaxed = true)
 
-        jwtUtils= mockk(relaxed = true)
+        jwtService= mockk(relaxed = true)
 
-        adminService = AdminServiceImpl(userRepositoryMock, jwtUtils)
+        adminService = AdminServiceImpl(userRepositoryMock, jwtService)
     }
 
 
@@ -55,7 +55,7 @@ class AdminServiceTest{
 
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
-        every { jwtUtils.sign(newUserDTO.email, Roles.ADMIN, 5) }.returns("token_test")
+        every { jwtService.sign(newUserDTO.email, Roles.ADMIN) }.returns("token_test")
 
         every { userRepositoryMock.add(newUserDTO.copy(role = Roles.ADMIN, token = "token_test"))  }.returns(expectedUserDTO)
 

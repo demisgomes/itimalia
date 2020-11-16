@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.domain.repositories
+package com.abrigo.itimalia.resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
@@ -8,9 +8,10 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
-import com.abrigo.itimalia.resources.storage.entities.AnimalDeficiencyMap
-import com.abrigo.itimalia.resources.storage.entities.AnimalMap
-import com.abrigo.itimalia.resources.storage.entities.AnimalToAnimalDeficiencyMap
+import com.abrigo.itimalia.domain.repositories.AnimalRepository
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyMap
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAnimalDeficiencyMap
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and

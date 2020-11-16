@@ -1,11 +1,12 @@
-package com.abrigo.itimalia.domain.repositories
+package com.abrigo.itimalia.resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.Roles
 import com.abrigo.itimalia.domain.entities.user.UserDTO
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
-import com.abrigo.itimalia.resources.storage.entities.UserMap
+import com.abrigo.itimalia.domain.repositories.UserRepository
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -15,7 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
-class UserRepositoryImpl:UserRepository{
+class UserRepositoryImpl: UserRepository {
     override fun getIdByToken(token: String): Int {
         try{
             return transaction {

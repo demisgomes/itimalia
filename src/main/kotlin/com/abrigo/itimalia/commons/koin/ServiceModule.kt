@@ -41,10 +41,13 @@ val serviceModule = module{
             NewUserRequestValidator(NewUserRequestConstraintValidator(get(), get())) as Validator<NewUserRequest>,
             UserDTORequestValidator(UserDTORequestConstraintValidator(get(), get())) as Validator<UserDTORequest>,
             UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>
-        ) as UserService }
+        ) as UserService
+    }
     single { AdminServiceImpl(get(), get ()) as AdminService }
-    single { AnimalServiceImpl(get(),
-        NewAnimalRequestValidator(NewAnimalRequestConstraintValidator(get(), get())),
-        AnimalDTORequestValidator(AnimalDTORequestConstraintValidator(get(), get())),
-        get()) as AnimalService }
+    single {
+        AnimalServiceImpl(get(),
+            NewAnimalRequestValidator(NewAnimalRequestConstraintValidator(get(), get())),
+            AnimalDTORequestValidator(AnimalDTORequestConstraintValidator(get(), get())),
+            get()) as AnimalService
+    }
 }

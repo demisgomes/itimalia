@@ -14,7 +14,7 @@ import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
-import com.abrigo.itimalia.domain.repositories.factories.AnimalFactory
+import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.domain.validation.Validator
 import io.mockk.every
 import io.mockk.mockk
