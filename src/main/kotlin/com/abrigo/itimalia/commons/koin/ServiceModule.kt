@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.commons.koin
 
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.services.AdminService
 import com.abrigo.itimalia.domain.services.AdminServiceImpl
 import com.abrigo.itimalia.domain.services.AnimalService
@@ -19,8 +19,8 @@ import com.abrigo.itimalia.resources.validation.hibernate.HibernateValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.AnimalDTORequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewAnimalRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewUserRequestConstraintValidator
-import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserLoginRequestConstraintValidator
+import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapMounter
 import org.koin.dsl.module.module
 

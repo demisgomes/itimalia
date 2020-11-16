@@ -1,8 +1,8 @@
 package com.abrigo.itimalia.resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.user.Gender
-import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.UserRepository

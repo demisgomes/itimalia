@@ -2,8 +2,8 @@ package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.toUserSearched
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
