@@ -1,7 +1,6 @@
 package com.abrigo.itimalia.domain.entities.user
 
 import org.joda.time.DateTime
-import java.lang.IllegalArgumentException
 
 data class UserRequest(
     var id: Int?,
@@ -18,13 +17,13 @@ data class UserRequest(
 
 fun UserRequest.toUser() =
     User(id,
-        email?: throw IllegalArgumentException(),
-        password?: throw IllegalArgumentException(),
-        birthDate ?: throw IllegalArgumentException(),
-        gender ?: throw IllegalArgumentException(),
-        name?: throw IllegalArgumentException(),
-        phone?: throw IllegalArgumentException(),
-        role?: throw IllegalArgumentException(),
-        creationDate ?: throw IllegalArgumentException(),
-        modificationDate ?: throw IllegalArgumentException(),
-        token ?: throw IllegalArgumentException())
+        email?: "",
+        password?: "",
+        birthDate ?: DateTime.now(),
+        gender ?: Gender.NOT_DECLARED,
+        name?: "",
+        phone?: "",
+        role?: UserRole.USER,
+        creationDate ?: DateTime.now(),
+        modificationDate ?: DateTime.now(),
+        token ?: "")

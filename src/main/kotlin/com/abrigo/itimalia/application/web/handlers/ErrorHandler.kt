@@ -14,7 +14,7 @@ class ErrorHandler{
     }
 
     fun handleIllegalArgumentException(exception: IllegalArgumentException, context: Context){
-        context.json(ErrorResponse(ApiError.BAD_REQUEST, "An error has occurred in request", mapOf("cause" to listOf<String>(exception.localizedMessage))))
+        context.json(ErrorResponse(ApiError.BAD_REQUEST, "An error has occurred in request", mapOf("cause" to listOf(exception.localizedMessage ?: ""))))
         context.status(HttpStatus.BAD_REQUEST_400)
     }
 

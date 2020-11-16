@@ -54,7 +54,7 @@ class AnimalRepositoryImpl : AnimalRepository {
             name = resultRow[AnimalMap.name],
             age = resultRow[AnimalMap.age],
             timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
-            specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
+            specie = resultRow[AnimalMap.specie].let { Specie.valueOf(resultRow[AnimalMap.specie]) },
             creationDate = resultRow[AnimalMap.creationDate],
             modificationDate = resultRow[AnimalMap.modificationDate],
             description = resultRow[AnimalMap.description],
@@ -104,7 +104,7 @@ class AnimalRepositoryImpl : AnimalRepository {
 
             commit()
         }
-        return getByCreationDate(newAnimal.creationDate!!)
+        return getByCreationDate(newAnimal.creationDate)
 
     }
 
@@ -131,7 +131,7 @@ class AnimalRepositoryImpl : AnimalRepository {
             it[name] = newAnimal.name
             it[age] = newAnimal.age
             it[timeUnit] = newAnimal.timeUnit?.toString()
-            it[specie] = newAnimal.specie?.toString()
+            it[specie] = newAnimal.specie.toString()
             it[description] = newAnimal.description
             it[creationDate] = newAnimal.creationDate
             it[modificationDate] = newAnimal.modificationDate
@@ -153,7 +153,7 @@ class AnimalRepositoryImpl : AnimalRepository {
                 resultRow[name] = animal.name
                 resultRow[age] = animal.age
                 resultRow[timeUnit] = animal.timeUnit?.toString()
-                resultRow[specie] = animal.specie?.toString()
+                resultRow[specie] = animal.specie.toString()
                 resultRow[modificationDate] = DateTime.now()
                 resultRow[description] = animal.description
                 resultRow[status] = animal.status.toString()

@@ -65,18 +65,18 @@ class AnimalServiceImpl(
 
         val animalToBeAddedDTO = Animal(
             null,
-            newAnimal.name!!,
+            newAnimal.name ?: throw IllegalArgumentException(),
             newAnimal.age,
             newAnimal.timeUnit,
-            newAnimal.specie,
-            newAnimal.description!!,
+            newAnimal.specie ?: throw IllegalArgumentException(),
+            newAnimal.description ?: throw IllegalArgumentException(),
             DateTime.now(),
             DateTime.now(),
             AnimalStatus.AVAILABLE,
-            newAnimal.deficiencies!!,
-            newAnimal.sex!!,
-            newAnimal.size!!,
-            newAnimal.castrated!!,
+            newAnimal.deficiencies?: throw IllegalArgumentException(),
+            newAnimal.sex?: throw IllegalArgumentException(),
+            newAnimal.size ?: throw IllegalArgumentException(),
+            newAnimal.castrated ?: throw IllegalArgumentException(),
             userId
         )
         return animalRepository.add(normalizeAge(animalToBeAddedDTO))
@@ -96,11 +96,11 @@ class AnimalServiceImpl(
 
         val animalToBeModifiedDTO = Animal(
             updatedAnimal.id,
-            updatedAnimal.name!!,
+            updatedAnimal.name ?: throw IllegalArgumentException(),
             updatedAnimal.age,
             updatedAnimal.timeUnit,
-            updatedAnimal.specie,
-            updatedAnimal.description!!,
+            updatedAnimal.specie ?: throw IllegalArgumentException(),
+            updatedAnimal.description ?: throw IllegalArgumentException(),
             animalInDatabase.creationDate,
             DateTime.now(),
             updatedAnimal.status,
