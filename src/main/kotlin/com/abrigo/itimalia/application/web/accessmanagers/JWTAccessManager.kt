@@ -18,7 +18,6 @@ class JWTAccessManager(
     private val defaultRole: Roles,
     private val jwtService: JWTService
 ) : AccessManager {
-
     companion object{
         const val ROLE_FIELD = "role"
         const val EMAIL_FIELD = "email"
@@ -34,15 +33,6 @@ class JWTAccessManager(
             handler.handle(ctx)
             return
         }
-//        if (!permittedRoles.contains(defaultRole)) {
-//            if (ctx.matchedPath() == "/swagger") {
-//                handler.handle(ctx)
-//                return
-//            } else {
-//                ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
-//                return
-//            }
-//        }
 
         val role = extractRole(ctx)
 

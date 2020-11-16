@@ -16,7 +16,6 @@ import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.domain.validation.Validator
-import io.javalin.core.security.Role
 import org.joda.time.DateTime
 
 class UserServiceImpl(
@@ -31,7 +30,7 @@ class UserServiceImpl(
         return userRepository.getIdByToken(token)
     }
 
-    override fun update(id: Int, userDTORequest: UserDTORequest, role: Role, email: String): UserDTO {
+    override fun update(id: Int, userDTORequest: UserDTORequest, role: Roles, email: String): UserDTO {
         validatorUserDTO.validate(userDTORequest)
         val userToBeModified = userRepository.get(id)
         val userDTO = userDTORequest.toUserDTO()
@@ -109,7 +108,7 @@ class UserServiceImpl(
 
     }
 
-    override fun delete(id: Int, role: Role, email: String) {
+    override fun delete(id: Int, role: Roles, email: String) {
         val userToBeDeleted = userRepository.get(id)
 
         if (role == Roles.ADMIN) {

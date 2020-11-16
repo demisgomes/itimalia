@@ -19,7 +19,7 @@ import com.abrigo.itimalia.resources.validation.hibernate.HibernateValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.AnimalDTORequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewAnimalRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewUserRequestConstraintValidator
-import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserDTORequestConstraintValidator
+import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserLoginRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapMounter
 import org.koin.dsl.module.module
@@ -39,7 +39,7 @@ val serviceModule = module{
             get(),
             get(),
             NewUserRequestValidator(NewUserRequestConstraintValidator(get(), get())) as Validator<NewUserRequest>,
-            UserDTORequestValidator(UserDTORequestConstraintValidator(get(), get())) as Validator<UserDTORequest>,
+            UserDTORequestValidator(UserRequestConstraintValidator(get(), get())) as Validator<UserDTORequest>,
             UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>
         ) as UserService
     }

@@ -12,7 +12,7 @@ import javax.validation.Validation
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class AnimalDTORequestValidatorTest {
+class AnimalRequestValidatorTest {
     private val validator = Validation.buildDefaultValidatorFactory().validator
 
     private val validAnimalDTORequest = AnimalDTORequestModel(

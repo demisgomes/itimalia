@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.factories
 
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.Animal
+import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
@@ -76,8 +76,8 @@ object AnimalFactory {
         size: AnimalSize = AnimalSize.MEDIUM,
         castrated: Boolean = true,
         createdById: Int = 1
-    ): AnimalDTO {
-        return AnimalDTO(
+    ): Animal {
+        return Animal(
             id,
             name,
             age,
@@ -110,8 +110,8 @@ object AnimalFactory {
         size: AnimalSize = AnimalSize.MEDIUM,
         castrated: Boolean = true,
         createdById: Int = 1
-    ): AnimalDTORequest {
-        return AnimalDTORequest(
+    ): AnimalRequest {
+        return AnimalRequest(
             id,
             name,
             age,

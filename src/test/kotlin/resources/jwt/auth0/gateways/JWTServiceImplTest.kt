@@ -7,13 +7,10 @@ import com.abrigo.itimalia.factories.TokenFactory
 import com.abrigo.itimalia.resources.jwt.auth0.gateways.JWTServiceImpl
 import io.mockk.every
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
-import jdk.nashorn.internal.parser.Token
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class JWTServiceImplTest{
 
