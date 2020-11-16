@@ -11,7 +11,6 @@ import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
-import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.validation.Validator
