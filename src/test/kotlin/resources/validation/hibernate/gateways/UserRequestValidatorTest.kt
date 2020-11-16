@@ -1,8 +1,8 @@
 package resources.validation.hibernate.gateways
 
 import com.abrigo.itimalia.domain.entities.user.Gender
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.resources.validation.hibernate.entities.UserDTORequestModel
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.resources.validation.hibernate.entities.UserRequestModel
 import org.joda.time.DateTime
 import org.joda.time.LocalDate
 import org.joda.time.LocalTime
@@ -11,12 +11,12 @@ import javax.validation.Validation
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class UserDTORequestValidatorTest{
+class UserRequestValidatorTest{
     private val validator = Validation.buildDefaultValidatorFactory().validator
     private val underMinimumDateTime = LocalDate.now().minusYears(12).toDateTime(LocalTime())
     private val validDateTime = LocalDate.now().minusYears(16).toDateTime(LocalTime())
 
-    private val validUserDTORequestModel = UserDTORequestModel(1, "email@email.com", "password", validDateTime, Gender.FEMALE, "name", "81", Roles.USER, DateTime.now(), DateTime.now(), null)
+    private val validUserDTORequestModel = UserRequestModel(1, "email@email.com", "password", validDateTime, Gender.FEMALE, "name", "81", UserRole.USER, DateTime.now(), DateTime.now(), null)
 
     @Test
     fun `given an user with null email, should return one constraint with message 'please fill with an email'`(){

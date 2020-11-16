@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.Animal
+import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
@@ -22,7 +22,7 @@ class AnimalControllerTest {
     private lateinit var animalServiceMock: AnimalService
     private lateinit var actualDateTime: DateTime
     private lateinit var newAnimalRequest: NewAnimalRequest
-    private lateinit var expectedAnimalDTO: AnimalDTO
+    private lateinit var expectedAnimal: Animal
 
     private val defaultToken = "Bearer defaultToken"
 
@@ -33,7 +33,7 @@ class AnimalControllerTest {
         actualDateTime = DateTime.now()
 
         newAnimalRequest = AnimalFactory.sampleNewRequest()
-        expectedAnimalDTO = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
+        expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
 
         every { contextMock.header("Authorization") } returns defaultToken
 
@@ -45,11 +45,11 @@ class AnimalControllerTest {
 
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalRequest)
-        every { animalServiceMock.add(newAnimalRequest, any()) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.add(newAnimalRequest, any()) }.returns(expectedAnimal)
         AnimalController(animalServiceMock).addAnimal(contextMock)
 
         //then
-        verify { contextMock.json(expectedAnimalDTO).status(HttpStatus.CREATED_201) }
+        verify { contextMock.json(expectedAnimal).status(HttpStatus.CREATED_201) }
     }
 
     @Test
@@ -96,53 +96,53 @@ class AnimalControllerTest {
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
-        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.get(1) }.returns(expectedAnimal)
         AnimalController(animalServiceMock).findAnimal(contextMock)
 
         //then
-        verify { contextMock.json(expectedAnimalDTO).status(HttpStatus.OK_200) }
+        verify { contextMock.json(expectedAnimal).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when an admin tries modify an animal that exists with valid fields, should return the modified animal with status 200 OK`() {
         //given id =1
-        val updatedAnimal = AnimalDTORequest(
+        val updatedAnimal = AnimalRequest(
             1,
-            expectedAnimalDTO.name,
-            expectedAnimalDTO.age!! + 1,
-            expectedAnimalDTO.timeUnit,
-            expectedAnimalDTO.specie,
-            expectedAnimalDTO.description,
-            expectedAnimalDTO.creationDate,
-            expectedAnimalDTO.modificationDate,
-            expectedAnimalDTO.status,
-            expectedAnimalDTO.deficiencies,
-            expectedAnimalDTO.sex,
-            expectedAnimalDTO.size,
-            expectedAnimalDTO.castrated,
-            expectedAnimalDTO.createdById
+            expectedAnimal.name,
+            expectedAnimal.age!! + 1,
+            expectedAnimal.timeUnit,
+            expectedAnimal.specie,
+            expectedAnimal.description,
+            expectedAnimal.creationDate,
+            expectedAnimal.modificationDate,
+            expectedAnimal.status,
+            expectedAnimal.deficiencies,
+            expectedAnimal.sex,
+            expectedAnimal.size,
+            expectedAnimal.castrated,
+            expectedAnimal.createdById
         )
-        val expectedModifiedAnimalDTO = AnimalDTO(
+        val expectedModifiedAnimalDTO = Animal(
             1,
-            expectedAnimalDTO.name,
-            expectedAnimalDTO.age!! + 1,
-            expectedAnimalDTO.timeUnit,
-            expectedAnimalDTO.specie,
-            expectedAnimalDTO.description,
-            expectedAnimalDTO.creationDate,
+            expectedAnimal.name,
+            expectedAnimal.age!! + 1,
+            expectedAnimal.timeUnit,
+            expectedAnimal.specie,
+            expectedAnimal.description,
+            expectedAnimal.creationDate,
             actualDateTime,
-            expectedAnimalDTO.status,
-            expectedAnimalDTO.deficiencies,
-            expectedAnimalDTO.sex,
-            expectedAnimalDTO.size,
-            expectedAnimalDTO.castrated,
-            expectedAnimalDTO.createdById
+            expectedAnimal.status,
+            expectedAnimal.deficiencies,
+            expectedAnimal.sex,
+            expectedAnimal.size,
+            expectedAnimal.castrated,
+            expectedAnimal.createdById
         )
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
-        every { contextMock.body<AnimalDTORequest>() }.returns(updatedAnimal)
-        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { contextMock.body<AnimalRequest>() }.returns(updatedAnimal)
+        every { animalServiceMock.get(1) }.returns(expectedAnimal)
         every { animalServiceMock.update(1, updatedAnimal) }.returns(expectedModifiedAnimalDTO)
         AnimalController(animalServiceMock).updateAnimal(contextMock)
 
@@ -156,7 +156,7 @@ class AnimalControllerTest {
 
         //when
         every { contextMock.pathParam("id") }.returns("1")
-        every { animalServiceMock.get(1) }.returns(expectedAnimalDTO)
+        every { animalServiceMock.get(1) }.returns(expectedAnimal)
         AnimalController(animalServiceMock).deleteAnimal(contextMock)
 
         //then
@@ -167,21 +167,21 @@ class AnimalControllerTest {
     fun `when an user tries to adopt an animal that is available for adoption, return the animal with AnimalStatus adopted and status 200 OK`() {
         //given id=1
         val id = 1
-        val expectedAdoptedAnimalDTO = AnimalDTO(
-            expectedAnimalDTO.id,
-            expectedAnimalDTO.name,
-            expectedAnimalDTO.age,
-            expectedAnimalDTO.timeUnit,
-            expectedAnimalDTO.specie,
-            expectedAnimalDTO.description,
-            expectedAnimalDTO.creationDate,
+        val expectedAdoptedAnimalDTO = Animal(
+            expectedAnimal.id,
+            expectedAnimal.name,
+            expectedAnimal.age,
+            expectedAnimal.timeUnit,
+            expectedAnimal.specie,
+            expectedAnimal.description,
+            expectedAnimal.creationDate,
             actualDateTime,
             AnimalStatus.ADOPTED,
-            expectedAnimalDTO.deficiencies,
-            expectedAnimalDTO.sex,
-            expectedAnimalDTO.size,
-            expectedAnimalDTO.castrated,
-            expectedAnimalDTO.createdById
+            expectedAnimal.deficiencies,
+            expectedAnimal.sex,
+            expectedAnimal.size,
+            expectedAnimal.castrated,
+            expectedAnimal.createdById
         )
 
         //when

@@ -1,7 +1,8 @@
 package com.abrigo.itimalia.application.web.accessmanagers
 
 
-import com.abrigo.itimalia.domain.entities.user.Roles
+import com.abrigo.itimalia.application.web.accessmanagers.entities.RouteRole
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedUserRoleException
@@ -14,11 +15,10 @@ import java.util.*
 
 
 class JWTAccessManager(
-    private val rolesMapping: Map<String, Roles>,
-    private val defaultRole: Roles,
+    private val rolesMapping: Map<String, UserRole>,
+    private val defaultRole: UserRole,
     private val jwtService: JWTService
 ) : AccessManager {
-
     companion object{
         const val ROLE_FIELD = "role"
         const val EMAIL_FIELD = "email"
@@ -34,22 +34,13 @@ class JWTAccessManager(
             handler.handle(ctx)
             return
         }
-//        if (!permittedRoles.contains(defaultRole)) {
-//            if (ctx.matchedPath() == "/swagger") {
-//                handler.handle(ctx)
-//                return
-//            } else {
-//                ctx.json(InvalidTokenException().createErrorResponse()).status(InvalidTokenException().httpStatus())
-//                return
-//            }
-//        }
 
         val role = extractRole(ctx)
 
-        if (permittedRoles.contains(role)) {
+        if (permittedRoles.contains(RouteRole.valueOf(role.toString()))) {
             handler.handle(ctx)
         } else {
-            if (permittedRoles.contains(Roles.ADMIN)) {
+            if (permittedRoles.contains(RouteRole.ADMIN)) {
                 ctx.json(UnauthorizedAdminRoleException().createErrorResponse())
                     .status(UnauthorizedAdminRoleException().httpStatus())
             } else {
@@ -60,7 +51,7 @@ class JWTAccessManager(
 
     }
 
-    fun extractRole(context: Context): Roles {
+    fun extractRole(context: Context): UserRole {
         val optToken = getTokenFromHeader(context)
         if (optToken == Optional.empty<String>()) {
             return defaultRole

@@ -5,17 +5,17 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
-import com.abrigo.itimalia.resources.validation.hibernate.entities.AnimalDTORequestModel
+import com.abrigo.itimalia.resources.validation.hibernate.entities.AnimalRequestModel
 import org.joda.time.DateTime
 import org.junit.Test
 import javax.validation.Validation
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class AnimalDTORequestValidatorTest {
+class AnimalRequestValidatorTest {
     private val validator = Validation.buildDefaultValidatorFactory().validator
 
-    private val validAnimalDTORequest = AnimalDTORequestModel(
+    private val validAnimalDTORequest = AnimalRequestModel(
         1,
         "Animal",
         3,

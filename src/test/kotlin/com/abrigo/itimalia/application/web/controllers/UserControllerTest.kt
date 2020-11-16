@@ -2,9 +2,9 @@ package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
-import com.abrigo.itimalia.domain.entities.user.UserDTORequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserSearched
@@ -25,12 +25,12 @@ import org.junit.Test
 class UserControllerTest{
     private lateinit var userServiceMock: UserService
     private lateinit var contextMock: Context
-    private lateinit var returnedUser: UserDTO
+    private lateinit var returnedUser: User
     private lateinit var newUser: NewUser
     private lateinit var newLoginUser: UserLogin
     private lateinit var newLoginRequest: UserLoginRequest
     private lateinit var newUserRequest: NewUserRequest
-    private lateinit var userDTORequest: UserDTORequest
+    private lateinit var userRequest: UserRequest
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
     private lateinit var userController: UserController
@@ -47,7 +47,7 @@ class UserControllerTest{
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = UserFactory.sampleNew()
         newUserRequest = UserFactory.sampleNewRequest()
-        userDTORequest = UserFactory.sampleDTORequest(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        userRequest = UserFactory.sampleDTORequest(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newLoginUser = UserFactory.sampleLogin()
         newLoginRequest = UserFactory.sampleLoginRequest()
         userController = UserController(userServiceMock, jwtAccessManagerMock)
@@ -82,11 +82,11 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userDTORequest, returnedUser.role, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, returnedUser.role, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
+        every { contextMock.body<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -95,15 +95,15 @@ class UserControllerTest{
 
     @Test
     fun `when modify an existent user with valid token with admin permissions and different email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.ADMIN)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
+        every { contextMock.body<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -114,15 +114,15 @@ class UserControllerTest{
 
     @Test
     fun `when modify an existent user with valid token with admin permissions and equal email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.ADMIN)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userDTORequest, Roles.ADMIN, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
+        every { contextMock.body<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -132,15 +132,15 @@ class UserControllerTest{
 
     @Test
     fun `when modify an existent user with valid token without admin permissions and equal email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.USER)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userDTORequest, Roles.USER, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.USER, returnedUser.email)}.returns(returnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTORequest>() }.returns(userDTORequest)
+        every { contextMock.body<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -156,7 +156,7 @@ class UserControllerTest{
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -165,13 +165,13 @@ class UserControllerTest{
 
     @Test
     fun `when delete an existent user with valid token with admin permissions and different email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.ADMIN)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -181,13 +181,13 @@ class UserControllerTest{
 
     @Test
     fun `when delete an existent user with valid token with admin permissions and equal email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.ADMIN)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.ADMIN)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -197,13 +197,13 @@ class UserControllerTest{
 
     @Test
     fun `when delete an existent user with valid token without admin permissions and equal email between modified and modifier should return OK with status 200`(){
-        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(Roles.USER)
+        every { jwtAccessManagerMock.extractRole(contextMock)}.returns(UserRole.USER)
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserDTO>() }.returns(returnedUser)
+        every { contextMock.body<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 

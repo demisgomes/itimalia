@@ -1,13 +1,13 @@
 package com.abrigo.itimalia.domain.repositories
 
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.User
 
 interface UserRepository{
-    fun add(userDTO: UserDTO): UserDTO
-    fun update(id: Int,userDTO: UserDTO) : UserDTO
-    fun get(id:Int): UserDTO
+    fun add(user: User): User
+    fun update(id: Int, user: User) : User
+    fun get(id:Int): User
     fun delete(id:Int)
-    fun findByCredentials(email:String,password:String): UserDTO
-    fun findByEmail(email: String): UserDTO
+    fun findByCredentials(email:String,password:String): User
+    fun findByEmail(email: String): User
     fun getIdByToken(token: String): Int
 }

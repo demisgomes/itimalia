@@ -1,6 +1,6 @@
 package com.abrigo.itimalia.resources.storage.exposed.gateways
 
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
@@ -25,7 +25,7 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class AnimalRepositoryImpl : AnimalRepository {
-    override fun getAll(): List<AnimalDTO> {
+    override fun getAll(): List<Animal> {
         return transaction {
             (AnimalMap).selectAll().map { resultRow ->
                 buildAnimalDTO(resultRow)
@@ -33,7 +33,7 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    override fun get(id: Int): AnimalDTO {
+    override fun get(id: Int): Animal {
         try {
             return transaction {
                 (AnimalMap).select { AnimalMap.id eq id }.map { resultRow ->
@@ -45,16 +45,16 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    private fun buildAnimalDTO(resultRow: ResultRow): AnimalDTO {
+    private fun buildAnimalDTO(resultRow: ResultRow): Animal {
         val animalId = resultRow[AnimalMap.id].value
         val deficiencies = getDeficiencies(animalId)
 
-        return AnimalDTO(
+        return Animal(
             id = resultRow[AnimalMap.id].value,
             name = resultRow[AnimalMap.name],
             age = resultRow[AnimalMap.age],
             timeUnit = resultRow[AnimalMap.timeUnit]?.let { TimeUnit.valueOf(resultRow[AnimalMap.timeUnit]!!) },
-            specie = resultRow[AnimalMap.specie]?.let { Specie.valueOf(resultRow[AnimalMap.specie]!!) },
+            specie = resultRow[AnimalMap.specie].let { Specie.valueOf(resultRow[AnimalMap.specie]) },
             creationDate = resultRow[AnimalMap.creationDate],
             modificationDate = resultRow[AnimalMap.modificationDate],
             description = resultRow[AnimalMap.description],
@@ -81,7 +81,7 @@ class AnimalRepositoryImpl : AnimalRepository {
         return AnimalDeficiency.valueOf(resultRow[AnimalDeficiencyMap.name])
     }
 
-    private fun getByCreationDate(creationDate: DateTime): AnimalDTO {
+    private fun getByCreationDate(creationDate: DateTime): Animal {
         try {
             return transaction {
                 (AnimalMap).select { AnimalMap.creationDate eq creationDate }.map { resultRow ->
@@ -93,7 +93,7 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    override fun add(newAnimal: AnimalDTO): AnimalDTO {
+    override fun add(newAnimal: Animal): Animal {
         transaction {
 
             val idsAnimalDeficiencies = getDeficienciesId(newAnimal.deficiencies)
@@ -104,7 +104,7 @@ class AnimalRepositoryImpl : AnimalRepository {
 
             commit()
         }
-        return getByCreationDate(newAnimal.creationDate!!)
+        return getByCreationDate(newAnimal.creationDate)
 
     }
 
@@ -126,12 +126,12 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    private fun insertAndGetId(newAnimal: AnimalDTO): EntityID<Int> {
+    private fun insertAndGetId(newAnimal: Animal): EntityID<Int> {
         return AnimalMap.insertAndGetId {
             it[name] = newAnimal.name
             it[age] = newAnimal.age
             it[timeUnit] = newAnimal.timeUnit?.toString()
-            it[specie] = newAnimal.specie?.toString()
+            it[specie] = newAnimal.specie.toString()
             it[description] = newAnimal.description
             it[creationDate] = newAnimal.creationDate
             it[modificationDate] = newAnimal.modificationDate
@@ -143,24 +143,24 @@ class AnimalRepositoryImpl : AnimalRepository {
         }
     }
 
-    override fun update(id: Int, animalDTO: AnimalDTO): AnimalDTO {
+    override fun update(id: Int, animal: Animal): Animal {
         val result = transaction {
             removeAnimalToDeficiency(id)
-            val idsAnimalDeficiencies = getDeficienciesId(animalDTO.deficiencies)
+            val idsAnimalDeficiencies = getDeficienciesId(animal.deficiencies)
             addAnimalToDeficiencyMap(idsAnimalDeficiencies, EntityID(id, AnimalMap))
 
             (AnimalMap).update({ AnimalMap.id eq id }) { resultRow ->
-                resultRow[name] = animalDTO.name
-                resultRow[age] = animalDTO.age
-                resultRow[timeUnit] = animalDTO.timeUnit?.toString()
-                resultRow[specie] = animalDTO.specie?.toString()
+                resultRow[name] = animal.name
+                resultRow[age] = animal.age
+                resultRow[timeUnit] = animal.timeUnit?.toString()
+                resultRow[specie] = animal.specie.toString()
                 resultRow[modificationDate] = DateTime.now()
-                resultRow[description] = animalDTO.description
-                resultRow[status] = animalDTO.status.toString()
-                resultRow[sex] = animalDTO.sex.toString()
-                resultRow[size] = animalDTO.size.toString()
-                resultRow[castrated] = animalDTO.castrated
-                resultRow[createdById] = animalDTO.createdById
+                resultRow[description] = animal.description
+                resultRow[status] = animal.status.toString()
+                resultRow[sex] = animal.sex.toString()
+                resultRow[size] = animal.size.toString()
+                resultRow[castrated] = animal.castrated
+                resultRow[createdById] = animal.createdById
             }
         }
         result.let { res ->

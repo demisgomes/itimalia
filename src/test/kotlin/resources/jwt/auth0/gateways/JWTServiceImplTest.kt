@@ -1,19 +1,16 @@
 package resources.jwt.auth0.gateways
 
 import com.abrigo.itimalia.application.config.EnvironmentConfig
-import com.abrigo.itimalia.domain.entities.user.Roles
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.factories.TokenFactory
 import com.abrigo.itimalia.resources.jwt.auth0.gateways.JWTServiceImpl
 import io.mockk.every
 import io.mockk.mockkObject
-import io.mockk.mockkStatic
-import jdk.nashorn.internal.parser.Token
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class JWTServiceImplTest{
 
@@ -32,7 +29,7 @@ class JWTServiceImplTest{
     fun `given a valid email and role, should sign the token`(){
 
         val email = "user@itimalia.org"
-        val role = Roles.USER
+        val role = UserRole.USER
 
         val token = jwtService.sign(email, role)
 
@@ -43,7 +40,7 @@ class JWTServiceImplTest{
     fun `given a valid token, should decode the token and get email and role information`(){
 
         val email = "user@itimalia.org"
-        val role = Roles.USER
+        val role = UserRole.USER
 
         val token = TokenFactory.build(email, role.toString())
 

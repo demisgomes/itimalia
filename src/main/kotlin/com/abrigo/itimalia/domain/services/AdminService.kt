@@ -1,10 +1,10 @@
 package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.NewUser
-import com.abrigo.itimalia.domain.entities.user.Roles
-import com.abrigo.itimalia.domain.entities.user.UserDTO
+import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserRole
 
 interface AdminService{
-    fun add(newUser: NewUser, role: Roles): UserDTO
-    fun get(id:Int): UserDTO
+    fun add(newUser: NewUser, role: UserRole): User
+    fun get(id:Int): User
 }

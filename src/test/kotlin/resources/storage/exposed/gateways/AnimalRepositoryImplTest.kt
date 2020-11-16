@@ -1,6 +1,6 @@
 package resources.storage.exposed.gateways
 
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTO
+import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
@@ -17,14 +17,14 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 class AnimalRepositoryImplTest{
-    private lateinit var expectedAnimalDTO: AnimalDTO
+    private lateinit var expectedAnimal: Animal
     private lateinit var actualDateTime: DateTime
     private val animalRepository = AnimalRepositoryImpl()
 
     @Before
     fun setup(){
         actualDateTime= DateTime.now()
-        expectedAnimalDTO = AnimalFactory.sampleDTO()
+        expectedAnimal = AnimalFactory.sampleDTO()
         DatabaseHolder.tearDown()
     }
 
@@ -47,16 +47,16 @@ class AnimalRepositoryImplTest{
         //given expectedAnimalDTO
 
         //when
-        val animalDTO=animalRepository.add(expectedAnimalDTO)
+        val animalDTO=animalRepository.add(expectedAnimal)
 
         //then
-        assertEquals(expectedAnimalDTO, animalDTO)
+        assertEquals(expectedAnimal, animalDTO)
     }
 
     @Test
     fun `when adds an animal in database with deficiency PARTIAL_BLINDNESS, return it with PARTIAL_BLINDESS deficiency`(){
         //given expectedAnimalDTO
-        val animalWithTwoDeficiencies = expectedAnimalDTO.copy(deficiencies = listOf(AnimalDeficiency.PARTIAL_BLINDNESS))
+        val animalWithTwoDeficiencies = expectedAnimal.copy(deficiencies = listOf(AnimalDeficiency.PARTIAL_BLINDNESS))
 
         //when
         val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
@@ -69,7 +69,7 @@ class AnimalRepositoryImplTest{
     @Test
     fun `when adds an animal in database with two deficiencies, return it with these two deficiencies`(){
         //given expectedAnimalDTO
-        val animalWithTwoDeficiencies = expectedAnimalDTO.copy(deficiencies = listOf(AnimalDeficiency.DEAFNESS, AnimalDeficiency.PARALYSIS))
+        val animalWithTwoDeficiencies = expectedAnimal.copy(deficiencies = listOf(AnimalDeficiency.DEAFNESS, AnimalDeficiency.PARALYSIS))
 
         //when
         val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
@@ -83,13 +83,13 @@ class AnimalRepositoryImplTest{
     @Test
     fun `when gets an previous added animal in database, return it`(){
         //given expectedAnimalDTO
-        animalRepository.add(expectedAnimalDTO)
+        animalRepository.add(expectedAnimal)
 
         //when
         val returnedAnimalDTO=animalRepository.get(1)
 
         //then
-        assertEquals(expectedAnimalDTO, returnedAnimalDTO)
+        assertEquals(expectedAnimal, returnedAnimalDTO)
     }
 
     @Test
@@ -117,7 +117,7 @@ class AnimalRepositoryImplTest{
         //given none
 
         //when
-        animalRepository.update(1, expectedAnimalDTO)
+        animalRepository.update(1, expectedAnimal)
 
         //then
         //AnimalNotFoundException

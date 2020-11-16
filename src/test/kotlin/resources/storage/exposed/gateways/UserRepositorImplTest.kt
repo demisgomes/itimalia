@@ -46,10 +46,10 @@ class UserRepositorImplTest{
         //when
         val user = userRepository.findByEmail(email)
 
-        userDTO.id = 2
+        val expectedUser = userDTO.copy(id = 2)
 
         //then
-        assertEquals(userDTO, user)
+        assertEquals(expectedUser, user)
     }
 
     @Test(expected = UserNotFoundException::class)
@@ -72,10 +72,10 @@ class UserRepositorImplTest{
         //when
         val user = userRepository.findByCredentials(email, password)
 
-        userDTO.id = 2
+        val expectedUser = userDTO.copy(id = 2)
 
         //then
-        assertEquals(userDTO, user)
+        assertEquals(expectedUser, user)
     }
 
     @Test(expected = InvalidCredentialsException::class)
@@ -142,7 +142,7 @@ class UserRepositorImplTest{
         userRepository.add(userDTO)
 
         //when
-        val id = userRepository.getIdByToken(userDTO.token ?: "")
+        val id = userRepository.getIdByToken(userDTO.token)
 
 
         //then

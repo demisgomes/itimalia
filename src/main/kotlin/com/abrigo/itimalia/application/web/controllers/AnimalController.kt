@@ -1,6 +1,6 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.domain.entities.animal.AnimalDTORequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
@@ -25,16 +25,13 @@ class AnimalController(private val animalService: AnimalService) {
 
     fun updateAnimal(context: Context){
         val id:Int=context.pathParam("id").toInt()
-        val animalToBeUpdated = context.body<AnimalDTORequest>()
-        //tirar esse get
-        //animalService.get(id)
+        val animalToBeUpdated = context.body<AnimalRequest>()
         val updatedAnimal=animalService.update(id, animalToBeUpdated)
         context.json(updatedAnimal).status(HttpStatus.OK_200)
     }
 
     fun deleteAnimal(context: Context) {
         val id:Int=context.pathParam("id").toInt()
-        //animalService.get(id)
         animalService.delete(id)
         context.status(HttpStatus.NO_CONTENT_204)
     }
