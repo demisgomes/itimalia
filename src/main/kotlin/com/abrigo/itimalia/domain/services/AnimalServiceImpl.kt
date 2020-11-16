@@ -16,8 +16,7 @@ import org.joda.time.DateTime
 class AnimalServiceImpl(
     private val animalRepository: AnimalRepository,
     private val newAnimalValidator: Validator<NewAnimalRequest>,
-    private val animalValidator: Validator<AnimalRequest>,
-    private val userService: UserService
+    private val animalValidator: Validator<AnimalRequest>
 ) : AnimalService {
 
     override fun getBySpecie(specie: Specie): List<Animal> {
@@ -58,10 +57,8 @@ class AnimalServiceImpl(
         return animalRepository.get(id)
     }
 
-    override fun add(newAnimal: NewAnimalRequest, token: String): Animal {
+    override fun add(newAnimal: NewAnimalRequest, creatorId:Int): Animal {
         newAnimalValidator.validate(newAnimal)
-
-        val userId = userService.getIdByToken(token)
 
         val animalToBeAddedDTO = Animal(
             null,
@@ -77,7 +74,7 @@ class AnimalServiceImpl(
             newAnimal.sex?: throw IllegalArgumentException(),
             newAnimal.size ?: throw IllegalArgumentException(),
             newAnimal.castrated ?: throw IllegalArgumentException(),
-            userId
+            creatorId
         )
         return animalRepository.add(normalizeAge(animalToBeAddedDTO))
     }

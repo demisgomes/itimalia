@@ -26,8 +26,8 @@ class UserServiceImpl(
     private val validatorUserLogin: Validator<UserLoginRequest>
 ) : UserService {
 
-    override fun getIdByToken(token: String): Int {
-        return userRepository.getIdByToken(token)
+    override fun findByEmail(email: String): User {
+        return userRepository.findByEmail(email)
     }
 
     override fun update(id: Int, userRequest: UserRequest, role: UserRole, email: String): User {

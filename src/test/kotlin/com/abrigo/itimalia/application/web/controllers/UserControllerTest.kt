@@ -1,16 +1,16 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
-import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.User
-import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
+import com.abrigo.itimalia.domain.entities.user.UserRequest
+import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.UserSearched
-import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
-import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.domain.services.UserService
+import com.abrigo.itimalia.factories.UserFactory
 import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk

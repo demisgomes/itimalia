@@ -1,12 +1,14 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
-import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.domain.services.AnimalService
+import com.abrigo.itimalia.domain.services.UserService
+import com.abrigo.itimalia.factories.AnimalFactory
 import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
@@ -23,6 +25,9 @@ class AnimalControllerTest {
     private lateinit var actualDateTime: DateTime
     private lateinit var newAnimalRequest: NewAnimalRequest
     private lateinit var expectedAnimal: Animal
+    private lateinit var animalController: AnimalController
+    private lateinit var jwtAccessManager: JWTAccessManager
+    private lateinit var userService: UserService
 
     private val defaultToken = "Bearer defaultToken"
 
@@ -30,6 +35,9 @@ class AnimalControllerTest {
     fun setup() {
         animalServiceMock = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
+        jwtAccessManager = mockk(relaxed = true)
+        userService = mockk(relaxed = true)
+
         actualDateTime = DateTime.now()
 
         newAnimalRequest = AnimalFactory.sampleNewRequest()
@@ -37,6 +45,7 @@ class AnimalControllerTest {
 
         every { contextMock.header("Authorization") } returns defaultToken
 
+        animalController = AnimalController(animalServiceMock,jwtAccessManager, userService)
     }
 
     @Test
@@ -46,7 +55,7 @@ class AnimalControllerTest {
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalRequest)
         every { animalServiceMock.add(newAnimalRequest, any()) }.returns(expectedAnimal)
-        AnimalController(animalServiceMock).addAnimal(contextMock)
+        animalController.addAnimal(contextMock)
 
         //then
         verify { contextMock.json(expectedAnimal).status(HttpStatus.CREATED_201) }
@@ -65,7 +74,7 @@ class AnimalControllerTest {
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalWithNullAge)
         every { animalServiceMock.add(newAnimalWithNullAge, any()) }.returns(expectedAnimalWithNullAgeAndTimeUnitDTO)
-        AnimalController(animalServiceMock).addAnimal(contextMock)
+        animalController.addAnimal(contextMock)
 
         //then
         verify { contextMock.json(expectedAnimalWithNullAgeAndTimeUnitDTO).status(HttpStatus.CREATED_201) }
@@ -84,7 +93,7 @@ class AnimalControllerTest {
         //when
         every { contextMock.body<NewAnimalRequest>() }.returns(newAnimalWithNullTimeUnit)
         every { animalServiceMock.add(newAnimalWithNullTimeUnit, any()) }.returns(expectedAnimalWithTimeUnitInYears)
-        AnimalController(animalServiceMock).addAnimal(contextMock)
+        animalController.addAnimal(contextMock)
 
         //then
         verify { contextMock.json(expectedAnimalWithTimeUnitInYears).status(HttpStatus.CREATED_201) }
@@ -97,7 +106,7 @@ class AnimalControllerTest {
         //when
         every { contextMock.pathParam("id") }.returns("1")
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
-        AnimalController(animalServiceMock).findAnimal(contextMock)
+        animalController.findAnimal(contextMock)
 
         //then
         verify { contextMock.json(expectedAnimal).status(HttpStatus.OK_200) }
@@ -144,7 +153,7 @@ class AnimalControllerTest {
         every { contextMock.body<AnimalRequest>() }.returns(updatedAnimal)
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
         every { animalServiceMock.update(1, updatedAnimal) }.returns(expectedModifiedAnimalDTO)
-        AnimalController(animalServiceMock).updateAnimal(contextMock)
+        animalController.updateAnimal(contextMock)
 
         //then
         verify { contextMock.json(expectedModifiedAnimalDTO).status(HttpStatus.OK_200) }
@@ -157,7 +166,7 @@ class AnimalControllerTest {
         //when
         every { contextMock.pathParam("id") }.returns("1")
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
-        AnimalController(animalServiceMock).deleteAnimal(contextMock)
+        animalController.deleteAnimal(contextMock)
 
         //then
         verify { contextMock.status(HttpStatus.NO_CONTENT_204) }
@@ -188,7 +197,7 @@ class AnimalControllerTest {
         every { contextMock.pathParam("id") }.returns("1")
         every { animalServiceMock.adopt(id) }.returns(expectedAdoptedAnimalDTO)
 
-        AnimalController(animalServiceMock).adopt(contextMock)
+        animalController.adopt(contextMock)
 
         //then
         verify { contextMock.json(expectedAdoptedAnimalDTO).status(HttpStatus.OK_200) }
