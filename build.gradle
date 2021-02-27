@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies{
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.10'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0'
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
@@ -30,7 +30,8 @@ dependencies {
     compile 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 
     //javalin
-    compile 'io.javalin:javalin:3.0.0'
+    compile 'io.javalin:javalin:3.13.3'
+    compile 'io.javalin:javalin-openapi:3.13.3'
     compile 'org.slf4j:slf4j-simple:1.7.25'
 
 
@@ -67,8 +68,6 @@ dependencies {
 
     //flyway
     compile group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
-
-
 
     // H2
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
