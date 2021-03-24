@@ -20,7 +20,6 @@ import org.junit.Test
 
 class AnimalControllerTest {
 
-    private lateinit var contextMock: Context
     private lateinit var animalServiceMock: AnimalService
     private lateinit var actualDateTime: DateTime
     private lateinit var newAnimalRequest: NewAnimalRequest
@@ -29,12 +28,11 @@ class AnimalControllerTest {
     private lateinit var jwtAccessManager: JWTAccessManager
     private lateinit var userService: UserService
 
-    private val defaultToken = "Bearer defaultToken"
+    private val contextMock: Context = mockk(relaxed = true)
 
     @Before
     fun setup() {
         animalServiceMock = mockk(relaxed = true)
-        contextMock = mockk(relaxed = true)
         jwtAccessManager = mockk(relaxed = true)
         userService = mockk(relaxed = true)
 
@@ -42,8 +40,6 @@ class AnimalControllerTest {
 
         newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
-
-        every { contextMock.header("Authorization") } returns defaultToken
 
         animalController = AnimalController(animalServiceMock,jwtAccessManager, userService)
     }
@@ -104,7 +100,7 @@ class AnimalControllerTest {
         //given id = 1
 
         //when
-        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.pathParam<Int>("id").get() }.returns(1)
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
         animalController.findAnimal(contextMock)
 
@@ -149,7 +145,7 @@ class AnimalControllerTest {
         )
 
         //when
-        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.pathParam<Int>("id").get() }.returns(1)
         every { contextMock.body<AnimalRequest>() }.returns(updatedAnimal)
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
         every { animalServiceMock.update(1, updatedAnimal) }.returns(expectedModifiedAnimalDTO)
@@ -164,7 +160,7 @@ class AnimalControllerTest {
         //given id = 1
 
         //when
-        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.pathParam<Int>("id").get() }.returns(1)
         every { animalServiceMock.get(1) }.returns(expectedAnimal)
         animalController.deleteAnimal(contextMock)
 
@@ -194,7 +190,7 @@ class AnimalControllerTest {
         )
 
         //when
-        every { contextMock.pathParam("id") }.returns("1")
+        every { contextMock.pathParam<Int>("id").get() }.returns(1)
         every { animalServiceMock.adopt(id) }.returns(expectedAdoptedAnimalDTO)
 
         animalController.adopt(contextMock)
