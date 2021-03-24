@@ -40,12 +40,5 @@ object SwaggerConfig {
 
         return openApiOptions
     }
-//        val applicationInfo = Info()
-//            .version("1.0")
-//            .description("Itimalia Application")
-//
-//        return OpenApiOptions(applicationInfo)
-//            .path("/swagger-docs")
-//            .swagger(SwaggerOptions("/swagger"))
-//            .roles(roles(Roles.ANYONE))
+
 }
