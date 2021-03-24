@@ -24,26 +24,26 @@ class AnimalController(private val animalService: AnimalService,
     }
 
     fun findAnimal(context: Context) {
-        val id:Int=context.pathParam("id").toInt()
+        val id:Int=context.pathParam<Int>("id").get()
         val animal=animalService.get(id)
         context.json(animal).status(HttpStatus.OK_200)
     }
 
     fun updateAnimal(context: Context){
-        val id:Int=context.pathParam("id").toInt()
+        val id:Int=context.pathParam<Int>("id").get()
         val animalToBeUpdated = context.body<AnimalRequest>()
         val updatedAnimal=animalService.update(id, animalToBeUpdated)
         context.json(updatedAnimal).status(HttpStatus.OK_200)
     }
 
     fun deleteAnimal(context: Context) {
-        val id:Int=context.pathParam("id").toInt()
+        val id:Int=context.pathParam<Int>("id").get()
         animalService.delete(id)
         context.status(HttpStatus.NO_CONTENT_204)
     }
 
     fun adopt(context: Context) {
-        val id:Int=context.pathParam("id").toInt()
+        val id:Int=context.pathParam<Int>("id").get()
         val adoptedAnimal=animalService.adopt(id)
         context.json(adoptedAnimal).status(HttpStatus.OK_200)
     }
@@ -75,16 +75,5 @@ class AnimalController(private val animalService: AnimalService,
         val name=context.queryParam("name").toString()
         val animals=animalService.getByName(name)
         context.json(animals).status(HttpStatus.OK_200)
-    }
-
-    private fun getTokenFromHeader(context: Context): Optional<String> {
-        return Optional.ofNullable(context.header("Authorization"))
-            .flatMap { header ->
-                val split = header.split(" ")
-                if (split.size != 2 || split[0] != "Bearer") {
-                    return@flatMap Optional.empty<String>()
-                }
-                return@flatMap Optional.of(split[1])
-            }
     }
 }
