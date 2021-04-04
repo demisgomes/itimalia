@@ -86,6 +86,7 @@ dependencies {
 jar {
     manifest {
         attributes "Main-Class": mainClassName
+        attributes 'Multi-Release': 'true'
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
