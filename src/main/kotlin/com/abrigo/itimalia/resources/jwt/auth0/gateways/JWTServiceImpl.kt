@@ -9,7 +9,8 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.TokenExpiredException
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Date
+import java.util.Calendar
 
 class JWTServiceImpl : JWTService {
 
@@ -27,7 +28,8 @@ class JWTServiceImpl : JWTService {
             .withIssuer(EnvironmentConfig.issuer())
             .withClaim(EMAIL_CLAIM, email)
             .withClaim(ROLE_CLAIM, role.toString())
-            .withExpiresAt(convertToDate(Integer.parseInt(EnvironmentConfig.jwtExpirationInMinutes()))).sign(algorithm)
+            .withExpiresAt(convertToDate(Integer.parseInt(EnvironmentConfig.jwtExpirationInMinutes())))
+            .sign(algorithm)
     }
 
     override fun decode(token: String): Map<String, String> {

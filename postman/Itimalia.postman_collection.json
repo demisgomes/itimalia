@@ -1,0 +1,774 @@
+{
+	"info": {
+		"_postman_id": "8470dbf6-996d-44a4-834f-5cb1040f8f02",
+		"name": "Itimalia requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Happy path",
+			"item": [
+				{
+					"name": "Login admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('admin_token', jsonData.token);\r",
+									"\r",
+									"pm.test(\"Login Ok\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.eq(1);\r",
+									"    pm.expect(jsonData.email).to.eq(\"admin@itimalia.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"admin@itimalia.org\",\n     \"password\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/login",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('created_admin_id', jsonData.id);\r",
+									"\r",
+									"pm.test(\"Admin created\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.not.eq(1);\r",
+									"    pm.expect(jsonData.email).to.eq(\"joaoadmin@itimalia.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"name\": \"João da Silvarrrr\",\r\n        \"email\": \"joaoadmin@itimalia.org\",\r\n        \"password\": \"hunter2\",\r\n        \"phone\": \"84891111\",\r\n        \"gender\": \"MALE\",\r\n        \"birthDate\": \"2009-01-28\"    \r\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/admins",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"admins"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create animal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('created_animal_id', jsonData.id);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Animal created\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"\r",
+									"    pm.expect(jsonData.status).to.eq(\"AVAILABLE\");\r",
+									"    pm.expect(jsonData.deficiencies.length).to.eq(2);\r",
+									"    pm.expect(jsonData.deficiencies).contains(\"DEAFNESS\");\r",
+									"    pm.expect(jsonData.deficiencies).contains(\"PARTIAL_BLINDNESS\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\":\"Poppy\",\n    \"age\": \"16\",\n    \"timeUnit\": \"YEAR\",\n\t\"specie\":\"DOG\",\n\t\"description\": \"Fofissima\",\n    \"deficiencies\": [\n        \"DEAFNESS\",\n        \"PARTIAL_BLINDNESS\"\n    ],\n    \"sex\": \"MALE\",\n    \"size\": \"MEDIUM\",\n    \"castrated\": true\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/animals",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login new admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('created_admin_token', jsonData.token);\r",
+									"\r",
+									"pm.test(\"Login Ok\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.not.eq(1);\r",
+									"    pm.expect(jsonData.email).to.eq(\"joaoadmin@itimalia.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"joaoadmin@itimalia.org\",\n     \"password\": \"hunter2\"\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/login",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create animal by new admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('created_animal_new_admin_id', jsonData.id);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Animal created\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"\r",
+									"    pm.expect(jsonData.name).to.eq(\"Poppy new admin\");\r",
+									"    pm.expect(jsonData.status).to.eq(\"AVAILABLE\");\r",
+									"    pm.expect(jsonData.deficiencies.length).to.eq(0);\r",
+									"    pm.expect(jsonData.createdById).to.eq(pm.environment.get(\"created_admin_id\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{created_admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\":\"Poppy new admin\",\n    \"age\": \"16\",\n    \"timeUnit\": \"YEAR\",\n\t\"specie\":\"DOG\",\n\t\"description\": \"Fofissima\",\n    \"deficiencies\": [],\n    \"sex\": \"MALE\",\n    \"size\": \"MEDIUM\",\n    \"castrated\": true\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/animals",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update animal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.test(\"Animal updated\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.name).to.eq(\"Lala\");\r",
+									"    pm.expect(jsonData.size).to.eq(\"LARGE\");\r",
+									"    pm.expect(jsonData.deficiencies.length).to.eq(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\":\"Lala\",\n\t\"age\":8,\n\t\"timeUnit\":\"YEAR\",\n\t\"specie\":\"DOG\",\n\t\"description\": \"Princesa\",\n\t\"status\": \"AVAILABLE\",\n    \"deficiencies\": [\n    ],\n    \"sex\": \"MALE\",\n    \"size\": \"LARGE\",\n    \"castrated\": true,\n    \"createdById\": 1\n}\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/animals/{{created_animal_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals",
+								"{{created_animal_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('created_user_id', jsonData.id);\r",
+									"\r",
+									"pm.test(\"user created\", function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.not.eq(1);\r",
+									"    pm.expect(jsonData.email).to.eq(\"joao1@silva.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"name\": \"João da Silvarrrr\",\r\n        \"email\": \"joao1@silva.org\",\r\n        \"password\": \"hunter2\",\r\n        \"phone\": \"84891111\",\r\n        \"gender\": \"MALE\",\r\n        \"birthDate\": \"2004-01-28\"\r\n\t\r\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/users",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set('user_token', jsonData.token);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Login Ok\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.not.eq(1);\r",
+									"    pm.expect(jsonData.email).to.eq(\"joao1@silva.org\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"joao1@silva.org\",\n     \"password\": \"hunter2\"\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/login",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"update Ok\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    pm.expect(jsonData.id).to.not.eq(1);\r",
+									"    pm.expect(jsonData.name).to.eq(\"Joaozinho\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\": \"joao1@silva.org\",\n    \"password\": \"hunter2\",\n    \"birthDate\": \"2006-01-28\",\n    \"gender\": \"MALE\",\n    \"name\": \"Joaozinho\",\n    \"phone\": \"84891111\",\n    \"role\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/users/{{created_user_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"users",
+								"{{created_user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"user Ok\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"type": "text",
+								"value": "02e854b7-5bfd-4ccc-8172-af2e20b60b8f",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{itimalia_url}}/users/{{created_user_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"users",
+								"{{created_user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get animal by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.test(\"Animal retrieved\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.name).to.eq(\"Lala\");\r",
+									"    pm.expect(jsonData.size).to.eq(\"LARGE\");\r",
+									"    pm.expect(jsonData.deficiencies.length).to.eq(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{itimalia_url}}/animals/{{created_animal_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals",
+								"{{created_animal_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adopt an animal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"pm.test(\"Animal adopted\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.name).to.eq(\"Lala\");\r",
+									"    pm.expect(jsonData.status).to.eq(\"ADOPTED\");\r",
+									"    pm.expect(jsonData.deficiencies.length).to.eq(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{user_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{itimalia_url}}/animals/adopt/{{created_animal_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals",
+								"adopt",
+								"{{created_animal_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Find animal by status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Animal retrieved\", function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{itimalia_url}}/animals?status=available",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "available"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete animal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Animal deleted\", function() {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/animals/{{created_animal_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals",
+								"{{created_animal_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"user deleted\", function() {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{itimalia_url}}/users/{{created_user_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"users",
+								"{{created_user_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete animal created by new admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Animal deleted\", function() {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{itimalia_url}}/animals/{{created_animal_new_admin_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"animals",
+								"{{created_animal_new_admin_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"admin deleted\", function() {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{itimalia_url}}/users/{{created_admin_id}}",
+							"host": [
+								"{{itimalia_url}}"
+							],
+							"path": [
+								"users",
+								"{{created_admin_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
