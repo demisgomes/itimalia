@@ -2,6 +2,7 @@ package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.factories.AnimalFactory
@@ -186,6 +187,26 @@ class AnimalRepositoryImplTest{
 
         //then
         animalRepository.get(1)
+    }
+
+    @Test
+    fun `given a valid animal and an existent user, should adopt an animal`(){
+        //given
+        val userId = 1
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        //when
+        animalRepository.add(lala)
+        val adoptedAnimal = animalRepository.adopt(lala,userId)
+
+        //then
+        assertEquals("Lala", adoptedAnimal.name)
+        assertEquals(8, adoptedAnimal.age)
+        assertEquals(TimeUnit.YEAR, adoptedAnimal.timeUnit)
+        assertNotEquals(actualDateTime, adoptedAnimal.modificationDate)
+        assertEquals(actualDateTime, adoptedAnimal.creationDate)
+        assertEquals(AnimalStatus.ADOPTED, adoptedAnimal.status)
+        assertTrue(adoptedAnimal.deficiencies.isEmpty())
     }
 
 }

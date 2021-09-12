@@ -11,6 +11,7 @@ import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAdopterMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAnimalDeficiencyMap
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.ResultRow
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
+import java.lang.IllegalArgumentException
 
 class AnimalRepositoryImpl : AnimalRepository {
     override fun getAll(): List<Animal> {
@@ -185,4 +187,29 @@ class AnimalRepositoryImpl : AnimalRepository {
 
         if (result == 0) throw AnimalNotFoundException()
     }
+
+    override fun adopt(animal: Animal, adopterId: Int): Animal {
+        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now())
+        update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
+
+        val result = transaction {
+            AnimalToAdopterMap.insertAndGetId {
+                it[animalId] = animal.id
+                it[userId] = adopterId
+            }
+        }
+
+        if (result.value == 0) {
+            //rollback
+            update(animal.id , animal)
+        }
+        return get(animal.id)
+    }
+    // chamar o update antes
+//    override fun adopt(animalId: Int, userId: Int): EntityID<Int> {
+//        return AnimalToAdopterMap.insertAndGetId {
+//            it[animalId] = animalId,
+//            it[userId] = userId
+//        }
+//    }
 }

@@ -8,4 +8,5 @@ interface AnimalRepository {
     fun update(id:Int, animal: Animal): Animal
     fun delete(id: Int)
     fun getAll():List<Animal>
+    fun adopt(animal: Animal, adopterId: Int): Animal
 }
