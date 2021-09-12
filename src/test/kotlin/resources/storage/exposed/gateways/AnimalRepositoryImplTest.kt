@@ -5,9 +5,11 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
+import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
 import com.abrigo.itimalia.resources.storage.exposed.gateways.AnimalRepositoryImpl
+import io.mockk.verify
 import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
@@ -207,6 +209,35 @@ class AnimalRepositoryImplTest{
         assertEquals(actualDateTime, adoptedAnimal.creationDate)
         assertEquals(AnimalStatus.ADOPTED, adoptedAnimal.status)
         assertTrue(adoptedAnimal.deficiencies.isEmpty())
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `given a valid animal and a non existent user, should expect an UserNotFoundException`(){
+        //given
+        val userId = 2
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        animalRepository.add(lala)
+
+        //when
+        animalRepository.adopt(lala,userId)
+
+        verify { animalRepository.update(5, lala) }
+
+        //then
+        //UserNotFoundException
+    }
+
+    @Test(expected = AnimalNotFoundException::class)
+    fun `given a non valid animal, should expect an AnimalNotFoundException when call adopt`(){
+        //given
+        val userId = 2
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        //when
+        animalRepository.adopt(lala,userId)
+
+        //then
+        //AnimalNotFoundException
     }
 
 }
