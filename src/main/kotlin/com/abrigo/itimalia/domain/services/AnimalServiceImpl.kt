@@ -38,16 +38,13 @@ class AnimalServiceImpl(
         return animalRepository.getAll()
     }
 
-    override fun adopt(id: Int): Animal {
+    // plus id user
+    override fun adopt(id: Int, adopterId: Int): Animal {
         val animalToBeAdopted = get(id)
-        when {
-            animalToBeAdopted.status == AnimalStatus.AVAILABLE -> {
-                val animalAdopted =
-                    animalToBeAdopted.copy(modificationDate = DateTime.now(), status = AnimalStatus.ADOPTED)
-                return animalRepository.update(id, animalAdopted)
-            }
-            animalToBeAdopted.status == AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
-            animalToBeAdopted.status == AnimalStatus.DEAD -> throw AnimalDeadException()
+        when (animalToBeAdopted.status) {
+            AnimalStatus.AVAILABLE -> return animalRepository.adopt(animalToBeAdopted, adopterId)
+            AnimalStatus.ADOPTED -> throw AnimalAlreadyAdoptedException()
+            AnimalStatus.DEAD -> throw AnimalDeadException()
             else -> throw AnimalGoneException()
         }
 
