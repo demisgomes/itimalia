@@ -8,12 +8,14 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
+import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAdopterMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAnimalDeficiencyMap
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
@@ -192,24 +194,18 @@ class AnimalRepositoryImpl : AnimalRepository {
         val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now())
         update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
 
-        val result = transaction {
-            AnimalToAdopterMap.insertAndGetId {
-                it[animalId] = animal.id
-                it[userId] = adopterId
+        return try {
+            transaction {
+                AnimalToAdopterMap.insertAndGetId {
+                    it[animalId] = animal.id
+                    it[userId] = adopterId
+                }
             }
+            get(animal.id)
+        } catch (exception:ExposedSQLException){
+            update(animal.id, animal)
+            throw UserNotFoundException()
         }
 
-        if (result.value == 0) {
-            //rollback
-            update(animal.id , animal)
-        }
-        return get(animal.id)
     }
-    // chamar o update antes
-//    override fun adopt(animalId: Int, userId: Int): EntityID<Int> {
-//        return AnimalToAdopterMap.insertAndGetId {
-//            it[animalId] = animalId,
-//            it[userId] = userId
-//        }
-//    }
 }

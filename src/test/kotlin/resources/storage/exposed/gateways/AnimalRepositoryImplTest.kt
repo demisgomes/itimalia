@@ -9,6 +9,7 @@ import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
 import com.abrigo.itimalia.resources.storage.exposed.gateways.AnimalRepositoryImpl
+import io.mockk.spyk
 import io.mockk.verify
 import org.joda.time.DateTime
 import org.junit.AfterClass
@@ -216,12 +217,36 @@ class AnimalRepositoryImplTest{
         //given
         val userId = 2
         val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
         animalRepository.add(lala)
 
         //when
         animalRepository.adopt(lala,userId)
 
         verify { animalRepository.update(5, lala) }
+
+        //then
+        //UserNotFoundException
+    }
+
+    @Test
+    fun `given a valid animal and a non existent user, should expect an UserNotFoundException and a call of rollback`(){
+        //given
+        val userId = 2
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        animalRepository.add(lala)
+        val animalRepositorySpy = spyk(animalRepository)
+
+        //when
+        try{
+            animalRepositorySpy.adopt(lala,userId)
+        }
+        catch (exception: UserNotFoundException){
+            assertEquals(UserNotFoundException::class.java, exception.javaClass)
+            verify(exactly = 2) { animalRepositorySpy.update(any(), any()) }
+            verify { animalRepositorySpy.update(lala.id!!, lala) }
+        }
+
 
         //then
         //UserNotFoundException
