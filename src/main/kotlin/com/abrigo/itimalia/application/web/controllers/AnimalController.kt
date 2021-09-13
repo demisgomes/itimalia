@@ -44,7 +44,9 @@ class AnimalController(private val animalService: AnimalService,
 
     fun adopt(context: Context) {
         val id:Int=context.pathParam<Int>("id").get()
-        val adoptedAnimal=animalService.adopt(id)
+        val email = jwtAccessManager.extractEmail(context)
+        val user = userService.findByEmail(email)
+        val adoptedAnimal=animalService.adopt(id, user.id ?: throw IllegalArgumentException())
         context.json(adoptedAnimal).status(HttpStatus.OK_200)
     }
 
