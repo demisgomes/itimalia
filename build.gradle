@@ -49,7 +49,6 @@ dependencies {
     
     //JWT
     compile group: 'com.auth0', name: 'java-jwt', version: '3.4.1'
-    compile group: 'com.auth0', name: 'java-jwt', version: '3.4.1'
 
     //test
     testCompile 'org.jetbrains.kotlin:kotlin-test-junit:1.3.11'
