@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.entities.animal
 
+import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
 import org.joda.time.DateTime
 
 data class Animal(
@@ -16,5 +17,6 @@ data class Animal(
     val sex: AnimalSex,
     val size: AnimalSize,
     val castrated: Boolean,
-    val createdById: Int
+    val createdById: Int,
+    val adopterUser : UserPublicInfo? = null
 )

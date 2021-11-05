@@ -7,15 +7,18 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
-import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
+import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyMap
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalEntity
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
-import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAdopterMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalToAnimalDeficiencyMap
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
+import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
@@ -26,9 +29,8 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
-import java.lang.IllegalArgumentException
 
-class AnimalRepositoryImpl : AnimalRepository {
+class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
     override fun getAll(): List<Animal> {
         return transaction {
             (AnimalMap).selectAll().map { resultRow ->
@@ -40,11 +42,9 @@ class AnimalRepositoryImpl : AnimalRepository {
     override fun get(id: Int): Animal {
         try {
             return transaction {
-                (AnimalMap).select { AnimalMap.id eq id }.map { resultRow ->
-                    buildAnimalDTO(resultRow)
-                }.first()
+                AnimalEntity[id].toAnimal()
             }
-        } catch (exception: NoSuchElementException) {
+        } catch (exception: EntityNotFoundException) {
             throw AnimalNotFoundException()
         }
     }
@@ -67,7 +67,8 @@ class AnimalRepositoryImpl : AnimalRepository {
             sex = resultRow[AnimalMap.sex].let { AnimalSex.valueOf(resultRow[AnimalMap.sex]) },
             size = resultRow[AnimalMap.size].let { AnimalSize.valueOf(resultRow[AnimalMap.size]) },
             castrated = resultRow[AnimalMap.castrated],
-            createdById = resultRow[AnimalMap.createdById].value
+            createdById = resultRow[AnimalMap.createdById].value,
+            adopterUser = resultRow[AnimalMap.adopterUser]?.let { UserEntity(it) }?.toUserPublicInfo()
         )
     }
 
@@ -165,6 +166,7 @@ class AnimalRepositoryImpl : AnimalRepository {
                 resultRow[size] = animal.size.toString()
                 resultRow[castrated] = animal.castrated
                 resultRow[createdById] = animal.createdById
+                resultRow[adopterUser] = animal.adopterUser?.let { EntityID(animal.adopterUser.id ?: throw IllegalArgumentException("id from adopter not found"), UserMap) }
             }
         }
         result.let { res ->
@@ -191,21 +193,10 @@ class AnimalRepositoryImpl : AnimalRepository {
     }
 
     override fun adopt(animal: Animal, adopterId: Int): Animal {
-        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now())
-        update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
+        val adopterUser = userRepository.get(adopterId)
+        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now(), adopterUser = adopterUser.toUserPublicInfo())
 
-        return try {
-            transaction {
-                AnimalToAdopterMap.insertAndGetId {
-                    it[animalId] = animal.id
-                    it[userId] = adopterId
-                }
-            }
-            get(animal.id)
-        } catch (exception:ExposedSQLException){
-            update(animal.id, animal)
-            throw UserNotFoundException()
-        }
+        return update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
 
     }
 }
