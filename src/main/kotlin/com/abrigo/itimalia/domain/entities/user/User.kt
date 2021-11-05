@@ -16,7 +16,7 @@ data class User(
     val token: String
 )
 
-fun User.toUserSearched() = UserSearched(
+fun User.toUserPublicInfo() = UserPublicInfo(
     email = email,
     birthDate = birthDate,
     role = role,

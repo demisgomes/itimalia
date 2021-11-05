@@ -3,7 +3,7 @@ package com.abrigo.itimalia.application.web.swagger
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.entities.user.UserLogin
-import com.abrigo.itimalia.domain.entities.user.UserSearched
+import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 import io.swagger.v3.oas.models.security.SecurityRequirement
@@ -12,7 +12,7 @@ object SwaggerUserDocumentation {
 
     fun getUserDocumentation() = OpenApiDocumentation()
         .pathParam("id", String::class.java)
-        .json("200", UserSearched::class.java)
+        .json("200", UserPublicInfo::class.java)
 
     fun createUserDocumentation() =
         OpenApiDocumentation()

@@ -8,7 +8,7 @@ import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserRole
-import com.abrigo.itimalia.domain.entities.user.UserSearched
+import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.factories.UserFactory
 import io.javalin.http.Context
@@ -41,7 +41,7 @@ class UserControllerTest{
         contextMock = mockk(relaxed = true)
         jwtAccessManagerMock=mockk(relaxed = true)
         actualDateTime= DateTime.now()
-        mockkStatic(UserSearched::class)
+        mockkStatic(UserPublicInfo::class)
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         val birthDate=formatter.parseDateTime("01/01/1990")
         returnedUser= UserFactory.sampleDTO(birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
@@ -61,7 +61,7 @@ class UserControllerTest{
 
         userController.findUser(contextMock)
 
-        verify { contextMock.json(any<UserSearched>()) }
+        verify { contextMock.json(any<UserPublicInfo>()) }
         verify { contextMock.status(HttpStatus.OK_200) }
     }
 
