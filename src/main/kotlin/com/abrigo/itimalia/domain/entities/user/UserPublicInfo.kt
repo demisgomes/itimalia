@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.entities.user
 
 import org.joda.time.DateTime
 
-class UserSearched(
+class UserPublicInfo(
     val id: Int?,
     val email: String,
     val birthDate: DateTime?,
