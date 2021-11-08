@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.entities.user
 
+import com.abrigo.itimalia.domain.entities.animal.AnimalWithoutAdopter
 import org.joda.time.DateTime
 
 class UserPublicInfo(
@@ -10,5 +11,6 @@ class UserPublicInfo(
     val name: String,
     val phone: String,
     val role: UserRole,
-    val creationDate: DateTime?
+    val creationDate: DateTime?,
+    val adoptedAnimals: List<AnimalWithoutAdopter>
 )
