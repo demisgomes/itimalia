@@ -5,6 +5,6 @@ import org.jetbrains.exposed.sql.ReferenceOption
 
 
 object AnimalToAnimalDeficiencyMap: IntIdTable("animal_to_deficiency"){
-    val animalId = reference("animal_id", AnimalMap.id, ReferenceOption.CASCADE)
-    val animalDeficiencyId = reference("animal_deficiency_id", AnimalDeficiencyMap.id)
+    val animalId = reference("animal_id", AnimalMap, ReferenceOption.CASCADE)
+    val animalDeficiencyId = reference("animal_deficiency_id", AnimalDeficiencyMap, ReferenceOption.CASCADE)
 }

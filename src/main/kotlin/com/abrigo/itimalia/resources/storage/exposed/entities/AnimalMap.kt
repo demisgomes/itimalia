@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.resources.storage.exposed.entities
 import com.abrigo.itimalia.domain.entities.animal.Animal
+import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
@@ -45,6 +46,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
     var castrated by AnimalMap.castrated
     var createdById by AnimalMap.createdById
     var adopterUser by UserEntity optionalReferencedOn AnimalMap.adopterUser
+    var deficiencies by AnimalDeficiencyEntity via AnimalToAnimalDeficiencyMap
 
     fun toAnimal() =
         Animal(
@@ -57,7 +59,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             creationDate,
             modificationDate,
             AnimalStatus.valueOf(status),
-            emptyList(),
+            deficiencies.map { animalDeficiencyEntity -> AnimalDeficiency.valueOf(animalDeficiencyEntity.name) },
             AnimalSex.valueOf(sex),
             AnimalSize.valueOf(size),
             castrated,
