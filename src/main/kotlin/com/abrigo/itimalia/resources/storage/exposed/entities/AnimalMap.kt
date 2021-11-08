@@ -4,6 +4,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.AnimalWithoutAdopter
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import org.jetbrains.exposed.dao.IntEntity
@@ -66,5 +67,23 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             createdById.value,
             adopterUser?.toUserPublicInfo()
             )
+
+    fun toAnimalWithoutAdopter() =
+        AnimalWithoutAdopter(
+            id.value,
+            name,
+            age,
+            timeUnit?.let { TimeUnit.valueOf(it) },
+            Specie.valueOf(specie),
+            description,
+            creationDate,
+            modificationDate,
+            AnimalStatus.valueOf(status),
+            deficiencies.map { animalDeficiencyEntity -> AnimalDeficiency.valueOf(animalDeficiencyEntity.name) },
+            AnimalSex.valueOf(sex),
+            AnimalSize.valueOf(size),
+            castrated,
+            createdById.value
+        )
 
 }
