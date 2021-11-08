@@ -11,6 +11,7 @@ import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.repositories.UserRepository
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyEntity
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalDeficiencyMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalEntity
 import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
@@ -23,7 +24,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -33,8 +33,8 @@ import org.joda.time.DateTime
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
     override fun getAll(): List<Animal> {
         return transaction {
-            (AnimalMap).selectAll().map { resultRow ->
-                buildAnimalDTO(resultRow)
+            AnimalEntity.all().map { animalEntity ->
+                animalEntity.toAnimal()
             }
         }
     }
@@ -86,30 +86,20 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
         return AnimalDeficiency.valueOf(resultRow[AnimalDeficiencyMap.name])
     }
 
-    private fun getByCreationDate(creationDate: DateTime): Animal {
-        try {
-            return transaction {
-                (AnimalMap).select { AnimalMap.creationDate eq creationDate }.map { resultRow ->
-                    buildAnimalDTO(resultRow)
-                }.first()
-            }
-        } catch (exception: NoSuchElementException) {
-            throw AnimalNotFoundException()
-        }
-    }
-
     override fun add(newAnimal: Animal): Animal {
-        transaction {
-
-            val idsAnimalDeficiencies = getDeficienciesId(newAnimal.deficiencies)
-
-            val idAnimal = insertAndGetId(newAnimal)
-
-            addAnimalToDeficiencyMap(idsAnimalDeficiencies, idAnimal)
-
-            commit()
+        val deficienciesEntities = transaction {
+            AnimalDeficiencyEntity.find { AnimalDeficiencyMap.name inList newAnimal.deficiencies.map { animalDeficiency -> animalDeficiency.toString() } }
         }
-        return getByCreationDate(newAnimal.creationDate)
+
+        val addedAnimalEntity = insertAnimalEntity(newAnimal)
+
+        transaction {
+            addedAnimalEntity.deficiencies = deficienciesEntities
+        }
+
+        return transaction {
+            addedAnimalEntity.toAnimal()
+        }
 
     }
 
@@ -131,20 +121,22 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
         }
     }
 
-    private fun insertAndGetId(newAnimal: Animal): EntityID<Int> {
-        return AnimalMap.insertAndGetId {
-            it[name] = newAnimal.name
-            it[age] = newAnimal.age
-            it[timeUnit] = newAnimal.timeUnit?.toString()
-            it[specie] = newAnimal.specie.toString()
-            it[description] = newAnimal.description
-            it[creationDate] = newAnimal.creationDate
-            it[modificationDate] = newAnimal.modificationDate
-            it[status] = newAnimal.status.toString()
-            it[sex] = newAnimal.sex.toString()
-            it[size] = newAnimal.size.toString()
-            it[castrated] = newAnimal.castrated
-            it[createdById] = newAnimal.createdById
+    private fun insertAnimalEntity(newAnimal: Animal): AnimalEntity {
+        return transaction {
+            AnimalEntity.new {
+                name = newAnimal.name
+                age = newAnimal.age
+                timeUnit = newAnimal.timeUnit?.toString()
+                specie = newAnimal.specie.toString()
+                description = newAnimal.description
+                creationDate = newAnimal.creationDate
+                modificationDate = newAnimal.modificationDate
+                status = newAnimal.status.toString()
+                sex = newAnimal.sex.toString()
+                size = newAnimal.size.toString()
+                castrated = newAnimal.castrated
+                createdById = EntityID(newAnimal.createdById, UserMap)
+            }
         }
     }
 
