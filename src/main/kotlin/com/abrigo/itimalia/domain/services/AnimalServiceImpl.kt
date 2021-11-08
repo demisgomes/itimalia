@@ -38,7 +38,6 @@ class AnimalServiceImpl(
         return animalRepository.getAll()
     }
 
-    // plus id user
     override fun adopt(id: Int, adopterId: Int): Animal {
         val animalToBeAdopted = get(id)
         when (animalToBeAdopted.status) {
