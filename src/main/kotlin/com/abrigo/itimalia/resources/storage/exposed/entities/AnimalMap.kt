@@ -29,7 +29,7 @@ object AnimalMap : IntIdTable("animals") {
     val size =  varchar("size", VARCHAR_LENGTH)
     val castrated = bool("castrated")
     val createdById = reference("created_by_id", UserMap.id, ReferenceOption.NO_ACTION)
-    val adopterUser = reference("adopter_user", UserMap).nullable()
+    val adoptedBy = reference("adopted_by", UserMap).nullable()
 }
 
 class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
@@ -46,7 +46,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
     var size by AnimalMap.size
     var castrated by AnimalMap.castrated
     var createdById by AnimalMap.createdById
-    var adopterUser by UserEntity optionalReferencedOn AnimalMap.adopterUser
+    var adoptedBy by UserEntity optionalReferencedOn AnimalMap.adoptedBy
     var deficiencies by AnimalDeficiencyEntity via AnimalToAnimalDeficiencyMap
 
     fun toAnimal() =
@@ -65,7 +65,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             AnimalSize.valueOf(size),
             castrated,
             createdById.value,
-            adopterUser?.toUserPublicInfo()
+            adoptedBy?.toUserPublicInfo()
             )
 
     fun toAnimalWithoutAdopter() =

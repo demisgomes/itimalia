@@ -216,7 +216,7 @@ class AnimalRepositoryImplTest{
         assertEquals(actualDateTime, adoptedAnimal.creationDate)
         assertEquals(AnimalStatus.ADOPTED, adoptedAnimal.status)
         assertTrue(adoptedAnimal.deficiencies.isEmpty())
-        assertNotNull(adoptedAnimal.adopterUser)
+        assertNotNull(adoptedAnimal.adoptedBy)
     }
 
     @Test(expected = UserNotFoundException::class)

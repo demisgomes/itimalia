@@ -97,7 +97,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
                 resultRow[size] = animal.size.toString()
                 resultRow[castrated] = animal.castrated
                 resultRow[createdById] = animal.createdById
-                resultRow[adopterUser] = animal.adopterUser?.let { EntityID(animal.adopterUser.id ?: throw IllegalArgumentException("id from adopter not found"), UserMap) }
+                resultRow[adoptedBy] = animal.adoptedBy?.let { EntityID(animal.adoptedBy.id ?: throw IllegalArgumentException("id from adopter not found"), UserMap) }
             }
         }
         result.let { res ->
@@ -121,7 +121,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
 
     override fun adopt(animal: Animal, adopterId: Int): Animal {
         val adopterUser = userRepository.get(adopterId)
-        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now(), adopterUser = adopterUser.toUserPublicInfo())
+        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now(), adoptedBy = adopterUser.toUserPublicInfo())
 
         return update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
     }

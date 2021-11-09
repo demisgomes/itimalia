@@ -18,5 +18,5 @@ data class Animal(
     val size: AnimalSize,
     val castrated: Boolean,
     val createdById: Int,
-    val adopterUser : UserPublicInfo? = null
+    val adoptedBy : UserPublicInfo? = null
 )

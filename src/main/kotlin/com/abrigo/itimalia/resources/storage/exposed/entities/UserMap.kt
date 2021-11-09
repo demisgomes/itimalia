@@ -35,7 +35,7 @@ class UserEntity(id: EntityID<Int>): IntEntity(id) {
     var creationDate by UserMap.creationDate
     var modificationDate by UserMap.modificationDate
     var token by UserMap.token
-    private val adoptedAnimals by AnimalEntity optionalReferrersOn AnimalMap.adopterUser
+    private val adoptedAnimals by AnimalEntity optionalReferrersOn AnimalMap.adoptedBy
 
     fun toUser() = User(id.value, email, password, birthDate,
         Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, modificationDate, token, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() })
