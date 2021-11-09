@@ -57,7 +57,7 @@ class UserRepositoryImpl: UserRepository {
                 role = user.role.toString()
             }
         }
-        return addedUser.toUser()
+        return transaction { addedUser.toUser() }
     }
 
     override fun update(id: Int, user: User): User {
