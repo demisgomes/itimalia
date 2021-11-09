@@ -1,17 +1,14 @@
 package com.abrigo.itimalia.resources.storage.exposed.gateways
 
-import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.User
-import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.UserRepository
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity
 import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
@@ -21,8 +18,8 @@ class UserRepositoryImpl: UserRepository {
     override fun findByEmail(email: String): User {
         try{
             return transaction {
-                UserMap.select { UserMap.email eq email }.map { resultRow ->
-                    buildUserDTO(resultRow)
+                UserEntity.find { UserMap.email eq email }.map { userEntity ->
+                    userEntity.toUser()
                 }.first()
             }
         }
@@ -35,8 +32,8 @@ class UserRepositoryImpl: UserRepository {
     override fun findByCredentials(email: String, password: String): User {
         try{
             return transaction {
-                UserMap.select { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { resultRow ->
-                    buildUserDTO(resultRow)
+                UserEntity.find { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { userEntity ->
+                    userEntity.toUser()
                 }.first()
             }
         }
@@ -46,21 +43,21 @@ class UserRepositoryImpl: UserRepository {
     }
 
     override fun add(user: User): User {
-        transaction {
-            UserMap.insert {
-                it[name] = user.name
-                it[birthDate] = user.birthDate
-                it[creationDate] = user.creationDate
-                it[email] = user.email
-                it[gender] = user.gender.toString()
-                it[password] = user.password
-                it[modificationDate] = user.modificationDate
-                it[phone] = user.phone
-                it[token] = user.token
-                it[role] = user.role.toString()
+        val addedUser = transaction {
+            UserEntity.new {
+                name = user.name
+                birthDate = user.birthDate
+                creationDate = user.creationDate
+                email = user.email
+                gender = user.gender.toString()
+                password = user.password
+                modificationDate = user.modificationDate
+                phone = user.phone
+                token = user.token
+                role = user.role.toString()
             }
         }
-        return findByEmail(user.email)
+        return transaction { addedUser.toUser() }
     }
 
     override fun update(id: Int, user: User): User {
@@ -81,7 +78,7 @@ class UserRepositoryImpl: UserRepository {
         result.let { res ->
             when (res) {
                 0 -> throw UserNotFoundException()
-                else -> return get(id)
+                else -> return transaction { UserEntity[id].toUser() }
             }
         }
     }
@@ -97,30 +94,12 @@ class UserRepositoryImpl: UserRepository {
     override fun get(id: Int): User {
         try{
             return transaction {
-                UserMap.select { UserMap.id eq id }.map { resultRow ->
-                    buildUserDTO(resultRow)
-                }.first()
+                UserEntity[id].toUser()
             }
         }
-        catch (exception:NoSuchElementException){
+        catch (exception:EntityNotFoundException){
             throw UserNotFoundException()
         }
-    }
-
-    private fun buildUserDTO(resultRow: ResultRow): User {
-        return User(
-            resultRow[UserMap.id].value,
-            resultRow[UserMap.email],
-            resultRow[UserMap.password],
-            resultRow[UserMap.birthDate],
-            Gender.valueOf(resultRow[UserMap.gender]),
-            resultRow[UserMap.name],
-            resultRow[UserMap.phone],
-            UserRole.valueOf(resultRow[UserMap.role]),
-            resultRow[UserMap.creationDate],
-            resultRow[UserMap.modificationDate],
-            resultRow[UserMap.token]
-        )
     }
 
 }

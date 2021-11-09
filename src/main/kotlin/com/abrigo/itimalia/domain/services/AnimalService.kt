@@ -12,7 +12,7 @@ interface AnimalService {
     fun update(id: Int, updatedAnimal: AnimalRequest): Animal
     fun delete(id: Int)
     fun getAll(): List<Animal>
-    fun adopt(id: Int): Animal
+    fun adopt(id: Int, adopterId: Int): Animal
     fun getByStatus(animalStatus: AnimalStatus): List<Animal>
     fun getBySpecie(specie: Specie): List<Animal>
     fun getByName(name: String): List<Animal>

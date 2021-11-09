@@ -2,11 +2,17 @@ package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
+import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
+import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.factories.AnimalFactory
+import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
 import com.abrigo.itimalia.resources.storage.exposed.gateways.AnimalRepositoryImpl
+import io.mockk.every
+import io.mockk.mockk
 import org.joda.time.DateTime
 import org.junit.AfterClass
 import org.junit.Before
@@ -14,12 +20,14 @@ import org.junit.BeforeClass
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class AnimalRepositoryImplTest{
     private lateinit var expectedAnimal: Animal
     private lateinit var actualDateTime: DateTime
-    private val animalRepository = AnimalRepositoryImpl()
+    private val userRepositoryMock: UserRepository = mockk(relaxed = true)
+    private val animalRepository = AnimalRepositoryImpl(userRepositoryMock)
 
     @Before
     fun setup(){
@@ -186,6 +194,58 @@ class AnimalRepositoryImplTest{
 
         //then
         animalRepository.get(1)
+    }
+
+    @Test
+    fun `given a valid animal and an existent user, should adopt an animal`(){
+        //given
+        val userId = 1
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        every { userRepositoryMock.get(userId) } returns UserFactory.sampleDTO()
+
+        //when
+        animalRepository.add(lala)
+        val adoptedAnimal = animalRepository.adopt(lala,userId)
+
+        //then
+        assertEquals("Lala", adoptedAnimal.name)
+        assertEquals(8, adoptedAnimal.age)
+        assertEquals(TimeUnit.YEAR, adoptedAnimal.timeUnit)
+        assertNotEquals(actualDateTime, adoptedAnimal.modificationDate)
+        assertEquals(actualDateTime, adoptedAnimal.creationDate)
+        assertEquals(AnimalStatus.ADOPTED, adoptedAnimal.status)
+        assertTrue(adoptedAnimal.deficiencies.isEmpty())
+        assertNotNull(adoptedAnimal.adoptedBy)
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `given a valid animal and a non existent user, should expect an UserNotFoundException`(){
+        //given
+        val userId = 2
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        animalRepository.add(lala)
+
+        every { userRepositoryMock.get(userId) } throws UserNotFoundException()
+        //when
+        animalRepository.adopt(lala,userId)
+
+        //then
+        //UserNotFoundException
+    }
+
+    @Test(expected = AnimalNotFoundException::class)
+    fun `given a non valid animal, should expect an AnimalNotFoundException when call adopt`(){
+        //given
+        val userId = 2
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+
+        //when
+        animalRepository.adopt(lala,userId)
+
+        //then
+        //AnimalNotFoundException
     }
 
 }

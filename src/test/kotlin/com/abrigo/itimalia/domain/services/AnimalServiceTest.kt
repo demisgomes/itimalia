@@ -305,14 +305,15 @@ class AnimalServiceTest {
     fun `when adopt an animal that has AnimalStatus available return the adopted animal`() {
         //given
         val id = 1
+        val adopterId = 1
         val expectedAdoptedAnimalDTO = expectedAnimal.copy(status = AnimalStatus.ADOPTED)
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAnimal)
         every { DateTime.now() }.returns(actualDateTime)
-        every { animalRepositoryMock.update(id, expectedAdoptedAnimalDTO) }.returns(expectedAdoptedAnimalDTO)
+        every { animalRepositoryMock.adopt(expectedAnimal, adopterId) }.returns(expectedAdoptedAnimalDTO)
 
-        val animalDTO = animalService.adopt(id)
+        val animalDTO = animalService.adopt(id, adopterId)
 
         //then
         assertEquals(expectedAdoptedAnimalDTO, animalDTO)
@@ -322,12 +323,13 @@ class AnimalServiceTest {
     fun `when adopt an animal that has AnimalStatus adopted should expect an AnimalAlreadyAdotpedException`() {
         //given
         val id = 1
+        val adopterId = 1
         val expectedAdoptedAnimalDTO = expectedAnimal.copy(status = AnimalStatus.ADOPTED)
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedAdoptedAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        animalService.adopt(id)
+        animalService.adopt(id, adopterId)
 
         //then expect AnimalAlreadyAdoptedException
     }
@@ -336,13 +338,14 @@ class AnimalServiceTest {
     fun `when adopt an animal that has AnimalStatus dead should expect an AnimalDeadException`() {
         //given
         val id = 1
+        val adopterId = 1
         val expectedDeadAnimalDTO = expectedAnimal.copy(status = AnimalStatus.DEAD)
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedDeadAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        animalService.adopt(id)
+        animalService.adopt(id, adopterId)
 
         //then expect AnimalDeadException
     }
@@ -351,13 +354,14 @@ class AnimalServiceTest {
     fun `when adopt an animal that has AnimalStatus adopted should expect an AnimalAlreadyAdotpedException and return the error with status UNAUTHORIZED 401`() {
         //given
         val id = 1
+        val adopterId = 1
         val expectedGoneAnimalDTO = expectedAnimal.copy(status = AnimalStatus.GONE)
 
         //when
         every { animalRepositoryMock.get(id) }.returns(expectedGoneAnimalDTO)
         every { DateTime.now() }.returns(actualDateTime)
 
-        animalService.adopt(id)
+        animalService.adopt(id, adopterId)
 
         //then expect AnimalGoneException
     }

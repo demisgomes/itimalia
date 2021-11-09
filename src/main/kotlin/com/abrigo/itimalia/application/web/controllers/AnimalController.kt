@@ -9,7 +9,6 @@ import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
-import java.util.*
 
 class AnimalController(private val animalService: AnimalService,
                        private val jwtAccessManager: JWTAccessManager,
@@ -44,7 +43,9 @@ class AnimalController(private val animalService: AnimalService,
 
     fun adopt(context: Context) {
         val id:Int=context.pathParam<Int>("id").get()
-        val adoptedAnimal=animalService.adopt(id)
+        val email = jwtAccessManager.extractEmail(context)
+        val user = userService.findByEmail(email)
+        val adoptedAnimal=animalService.adopt(id, user.id ?: throw IllegalArgumentException())
         context.json(adoptedAnimal).status(HttpStatus.OK_200)
     }
 
