@@ -6,7 +6,7 @@ import com.abrigo.itimalia.application.web.handlers.ErrorHandler
 import org.koin.dsl.module.module
 
 val configModule=module{
-    single { RouteConfig(get(), get(), get()) }
+    single { RouteConfig(get(), get(), get(), get()) }
     single { ItimaliaJsonSerializer.build() }
     single { ErrorHandler() }
 }
