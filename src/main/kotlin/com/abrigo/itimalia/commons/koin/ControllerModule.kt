@@ -16,5 +16,5 @@ val controllerModule = module {
     }
     single { AdminController(get(),get()) }
     single { AnimalController(get(), get(), get()) }
-    single { ImageController() }
+    single { ImageController(get()) }
 }

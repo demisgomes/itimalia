@@ -70,7 +70,7 @@ dependencies {
     compile group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
 
     // H2
-    compile group: 'com.h2database', name: 'h2', version: '1.4.199'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.199'
 
     // Swagger
     compile group: 'cc.vileda', name: 'kotlin-openapi3-dsl', version: '0.20.1'

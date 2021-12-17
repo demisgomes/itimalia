@@ -10,6 +10,7 @@ import com.abrigo.itimalia.commons.koin.JWTModule
 import com.abrigo.itimalia.commons.koin.accessManagerModule
 import com.abrigo.itimalia.commons.koin.configModule
 import com.abrigo.itimalia.commons.koin.controllerModule
+import com.abrigo.itimalia.commons.koin.imageModule
 import com.abrigo.itimalia.commons.koin.repositoryModule
 import com.abrigo.itimalia.commons.koin.serviceModule
 import com.abrigo.itimalia.domain.exceptions.ApiException
@@ -41,7 +42,8 @@ class ItimaliaApplication : KoinComponent {
                 configModule,
                 JWTModule,
                 accessManagerModule,
-                repositoryModule
+                repositoryModule,
+                imageModule
             )
         )
 
