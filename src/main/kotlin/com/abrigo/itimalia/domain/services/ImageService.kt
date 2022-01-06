@@ -1,5 +1,8 @@
 package com.abrigo.itimalia.domain.services
 
+import com.abrigo.itimalia.domain.entities.image.Image
+import com.abrigo.itimalia.domain.entities.image.ImageToBeUploaded
+
 interface ImageService {
-    fun add(imageFiles: List<ByteArray>) : List<String>
+    fun add(imageFiles: List<ImageToBeUploaded>) : List<Image>
 }
