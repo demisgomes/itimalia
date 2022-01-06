@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.resources.cloudinary
+package com.abrigo.itimalia.resources.images.cloudinary
 
 import com.cloudinary.Cloudinary
 
