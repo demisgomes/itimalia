@@ -7,6 +7,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.AnimalWithoutAdopter
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity.Companion.optionalReferrersOn
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -48,6 +49,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
     var createdById by AnimalMap.createdById
     var adoptedBy by UserEntity optionalReferencedOn AnimalMap.adoptedBy
     var deficiencies by AnimalDeficiencyEntity via AnimalToAnimalDeficiencyMap
+    val images by AnimalImageEntity referrersOn AnimalImage.animalId
 
     fun toAnimal() =
         Animal(
@@ -65,7 +67,8 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             AnimalSize.valueOf(size),
             castrated,
             createdById.value,
-            adoptedBy?.toUserPublicInfo()
+            adoptedBy?.toUserPublicInfo(),
+            images.map { image -> image.toAnimalImage() }.toList()
             )
 
     fun toAnimalWithoutAdopter() =
@@ -83,7 +86,8 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             AnimalSex.valueOf(sex),
             AnimalSize.valueOf(size),
             castrated,
-            createdById.value
+            createdById.value,
+            images.map { image -> image.toAnimalImage() }.toList()
         )
 
 }
