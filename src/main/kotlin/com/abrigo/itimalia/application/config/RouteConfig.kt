@@ -46,6 +46,9 @@ class RouteConfig(private val userController: UserController, private val adminC
                     ApiBuilder.get(documented(getAnimalDocumentation(),animalController::findAnimal), roles(RouteRole.ANYONE))
                     ApiBuilder.put(documented(updateAnimalDocumentation(),animalController::updateAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.delete(documented(deleteAnimalDocumentation(),animalController::deleteAnimal), roles(RouteRole.ADMIN))
+                    ApiBuilder.path("images"){
+                        ApiBuilder.post(imageController::addImage, roles(RouteRole.ANYONE))
+                    }
                 }
                 ApiBuilder.post(documented(createAnimalDocumentation(),animalController::addAnimal), roles(RouteRole.ADMIN))
                 ApiBuilder.get(documented(getAnimalsDocumentation(),animalController::findAllAnimals), roles(RouteRole.ANYONE))
@@ -53,9 +56,6 @@ class RouteConfig(private val userController: UserController, private val adminC
             }
             ApiBuilder.path("animals/adopt/:id"){
                 ApiBuilder.post(documented(adoptAnimalDocumentation(),animalController::adopt), roles(RouteRole.USER))
-            }
-            ApiBuilder.path("images"){
-                ApiBuilder.post(imageController::addImage, roles(RouteRole.ANYONE))
             }
 
         }
