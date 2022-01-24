@@ -26,11 +26,13 @@ class ImageControllerTest {
         val sampleFile = File("./src/test/kotlin/samples/sample-image.png")
         val filename = "filename.png"
         val imageServiceResult = listOf(Image(filename, "path", "png", 12345))
+        val animalId = 1
+
         every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", 12345, filename, "png",  12345))
-        every { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes()))) } returns imageServiceResult
+        every { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) } returns imageServiceResult
         imageController.addImage(contextMock)
 
-        verify { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes()))) }
+        verify { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) }
         verify { contextMock.json(any<List<Image>>()) }
     }
 
@@ -54,12 +56,14 @@ class ImageControllerTest {
     fun `should throw an exception when one or more files are not images`() {
         val content = ByteArrayInputStream("bytes".encodeToByteArray())
         val filename = "filename.png"
+        val animalId = 1
+
         val imageServiceResult = listOf(Image(filename, "path", "png", 12345))
         every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345, filename, "png",  12345))
-        every { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes()))) } returns imageServiceResult
+        every { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) } returns imageServiceResult
         imageController.addImage(contextMock)
 
-        verify { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes()))) }
+        verify { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) }
         verify { contextMock.json(any<List<Image>>()) }
     }
 }

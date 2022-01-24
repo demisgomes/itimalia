@@ -24,12 +24,13 @@ class CloudinaryServiceTest {
         val imageToBeUploaded = ImageToBeUploaded("test", "test".encodeToByteArray())
         val imageBytes = 1232434L
         val imageFormat = "png"
+        val animalId = 1
 
         every { cloudinaryConfig.uploader().upload(imageToBeUploaded.byteArray, any()) }returns mapOf("public_id" to imageToBeUploaded.fileName, "format" to imageFormat, "bytes" to "1232434")
         every { cloudinaryConfig.url().transformation(any()).generate(any()) } returns "http://res.cloudinary.com/q_60/idimage"
         every { animalImagesRepositoryMock.addAll(any(), any()) } returns Unit
 
-        val imagesList = cloudinaryService.add(listOf(imageToBeUploaded))
+        val imagesList = cloudinaryService.add(listOf(imageToBeUploaded), animalId)
 
         assertTrue(imagesList.contains(Image(imageToBeUploaded.fileName,"http://res.cloudinary.com/q_60/idimage", imageFormat, imageBytes)))
     }
@@ -39,6 +40,6 @@ class CloudinaryServiceTest {
         val imageToBeUploaded = ImageToBeUploaded("test", "test".encodeToByteArray())
         every { cloudinaryConfig.uploader().upload(imageToBeUploaded.byteArray, any()) } throws (RuntimeException())
 
-        cloudinaryService.add(listOf(imageToBeUploaded))
+        cloudinaryService.add(listOf(imageToBeUploaded), 1)
     }
 }

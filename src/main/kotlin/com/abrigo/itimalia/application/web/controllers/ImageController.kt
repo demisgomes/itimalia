@@ -20,13 +20,15 @@ class ImageController(private val imageService: ImageService) {
             .map { ImageToBeUploaded(it.filename, it.content.readBytes()) }
             .toList()
 
+        val animalId = context.pathParam("id").toInt()
+
         checkIfIsEmpty(imageFilesToBeUploaded)
 
         checkIfImagesSurpassMaxSize(context)
 
         checkIfAreImages(imageFilesToBeUploaded)
 
-        val uploadedImagesList = imageService.add(imageFilesToBeUploaded)
+        val uploadedImagesList = imageService.add(imageFilesToBeUploaded, animalId)
         context.json(uploadedImagesList).status(HttpStatus.CREATED_201)
     }
 

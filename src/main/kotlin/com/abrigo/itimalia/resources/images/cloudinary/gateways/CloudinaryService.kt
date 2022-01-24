@@ -10,9 +10,9 @@ import com.cloudinary.EagerTransformation
 import com.cloudinary.Transformation
 
 class CloudinaryService(private val cloudinary: Cloudinary, private val animalImagesRepository: AnimalImagesRepository) : ImageService {
-    override fun add(imageFiles: List<ImageToBeUploaded>) : List<Image> {
+    override fun add(imageFiles: List<ImageToBeUploaded>, animalId: Int) : List<Image> {
         val uploadedImages = imageFiles.map { uploadImage(it) }.toList()
-        animalImagesRepository.addAll(uploadedImages, 1)
+        animalImagesRepository.addAll(uploadedImages, animalId)
         return uploadedImages
     }
 
