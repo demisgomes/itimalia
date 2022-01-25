@@ -5,6 +5,7 @@ import com.abrigo.itimalia.application.web.controllers.AdminController
 import com.abrigo.itimalia.application.web.controllers.AnimalController
 import com.abrigo.itimalia.application.web.controllers.AnimalImageController
 import com.abrigo.itimalia.application.web.controllers.UserController
+import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.addAnimalImagesDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.adoptAnimalDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.createAnimalDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.deleteAnimalDocumentation
@@ -19,6 +20,7 @@ import com.abrigo.itimalia.application.web.swagger.SwaggerUserDocumentation.upda
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.core.security.SecurityUtil.roles
+import io.javalin.plugin.openapi.dsl.document
 import io.javalin.plugin.openapi.dsl.documented
 
 
@@ -47,7 +49,7 @@ class RouteConfig(private val userController: UserController, private val adminC
                     ApiBuilder.put(documented(updateAnimalDocumentation(),animalController::updateAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.delete(documented(deleteAnimalDocumentation(),animalController::deleteAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.path("images"){
-                        ApiBuilder.post(animalImageController::addImage, roles(RouteRole.ANYONE))
+                        ApiBuilder.post(documented(addAnimalImagesDocumentation(), animalImageController::addImage), roles(RouteRole.ANYONE))
                     }
                 }
                 ApiBuilder.post(documented(createAnimalDocumentation(),animalController::addAnimal), roles(RouteRole.ADMIN))
