@@ -2,6 +2,7 @@ package com.abrigo.itimalia.application.web.swagger
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.NewAnimal
+import com.abrigo.itimalia.domain.entities.image.Image
 import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 import io.swagger.v3.oas.models.security.SecurityRequirement
@@ -50,6 +51,16 @@ object SwaggerAnimalDocumentation{
         .result("403", ErrorResponse::class.java)
         .result("404", Unit::class.java)
         .result("410", Unit::class.java)
+        .operation {
+            it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
+        }
+
+    fun addAnimalImagesDocumentation() = OpenApiDocumentation()
+        .pathParam("id", String::class.java)
+        .jsonArray<Image>("200")
+        .result("401", ErrorResponse::class.java)
+        .result("403", ErrorResponse::class.java)
+        .result("404", ErrorResponse::class.java)
         .operation {
             it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
         }

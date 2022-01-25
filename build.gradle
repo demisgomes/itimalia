@@ -81,6 +81,10 @@ dependencies {
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.1-b06'
     compile 'org.glassfish.web:javax.el:2.2.6'
 
+    // Cloudinary
+    implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.29.0'
+
+
 }
 
 jar {

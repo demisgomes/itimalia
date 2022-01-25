@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.domain.exceptions
 
 enum class ApiError{
+    IMAGE_UPLOAD_ERROR,
     INVALID_GENDER_ERROR,
     VALIDATION_ERROR,
     USER_NOT_FOUND_ERROR,

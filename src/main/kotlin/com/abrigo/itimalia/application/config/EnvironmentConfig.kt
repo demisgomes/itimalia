@@ -29,4 +29,12 @@ object EnvironmentConfig {
     fun jwtExpirationInMinutes(): String {
         return getenv("JWT_EXPIRATION_MINUTES", "5")
     }
+
+    fun maxFileSize(): String {
+        return getenv("MAX_FILE_SIZE", "6048576")
+    }
+
+    fun maxNumberOfImages(): String {
+        return getenv("MAX_NUMBER_OF_IMAGES", "8")
+    }
 }
