@@ -7,7 +7,6 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.AnimalWithoutAdopter
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
-import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity.Companion.optionalReferrersOn
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
