@@ -25,7 +25,7 @@ object DatabaseConfig {
             EnvironmentConfig.jdbcUrl(),
             EnvironmentConfig.databaseUsername(),
             EnvironmentConfig.databasePassword()
-        ).locations("db/migration").load()
+        ).locations("db/migration-postgres").load()
 
         flyway.migrate()
     }
