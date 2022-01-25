@@ -3,7 +3,7 @@ package com.abrigo.itimalia.application.config
 import com.abrigo.itimalia.application.web.accessmanagers.entities.RouteRole
 import com.abrigo.itimalia.application.web.controllers.AdminController
 import com.abrigo.itimalia.application.web.controllers.AnimalController
-import com.abrigo.itimalia.application.web.controllers.ImageController
+import com.abrigo.itimalia.application.web.controllers.AnimalImageController
 import com.abrigo.itimalia.application.web.controllers.UserController
 import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.adoptAnimalDocumentation
 import com.abrigo.itimalia.application.web.swagger.SwaggerAnimalDocumentation.createAnimalDocumentation
@@ -22,7 +22,7 @@ import io.javalin.core.security.SecurityUtil.roles
 import io.javalin.plugin.openapi.dsl.documented
 
 
-class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController, private val imageController: ImageController){
+class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController, private val animalImageController: AnimalImageController){
     fun register(app: Javalin) {
 
         app.routes {
@@ -47,7 +47,7 @@ class RouteConfig(private val userController: UserController, private val adminC
                     ApiBuilder.put(documented(updateAnimalDocumentation(),animalController::updateAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.delete(documented(deleteAnimalDocumentation(),animalController::deleteAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.path("images"){
-                        ApiBuilder.post(imageController::addImage, roles(RouteRole.ANYONE))
+                        ApiBuilder.post(animalImageController::addImage, roles(RouteRole.ANYONE))
                     }
                 }
                 ApiBuilder.post(documented(createAnimalDocumentation(),animalController::addAnimal), roles(RouteRole.ADMIN))

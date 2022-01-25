@@ -14,7 +14,7 @@ import java.net.URLConnection
 import kotlin.streams.toList
 
 
-class ImageController(private val imageService: ImageService, private val animalService: AnimalService) {
+class AnimalImageController(private val imageService: ImageService, private val animalService: AnimalService) {
     fun addImage(context: Context) {
         val imageFilesToBeUploaded = context
             .uploadedFiles("files")
@@ -23,15 +23,13 @@ class ImageController(private val imageService: ImageService, private val animal
 
         val animalId = context.pathParam("id").toInt()
 
-        val maxNumberOfImages = EnvironmentConfig.maxNumberOfImages().toInt()
-
         checkIfIsEmpty(imageFilesToBeUploaded)
 
         checkIfImagesSurpassMaxSize(context)
 
         checkIfAreImages(imageFilesToBeUploaded)
 
-        checkMaxNumberOfImages(animalId, imageFilesToBeUploaded, maxNumberOfImages)
+        checkMaxNumberOfImages(animalId, imageFilesToBeUploaded)
 
         val uploadedImagesList = imageService.add(imageFilesToBeUploaded, animalId)
         context.json(uploadedImagesList).status(HttpStatus.CREATED_201)
@@ -39,10 +37,11 @@ class ImageController(private val imageService: ImageService, private val animal
 
     private fun checkMaxNumberOfImages(
         animalId: Int,
-        imageFilesToBeUploaded: List<ImageToBeUploaded>,
-        maxNumberOfImages: Int
+        imageFilesToBeUploaded: List<ImageToBeUploaded>
     ) {
         val animal = animalService.get(animalId)
+
+        val maxNumberOfImages = EnvironmentConfig.maxNumberOfImages().toInt()
 
         if (animal.images.size + imageFilesToBeUploaded.size > maxNumberOfImages) {
             throw ImageUploadException(

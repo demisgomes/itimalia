@@ -19,12 +19,12 @@ import java.io.ByteArrayInputStream
 import java.io.File
 
 @Ignore
-class ImageControllerTest {
+class AnimalImageControllerTest {
 
     private val imageService = mockk<ImageService>(relaxed = true)
     private val animalService = mockk<AnimalService>(relaxed = true)
     private val contextMock = mockk<Context>(relaxed = true)
-    private val imageController = ImageController(imageService, animalService)
+    private val animalImageController = AnimalImageController(imageService, animalService)
 
     @Test
     fun `should call imageService upload when have images in request`() {
@@ -37,7 +37,7 @@ class ImageControllerTest {
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
         every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", 12345, filename, "png",  12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) } returns imageServiceResult
-        imageController.addImage(contextMock)
+        animalImageController.addImage(contextMock)
 
         verify { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) }
         verify { contextMock.json(any<List<Image>>()) }
@@ -49,7 +49,7 @@ class ImageControllerTest {
        every { contextMock.pathParam("id") } returns "1"
        every { animalService.get(1) } returns AnimalFactory.sampleDTO()
 
-       imageController.addImage(contextMock)
+       animalImageController.addImage(contextMock)
     }
 
     @Test(expected = ImageUploadException::class)
@@ -60,7 +60,7 @@ class ImageControllerTest {
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(1) } returns AnimalFactory.sampleDTO()
-        imageController.addImage(contextMock)
+        animalImageController.addImage(contextMock)
     }
 
     @Test(expected = ImageUploadException::class)
@@ -75,7 +75,7 @@ class ImageControllerTest {
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
         every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345, filename, "png",  12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) } returns imageServiceResult
-        imageController.addImage(contextMock)
+        animalImageController.addImage(contextMock)
 
         verify { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) }
         verify { contextMock.json(any<List<Image>>()) }
@@ -98,7 +98,7 @@ class ImageControllerTest {
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
         every { EnvironmentConfig.maxNumberOfImages() } returns "2"
 
-        imageController.addImage(contextMock)
+        animalImageController.addImage(contextMock)
 
     }
 }
