@@ -31,6 +31,10 @@ object EnvironmentConfig {
     }
 
     fun maxFileSize(): String {
-        return getenv("MAX_FILE_SIZE", "1048576")
+        return getenv("MAX_FILE_SIZE", "6048576")
+    }
+
+    fun maxNumberOfImages(): String {
+        return getenv("MAX_NUMBER_OF_IMAGES", "8")
     }
 }

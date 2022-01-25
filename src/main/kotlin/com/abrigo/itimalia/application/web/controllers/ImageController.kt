@@ -3,6 +3,7 @@ package com.abrigo.itimalia.application.web.controllers
 import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.domain.entities.image.ImageToBeUploaded
 import com.abrigo.itimalia.domain.exceptions.ImageUploadException
+import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.ImageService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
@@ -13,7 +14,7 @@ import java.net.URLConnection
 import kotlin.streams.toList
 
 
-class ImageController(private val imageService: ImageService) {
+class ImageController(private val imageService: ImageService, private val animalService: AnimalService) {
     fun addImage(context: Context) {
         val imageFilesToBeUploaded = context
             .uploadedFiles("files")
@@ -22,14 +23,32 @@ class ImageController(private val imageService: ImageService) {
 
         val animalId = context.pathParam("id").toInt()
 
+        val maxNumberOfImages = EnvironmentConfig.maxNumberOfImages().toInt()
+
         checkIfIsEmpty(imageFilesToBeUploaded)
 
         checkIfImagesSurpassMaxSize(context)
 
         checkIfAreImages(imageFilesToBeUploaded)
 
+        checkMaxNumberOfImages(animalId, imageFilesToBeUploaded, maxNumberOfImages)
+
         val uploadedImagesList = imageService.add(imageFilesToBeUploaded, animalId)
         context.json(uploadedImagesList).status(HttpStatus.CREATED_201)
+    }
+
+    private fun checkMaxNumberOfImages(
+        animalId: Int,
+        imageFilesToBeUploaded: List<ImageToBeUploaded>,
+        maxNumberOfImages: Int
+    ) {
+        val animal = animalService.get(animalId)
+
+        if (animal.images.size + imageFilesToBeUploaded.size > maxNumberOfImages) {
+            throw ImageUploadException(
+                Throwable("The number of images surpass the maximum of $maxNumberOfImages images")
+            )
+        }
     }
 
     private fun checkIfAreImages(imageFilesToBeUploaded: List<ImageToBeUploaded>) {
