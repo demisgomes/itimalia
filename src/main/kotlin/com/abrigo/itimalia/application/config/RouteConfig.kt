@@ -48,7 +48,7 @@ class RouteConfig(private val userController: UserController, private val adminC
                     ApiBuilder.put(documented(updateAnimalDocumentation(),animalController::updateAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.delete(documented(deleteAnimalDocumentation(),animalController::deleteAnimal), roles(RouteRole.ADMIN))
                     ApiBuilder.path("images"){
-                        ApiBuilder.post(documented(addAnimalImagesDocumentation(), animalImageController::addImage), roles(RouteRole.ANYONE))
+                        ApiBuilder.post(documented(addAnimalImagesDocumentation(), animalImageController::addImage), roles(RouteRole.ADMIN))
                     }
                 }
                 ApiBuilder.post(documented(createAnimalDocumentation(),animalController::addAnimal), roles(RouteRole.ADMIN))
