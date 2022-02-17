@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
+import com.abrigo.itimalia.domain.entities.user.LoggedUser
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.User
@@ -9,12 +10,14 @@ import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
+import com.abrigo.itimalia.domain.entities.user.toLoggedUser
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.factories.UserFactory
 import io.javalin.http.Context
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.verify
 import org.eclipse.jetty.http.HttpStatus
 import org.joda.time.DateTime
@@ -36,6 +39,7 @@ class UserControllerTest{
     private lateinit var jwtAccessManagerMock: JWTAccessManager
     private lateinit var actualDateTime:DateTime
     private lateinit var userController: UserController
+    private lateinit var spyReturnedUser: User
 
     private val contextMock: Context = mockk(relaxed = true)
 
@@ -54,6 +58,7 @@ class UserControllerTest{
         newLoginUser = UserFactory.sampleLogin()
         newLoginRequest = UserFactory.sampleLoginRequest()
         userController = UserController(userServiceMock, jwtAccessManagerMock)
+        spyReturnedUser = spyk(returnedUser)
     }
 
     @Test
@@ -70,13 +75,16 @@ class UserControllerTest{
 
     @Test
     fun `when add a valid user should return the user with status 201`(){
-        every{ userServiceMock.add(newUserRequest)}.returns(returnedUser)
+        every{ userServiceMock.add(newUserRequest)}.returns(spyReturnedUser)
 
         every { contextMock.body<NewUserRequest>() }.returns(newUserRequest)
 
         userController.addUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.CREATED_201) }
+        verify { spyReturnedUser.toLoggedUser() }
+
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.CREATED_201) }
     }
 
     @Test
@@ -85,7 +93,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userRequest, returnedUser.role, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, returnedUser.role, returnedUser.email)}.returns(spyReturnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -93,7 +101,10 @@ class UserControllerTest{
 
         userController.updateUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { spyReturnedUser.toLoggedUser() }
+
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
     }
 
     @Test
@@ -102,7 +113,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email+"A")
 
-        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email+"A")}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email+"A")}.returns(spyReturnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -110,7 +121,10 @@ class UserControllerTest{
 
         userController.updateUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { spyReturnedUser.toLoggedUser() }
+
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
 
     }
 
@@ -121,7 +135,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.ADMIN, returnedUser.email)}.returns(spyReturnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -129,8 +143,10 @@ class UserControllerTest{
 
         userController.updateUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { spyReturnedUser.toLoggedUser() }
 
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
     }
 
     @Test
@@ -139,7 +155,7 @@ class UserControllerTest{
 
         every { jwtAccessManagerMock.extractEmail(contextMock)}.returns(returnedUser.email)
 
-        every{ userServiceMock.update(1, userRequest, UserRole.USER, returnedUser.email)}.returns(returnedUser)
+        every{ userServiceMock.update(1, userRequest, UserRole.USER, returnedUser.email)}.returns(spyReturnedUser)
 
         every { contextMock.pathParam("id") }.returns("1")
 
@@ -147,7 +163,10 @@ class UserControllerTest{
 
         userController.updateUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { spyReturnedUser.toLoggedUser() }
+
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
 
     }
 
@@ -217,13 +236,16 @@ class UserControllerTest{
 
     @Test
     fun `when a user with valid credentials log in, should return the logged user with status 200`(){
-        every { userServiceMock.login(newLoginRequest) }.returns(returnedUser)
+        every { userServiceMock.login(newLoginRequest) }.returns(spyReturnedUser)
 
         every { contextMock.body<UserLoginRequest>() }.returns(newLoginRequest)
 
         userController.loginUser(contextMock)
 
-        verify { contextMock.json(returnedUser).status(HttpStatus.OK_200) }
+        verify { spyReturnedUser.toLoggedUser() }
+
+        verify { contextMock.json(any<LoggedUser>()) }
+        verify { contextMock.status(HttpStatus.OK_200) }
 
     }
 
