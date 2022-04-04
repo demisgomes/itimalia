@@ -10,7 +10,6 @@ import com.abrigo.itimalia.domain.entities.user.toUser
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
-import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.jwt.JWTService
@@ -54,6 +53,7 @@ class UserServiceTest{
     private lateinit var validatorNewUser: Validator<NewUserRequest>
     private lateinit var validatorUser: Validator<UserRequest>
     private lateinit var validatorUserLogin: Validator<UserLoginRequest>
+    private val passwordServiceMock: PasswordService = mockk(relaxed = true)
 
     private val defaultToken = "default_token"
 
@@ -74,16 +74,16 @@ class UserServiceTest{
         newUserRequest = UserFactory.sampleDTORequest(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newUser = newUserRequest.toUser()
         expectedUserRequest = newUserRequest.copy(id = 1, token = "token_test")
-        expectedUser = expectedUserRequest.toUser()
-        updatedUserRequest = expectedUserRequest.copy(password = expectedUser.password+"123")
-        updatedUser = updatedUserRequest.toUser()
+        expectedUser = expectedUserRequest.toUser().copy(password = "encodedPassword")
+        updatedUserRequest = expectedUserRequest.copy(name = "New name")
+        updatedUser = updatedUserRequest.toUser().copy(password = "encodedPassword")
         expectedAdminModifiedUserRequest = expectedUserRequest.copy(role = UserRole.ADMIN)
         expectedAdminModifiedUser = expectedAdminModifiedUserRequest.toUser()
         expectedModifiedUserRequest = expectedUserRequest.copy(password = expectedUserRequest.password+"123")
         expectedModifiedUser = expectedUserRequest.toUser()
 
         updatedAdminUserRequest = expectedUserRequest.copy(role = UserRole.ADMIN)
-        updatedAdminUser=updatedAdminUserRequest.toUser()
+        updatedAdminUser=updatedAdminUserRequest.toUser().copy(password = "encodedPassword")
 
         invalidUserLogin= UserFactory.sampleLoginRequest(email = "myemail.com")
 
@@ -95,20 +95,22 @@ class UserServiceTest{
 
         jwtService= mockk(relaxed = true)
 
-        userService = UserServiceImpl(userRepositoryMock, jwtService, validatorNewUser, validatorUser, validatorUserLogin)
+        userService = UserServiceImpl(userRepositoryMock, jwtService, validatorNewUser, validatorUser, validatorUserLogin, passwordServiceMock)
     }
 
 
     @Test
-    fun `when a valid user without admin permissions request a sign up, register it`(){
+    fun `when a valid user without admin permissions request a sign up, register it with an encoded password`(){
         val userRequest = UserFactory.sampleNewRequest(birthDate = birthDate)
         every { DateTime.now() }.returns(actualDateTime)
+
+        every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
         every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
 
         every { jwtService.sign(newUser.email, UserRole.USER) }.returns("token_test")
 
-        every { userRepositoryMock.add(newUser.copy(role = UserRole.USER, token = "token_test"))  }.returns(expectedUser)
+        every { userRepositoryMock.add(newUser.copy(role = UserRole.USER, token = "token_test", password =  "encodedPassword"))  }.returns(expectedUser)
 
         val userDTO=userService.add(userRequest)
 
@@ -231,23 +233,6 @@ class UserServiceTest{
         assertEquals(expectedAdminModifiedUser,userDTO)
     }
 
-    @Test(expected = UnmodifiedUserException::class)
-    fun `when an user without admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
-        //given
-
-        every { DateTime.now() }.returns(actualDateTime)
-
-        every { jwtService.sign(expectedUser.email, expectedUser.role) }.returns("token_test")
-
-        every { userRepositoryMock.get(1)}.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(expectedUser.email) }.throws(UserNotFoundException())
-
-        //when
-        userService.update(1,expectedUserRequest, UserRole.USER, expectedUser.email)
-
-        //then expect UnmodifiedUserException
-    }
-
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when an user without admin permission tries to modify its email by another email used, should expect EmailAlreadyExistsException`(){
         //given
@@ -265,42 +250,6 @@ class UserServiceTest{
         userService.update(1,modifiedUserDTO, UserRole.USER, expectedUser.email)
 
         //then EmailAlreadyExistsException
-    }
-
-    @Test(expected = UnmodifiedUserException::class)
-    fun `when an user with admin permission tries to modify its account but without modifications should expect UnmodifiedUserException`(){
-        //given
-
-        every { DateTime.now() }.returns(actualDateTime)
-
-        every { jwtService.sign(expectedAdminModifiedUser.email, expectedAdminModifiedUser.role) }.returns("token_test")
-
-        every { userRepositoryMock.get(1)}.returns(expectedAdminModifiedUser)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.throws(UserNotFoundException())
-
-        //when
-        userService.update(1,expectedAdminModifiedUserRequest, UserRole.ADMIN, expectedAdminModifiedUser.email)
-
-        //then
-        //assertEquals(expectedAdminModifiedUserDTO,userDTO)
-    }
-
-    @Test(expected = UnmodifiedUserException::class)
-    fun `when an user with admin permission tries to modify another account but without modifications should expect UnmodifiedUserException`(){
-        //given
-
-        every { DateTime.now() }.returns(actualDateTime)
-
-        //every { jwtService.sign(expectedAdminModifiedUserDTO.email, expectedAdminModifiedUserDTO.role, 5) }.returns("token_test")
-
-        every { userRepositoryMock.get(1)}.returns(expectedUser)
-        //every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.throws(UserNotFoundException())
-
-        //when
-        userService.update(1,expectedUserRequest, UserRole.ADMIN, updatedAdminUser.email)
-
-        //then return exception
     }
 
     @Test
@@ -349,9 +298,11 @@ class UserServiceTest{
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
         every { jwtService.sign(validUserLogin.email!!, UserRole.USER) }.returns("token_updated")
         val updatedTokenUser = expectedUser.copy(token = "token_updated")
+
+        every { passwordServiceMock.verify(validUserLogin.password!!, expectedUser.password) } returns true
         every { userRepositoryMock.update(expectedUser.id!!, updatedTokenUser) }.returns(updatedTokenUser)
         every { userRepositoryMock.get(expectedUser.id!!) }.returns(updatedTokenUser)
 
@@ -362,11 +313,23 @@ class UserServiceTest{
     }
 
     @Test(expected = UserNotFoundException::class)
-    fun `when an user tries login with a valid email and password but not matches with any user, should expect UserNotFoundException`() {
+    fun `when an user tries login with a valid email but not matches with any user, should expect UserNotFoundException`() {
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.throws(UserNotFoundException())
+        userService.login(validUserLogin)
+
+        //then UserNotFoundException
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when an user tries login with a valid email, matches one user, but password not, should expect UserNotFoundException`() {
+        //given validUserLogin
+
+        //when
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+        every { passwordServiceMock.verify(validUserLogin.password!!, expectedUser.password) } returns false
         userService.login(validUserLogin)
 
         //then UserNotFoundException

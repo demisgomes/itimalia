@@ -11,7 +11,6 @@ import com.abrigo.itimalia.domain.entities.user.toUserLogin
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
-import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -23,7 +22,8 @@ class UserServiceImpl(
     private val jwtService: JWTService,
     private val validatorNewUser: Validator<NewUserRequest>,
     private val validatorUser: Validator<UserRequest>,
-    private val validatorUserLogin: Validator<UserLoginRequest>
+    private val validatorUserLogin: Validator<UserLoginRequest>,
+    private val passwordService: PasswordService
 ) : UserService {
 
     override fun findByEmail(email: String): User {
@@ -46,24 +46,24 @@ class UserServiceImpl(
             val newUserDTO = User(
                 userToBeModified.id,
                 userDTO.email,
-                userDTO.password,
+                userToBeModified.password,
                 userDTO.birthDate,
                 userDTO.gender,
                 userDTO.name,
                 userDTO.phone,
                 userDTO.role,
                 userToBeModified.creationDate,
-                userToBeModified.modificationDate,
-                userToBeModified.token
+                DateTime.now(),
+                jwtService.sign(userDTO.email, userDTO.role)
             )
 
             if (role == UserRole.ADMIN) {
-                return updateCall(newUserDTO, userToBeModified, id)
+                return userRepository.update(id, newUserDTO)
             }
 
             if (userToBeModified.email == email) {
                 if (userToBeModified.role == newUserDTO.role) {
-                    return updateCall(newUserDTO, userToBeModified, id)
+                    return userRepository.update(id, newUserDTO)
                 }
                 throw UnauthorizedRoleChangeException()
             }
@@ -75,11 +75,15 @@ class UserServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): User {
         validatorUserLogin.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
-        val user = userRepository.findByCredentials(newUserLogin.email, newUserLogin.password)
-        val token = jwtService.sign(user.email, user.role)
-        val loggedUser = user.copy(token = token)
-        userRepository.update(loggedUser.id!!, loggedUser)
-        return userRepository.get(loggedUser.id)
+        val user = userRepository.findByEmail(newUserLogin.email)
+        if (passwordService.verify(newUserLogin.password, user.password)){
+            val token = jwtService.sign(user.email, user.role)
+            val loggedUser = user.copy(token = token)
+            userRepository.update(loggedUser.id!!, loggedUser)
+            return userRepository.get(loggedUser.id)
+        }
+        throw UserNotFoundException()
+
     }
 
     override fun add(newUserRequest: NewUserRequest): User {
@@ -93,7 +97,7 @@ class UserServiceImpl(
             val newUserDTO = User(
                 null,
                 newUser.email,
-                newUser.password,
+                passwordService.encode(newUser.password),
                 newUser.birthDate,
                 newUser.gender,
                 newUser.name,
@@ -122,28 +126,6 @@ class UserServiceImpl(
 
     override fun get(id: Int): User {
         return userRepository.get(id)
-    }
-
-    private fun updateCall(newUser: User, userToBeModified: User, id: Int): User {
-        if (newUser == userToBeModified) {
-            throw UnmodifiedUserException()
-        }
-
-        val actualDate = DateTime.now()
-        val modifiedUserDTO = User(
-            userToBeModified.id,
-            newUser.email,
-            newUser.password,
-            newUser.birthDate,
-            newUser.gender,
-            newUser.name,
-            newUser.phone,
-            newUser.role,
-            userToBeModified.creationDate,
-            actualDate,
-            jwtService.sign(newUser.email, newUser.role)
-        )
-        return userRepository.update(id, modifiedUserDTO)
     }
 
 }

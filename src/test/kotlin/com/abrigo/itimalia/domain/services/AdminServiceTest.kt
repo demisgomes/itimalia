@@ -28,6 +28,7 @@ class AdminServiceTest{
     private lateinit var expectedUser: User
     private lateinit var adminService: AdminService
     private lateinit var newUser: NewUser
+    private val passwordServiceMock: PasswordService = mockk(relaxed = true)
 
     @Before
     fun setup() {
@@ -36,7 +37,7 @@ class AdminServiceTest{
         mockkStatic(DateTime::class)
         actualDateTime= DateTime.now()
         newUserDTO = UserFactory.sampleDTO(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
-        expectedUser = newUserDTO.copy(id = 1, token = "token_test")
+        expectedUser = newUserDTO.copy(id = 1, token = "token_test", password = "encodedPassword")
 
         newUser = UserFactory.sampleNew(birthDate = birthDate)
 
@@ -44,7 +45,7 @@ class AdminServiceTest{
 
         jwtService= mockk(relaxed = true)
 
-        adminService = AdminServiceImpl(userRepositoryMock, jwtService)
+        adminService = AdminServiceImpl(userRepositoryMock, jwtService, passwordServiceMock)
     }
 
 
@@ -53,11 +54,14 @@ class AdminServiceTest{
 
         every { DateTime.now() }.returns(actualDateTime)
 
+
+        every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
+
         every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
 
         every { jwtService.sign(newUserDTO.email, UserRole.ADMIN) }.returns("token_test")
 
-        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test"))  }.returns(expectedUser)
+        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test", password = "encodedPassword"))  }.returns(expectedUser)
 
         val userDTO=adminService.add(newUser, UserRole.ADMIN)
 

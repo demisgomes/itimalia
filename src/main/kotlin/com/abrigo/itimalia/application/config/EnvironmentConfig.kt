@@ -37,4 +37,8 @@ object EnvironmentConfig {
     fun maxNumberOfImages(): String {
         return getenv("MAX_NUMBER_OF_IMAGES", "8")
     }
+
+    fun hashSalt(): String {
+        return getenv("HASH_SALT", "12")
+    }
 }
