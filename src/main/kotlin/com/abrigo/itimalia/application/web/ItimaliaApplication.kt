@@ -81,18 +81,6 @@ class ItimaliaApplication : KoinComponent {
         initDB()
         logger.info("Connected with DB successfully")
 
-        transaction {
-            UserEntity.all().forEach { userEntity ->
-                transaction {
-                    (UserMap).update({ UserMap.id eq userEntity.id }) {
-                        it[password] = passwordService.encode(userEntity.password)
-                    }
-                }
-
-            }
-        }
-
-
     }
 }
 
