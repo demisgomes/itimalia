@@ -84,6 +84,8 @@ dependencies {
     // Cloudinary
     implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.29.0'
 
+    // BCrypt
+    implementation 'at.favre.lib:bcrypt:0.9.0'
 
 }
 
