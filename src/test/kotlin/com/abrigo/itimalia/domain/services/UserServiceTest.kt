@@ -75,15 +75,15 @@ class UserServiceTest{
         newUser = newUserRequest.toUser()
         expectedUserRequest = newUserRequest.copy(id = 1, token = "token_test")
         expectedUser = expectedUserRequest.toUser().copy(password = "encodedPassword")
-        updatedUserRequest = expectedUserRequest.copy(password = expectedUser.password+"123")
-        updatedUser = updatedUserRequest.toUser()
+        updatedUserRequest = expectedUserRequest.copy(name = "New name")
+        updatedUser = updatedUserRequest.toUser().copy(password = "encodedPassword")
         expectedAdminModifiedUserRequest = expectedUserRequest.copy(role = UserRole.ADMIN)
         expectedAdminModifiedUser = expectedAdminModifiedUserRequest.toUser()
         expectedModifiedUserRequest = expectedUserRequest.copy(password = expectedUserRequest.password+"123")
         expectedModifiedUser = expectedUserRequest.toUser()
 
         updatedAdminUserRequest = expectedUserRequest.copy(role = UserRole.ADMIN)
-        updatedAdminUser=updatedAdminUserRequest.toUser()
+        updatedAdminUser=updatedAdminUserRequest.toUser().copy(password = "encodedPassword")
 
         invalidUserLogin= UserFactory.sampleLoginRequest(email = "myemail.com")
 

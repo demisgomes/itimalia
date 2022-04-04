@@ -46,24 +46,24 @@ class UserServiceImpl(
             val newUserDTO = User(
                 userToBeModified.id,
                 userDTO.email,
-                userDTO.password,
+                userToBeModified.password,
                 userDTO.birthDate,
                 userDTO.gender,
                 userDTO.name,
                 userDTO.phone,
                 userDTO.role,
                 userToBeModified.creationDate,
-                userToBeModified.modificationDate,
-                userToBeModified.token
+                DateTime.now(),
+                jwtService.sign(userDTO.email, userDTO.role)
             )
 
             if (role == UserRole.ADMIN) {
-                return updateCall(newUserDTO, userToBeModified, id)
+                return userRepository.update(id, newUserDTO)
             }
 
             if (userToBeModified.email == email) {
                 if (userToBeModified.role == newUserDTO.role) {
-                    return updateCall(newUserDTO, userToBeModified, id)
+                    return userRepository.update(id, newUserDTO)
                 }
                 throw UnauthorizedRoleChangeException()
             }
@@ -122,24 +122,6 @@ class UserServiceImpl(
 
     override fun get(id: Int): User {
         return userRepository.get(id)
-    }
-
-    private fun updateCall(newUser: User, userToBeModified: User, id: Int): User {
-        val actualDate = DateTime.now()
-        val modifiedUserDTO = User(
-            userToBeModified.id,
-            newUser.email,
-            newUser.password,
-            newUser.birthDate,
-            newUser.gender,
-            newUser.name,
-            newUser.phone,
-            newUser.role,
-            userToBeModified.creationDate,
-            actualDate,
-            jwtService.sign(newUser.email, newUser.role)
-        )
-        return userRepository.update(id, modifiedUserDTO)
     }
 
 }
