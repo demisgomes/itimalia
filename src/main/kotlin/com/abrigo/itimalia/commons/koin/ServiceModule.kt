@@ -44,7 +44,7 @@ val serviceModule = module{
             get()
         ) as UserService
     }
-    single { AdminServiceImpl(get(), get ()) as AdminService }
+    single { AdminServiceImpl(get(), get (), get()) as AdminService }
     single {
         AnimalServiceImpl(get(),
             NewAnimalRequestValidator(NewAnimalRequestConstraintValidator(get(), get())),

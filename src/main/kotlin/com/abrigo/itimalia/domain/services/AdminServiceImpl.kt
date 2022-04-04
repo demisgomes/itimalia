@@ -10,7 +10,7 @@ import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
 import org.joda.time.DateTime
 
-class AdminServiceImpl(private val userRepository: UserRepository, private val jwtService: JWTService) : AdminService {
+class AdminServiceImpl(private val userRepository: UserRepository, private val jwtService: JWTService, private val passwordService: PasswordService) : AdminService {
     override fun add(newUser: NewUser, role: UserRole): User {
         if (role != UserRole.ADMIN) {
             throw UnauthorizedAdminRoleException()
@@ -23,7 +23,7 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
             val newUserDTO = User(
                 null,
                 newUser.email,
-                newUser.password,
+                passwordService.encode(newUser.password),
                 newUser.birthDate,
                 newUser.gender,
                 newUser.name,
