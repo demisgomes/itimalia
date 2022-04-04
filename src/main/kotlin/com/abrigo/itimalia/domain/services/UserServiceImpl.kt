@@ -75,11 +75,15 @@ class UserServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): User {
         validatorUserLogin.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
-        val user = userRepository.findByCredentials(newUserLogin.email, newUserLogin.password)
-        val token = jwtService.sign(user.email, user.role)
-        val loggedUser = user.copy(token = token)
-        userRepository.update(loggedUser.id!!, loggedUser)
-        return userRepository.get(loggedUser.id)
+        val user = userRepository.findByEmail(newUserLogin.email)
+        if (passwordService.verify(newUserLogin.password, user.password)){
+            val token = jwtService.sign(user.email, user.role)
+            val loggedUser = user.copy(token = token)
+            userRepository.update(loggedUser.id!!, loggedUser)
+            return userRepository.get(loggedUser.id)
+        }
+        throw UserNotFoundException()
+
     }
 
     override fun add(newUserRequest: NewUserRequest): User {

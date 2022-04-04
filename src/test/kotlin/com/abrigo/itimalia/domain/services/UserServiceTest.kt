@@ -298,9 +298,11 @@ class UserServiceTest{
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
         every { jwtService.sign(validUserLogin.email!!, UserRole.USER) }.returns("token_updated")
         val updatedTokenUser = expectedUser.copy(token = "token_updated")
+
+        every { passwordServiceMock.verify(validUserLogin.password!!, expectedUser.password) } returns true
         every { userRepositoryMock.update(expectedUser.id!!, updatedTokenUser) }.returns(updatedTokenUser)
         every { userRepositoryMock.get(expectedUser.id!!) }.returns(updatedTokenUser)
 
@@ -311,11 +313,23 @@ class UserServiceTest{
     }
 
     @Test(expected = UserNotFoundException::class)
-    fun `when an user tries login with a valid email and password but not matches with any user, should expect UserNotFoundException`() {
+    fun `when an user tries login with a valid email but not matches with any user, should expect UserNotFoundException`() {
         //given validUserLogin
 
         //when
-        every { userRepositoryMock.findByCredentials(validUserLogin.email!!, validUserLogin.password!!) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.throws(UserNotFoundException())
+        userService.login(validUserLogin)
+
+        //then UserNotFoundException
+    }
+
+    @Test(expected = UserNotFoundException::class)
+    fun `when an user tries login with a valid email, matches one user, but password not, should expect UserNotFoundException`() {
+        //given validUserLogin
+
+        //when
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+        every { passwordServiceMock.verify(validUserLogin.password!!, expectedUser.password) } returns false
         userService.login(validUserLogin)
 
         //then UserNotFoundException
