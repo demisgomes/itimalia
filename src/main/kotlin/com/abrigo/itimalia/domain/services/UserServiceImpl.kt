@@ -11,7 +11,6 @@ import com.abrigo.itimalia.domain.entities.user.toUserLogin
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
-import com.abrigo.itimalia.domain.exceptions.UnmodifiedUserException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -23,7 +22,8 @@ class UserServiceImpl(
     private val jwtService: JWTService,
     private val validatorNewUser: Validator<NewUserRequest>,
     private val validatorUser: Validator<UserRequest>,
-    private val validatorUserLogin: Validator<UserLoginRequest>
+    private val validatorUserLogin: Validator<UserLoginRequest>,
+    private val passwordService: PasswordService
 ) : UserService {
 
     override fun findByEmail(email: String): User {
@@ -93,7 +93,7 @@ class UserServiceImpl(
             val newUserDTO = User(
                 null,
                 newUser.email,
-                newUser.password,
+                passwordService.encode(newUser.password),
                 newUser.birthDate,
                 newUser.gender,
                 newUser.name,
@@ -125,10 +125,6 @@ class UserServiceImpl(
     }
 
     private fun updateCall(newUser: User, userToBeModified: User, id: Int): User {
-        if (newUser == userToBeModified) {
-            throw UnmodifiedUserException()
-        }
-
         val actualDate = DateTime.now()
         val modifiedUserDTO = User(
             userToBeModified.id,

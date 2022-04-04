@@ -40,7 +40,8 @@ val serviceModule = module{
             get(),
             NewUserRequestValidator(NewUserRequestConstraintValidator(get(), get())) as Validator<NewUserRequest>,
             UserDTORequestValidator(UserRequestConstraintValidator(get(), get())) as Validator<UserRequest>,
-            UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>
+            UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>,
+            get()
         ) as UserService
     }
     single { AdminServiceImpl(get(), get ()) as AdminService }
