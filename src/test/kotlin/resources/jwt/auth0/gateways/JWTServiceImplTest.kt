@@ -26,7 +26,6 @@ class JWTServiceImplTest {
 
     @Test
     fun `given a valid email and role, should sign the token`() {
-
         val email = "user@itimalia.org"
         val role = UserRole.USER
 
@@ -37,7 +36,6 @@ class JWTServiceImplTest {
 
     @Test
     fun `given a valid token, should decode the token and get email and role information`() {
-
         val email = "user@itimalia.org"
         val role = UserRole.USER
 

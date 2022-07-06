@@ -197,9 +197,9 @@ class AnimalRepositoryImplTest {
         animalRepository.get(1)
     }
 
+    // test do not pass in heroku and CI
     @Test
     @Ignore
-    // test do not pass in heroku and CI
     fun `given a valid animal and an existent user, should adopt an animal`() {
         // given
         val userId = 1
