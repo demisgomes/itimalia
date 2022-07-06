@@ -54,10 +54,12 @@ class AnimalImageController(private val imageService: ImageService, private val 
             !isImage(it.byteArray)
         }.map { it.fileName }.toList()
 
-        if (filesNotImages.isNotEmpty()) throw ImageUploadException(
+        if (filesNotImages.isNotEmpty()) {
+            throw ImageUploadException(
                 Throwable("there are files that are not supported. Upload PNG, JPEG, or SVG."),
                 filesNotImages
             )
+        }
     }
 
     private fun checkIfImagesSurpassMaxSize(context: Context) {
@@ -66,10 +68,9 @@ class AnimalImageController(private val imageService: ImageService, private val 
                 it.size > EnvironmentConfig.maxFileSize().toInt()
             }.map { it.filename }.toList()
 
-        if (imagesBiggerThanLimit.isNotEmpty()) throw ImageUploadException(
-                Throwable("there are some images bigger than limit"),
-                imagesBiggerThanLimit
-        )
+        if (imagesBiggerThanLimit.isNotEmpty()) {
+            throw ImageUploadException(Throwable("there are some images bigger than limit"), imagesBiggerThanLimit)
+        }
     }
 
     private fun checkIfIsEmpty(imageFilesToBeUploaded: List<ImageToBeUploaded>) {

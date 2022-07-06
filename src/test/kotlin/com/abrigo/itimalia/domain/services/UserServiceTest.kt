@@ -61,7 +61,6 @@ class UserServiceTest {
 
     @Before
     fun setup() {
-
         validatorNewUser = mockk(relaxed = true)
         validatorUser = mockk(relaxed = true)
         validatorUserLogin = mockk(relaxed = true)
@@ -135,7 +134,6 @@ class UserServiceTest {
 
     @Test
     fun `when an user without admin permission tries to modify its account should return the modified user`() {
-
         every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
@@ -152,7 +150,6 @@ class UserServiceTest {
 
     @Test
     fun `when an user without admin permission tries to modify its account without change the email should return the modified user`() {
-
         every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
@@ -169,9 +166,7 @@ class UserServiceTest {
 
     @Test
     fun `when an user with admin permission tries to modify any account should return the modified user`() {
-
         // given
-
         every { DateTime.now() }.returns(actualDateTime)
 
         every { jwtService.sign(updatedAdminUser.email, updatedAdminUser.role) }.returns("token_test")
@@ -328,7 +323,6 @@ class UserServiceTest {
 
     @Test
     fun `when an user without admin permission tries to delete your account should return no content with status 204`() {
-
         every { userRepositoryMock.get(1) }.returns(expectedUser)
         userService.delete(1, UserRole.USER, expectedUser.email)
         verify { userRepositoryMock.delete(1) }

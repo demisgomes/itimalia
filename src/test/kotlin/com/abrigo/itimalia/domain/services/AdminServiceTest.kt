@@ -50,7 +50,6 @@ class AdminServiceTest {
 
     @Test
     fun `when a valid user with admin permissions request a sign up, register it`() {
-
         every { DateTime.now() }.returns(actualDateTime)
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
