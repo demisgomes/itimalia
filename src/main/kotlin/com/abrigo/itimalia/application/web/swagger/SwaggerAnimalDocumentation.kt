@@ -7,7 +7,7 @@ import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 import io.swagger.v3.oas.models.security.SecurityRequirement
 
-object SwaggerAnimalDocumentation{
+object SwaggerAnimalDocumentation {
     fun createAnimalDocumentation() = OpenApiDocumentation()
         .body<NewAnimal>(CONTENT_TYPE)
         .json("200", Animal::class.java)
@@ -35,11 +35,11 @@ object SwaggerAnimalDocumentation{
             it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
         }
 
-    fun getAnimalDocumentation()= OpenApiDocumentation()
+    fun getAnimalDocumentation() = OpenApiDocumentation()
         .pathParam("id", String::class.java)
         .json("200", Animal::class.java)
 
-    fun getAnimalsDocumentation()= OpenApiDocumentation()
+    fun getAnimalsDocumentation() = OpenApiDocumentation()
         .queryParam("specie", String::class.java)
         .queryParam("status", String::class.java)
         .queryParam("name", String::class.java)

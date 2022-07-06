@@ -13,31 +13,28 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
-class UserRepositoryImpl: UserRepository {
+class UserRepositoryImpl : UserRepository {
 
     override fun findByEmail(email: String): User {
-        try{
+        try {
             return transaction {
                 UserEntity.find { UserMap.email eq email }.map { userEntity ->
                     userEntity.toUser()
                 }.first()
             }
-        }
-        catch (exception:NoSuchElementException){
+        } catch (exception: NoSuchElementException) {
             throw UserNotFoundException()
         }
-
     }
 
     override fun findByCredentials(email: String, password: String): User {
-        try{
+        try {
             return transaction {
                 UserEntity.find { UserMap.email.eq(email) and UserMap.password.eq(password) }.map { userEntity ->
                     userEntity.toUser()
                 }.first()
             }
-        }
-        catch (exception:NoSuchElementException){
+        } catch (exception: NoSuchElementException) {
             throw InvalidCredentialsException()
         }
     }
@@ -62,18 +59,18 @@ class UserRepositoryImpl: UserRepository {
 
     override fun update(id: Int, user: User): User {
         val result = transaction {
-                (UserMap).update({ UserMap.id eq id }) {
-                    it[name] = user.name
-                    it[birthDate] = user.birthDate
-                    it[email] = user.email
-                    it[gender] = user.gender.toString()
-                    it[password] = user.password
-                    it[modificationDate] = DateTime.now()
-                    it[phone] = user.phone
-                    it[token] = user.token
-                    it[role] = user.role.toString()
-                }
+            (UserMap).update({ UserMap.id eq id }) {
+                it[name] = user.name
+                it[birthDate] = user.birthDate
+                it[email] = user.email
+                it[gender] = user.gender.toString()
+                it[password] = user.password
+                it[modificationDate] = DateTime.now()
+                it[phone] = user.phone
+                it[token] = user.token
+                it[role] = user.role.toString()
             }
+        }
 
         result.let { res ->
             when (res) {
@@ -92,14 +89,12 @@ class UserRepositoryImpl: UserRepository {
     }
 
     override fun get(id: Int): User {
-        try{
+        try {
             return transaction {
                 UserEntity[id].toUser()
             }
-        }
-        catch (exception:EntityNotFoundException){
+        } catch (exception: EntityNotFoundException) {
             throw UserNotFoundException()
         }
     }
-
 }

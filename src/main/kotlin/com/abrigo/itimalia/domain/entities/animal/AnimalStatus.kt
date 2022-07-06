@@ -5,5 +5,4 @@ enum class AnimalStatus {
     ADOPTED,
     DEAD,
     GONE
-
 }

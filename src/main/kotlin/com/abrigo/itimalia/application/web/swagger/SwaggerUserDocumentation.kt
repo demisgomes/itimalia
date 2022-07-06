@@ -33,20 +33,19 @@ object SwaggerUserDocumentation {
         .result("403", ErrorResponse::class.java)
         .result("404", Unit::class.java)
         .operation {
-                it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
+            it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
         }
 
     fun loginUserDocumentation() = OpenApiDocumentation()
         .body<UserLogin>(CONTENT_TYPE)
-        .result("200",User::class.java)
+        .result("200", User::class.java)
         .result("401", ErrorResponse::class.java)
 
-    fun createAdminDocumentation()= OpenApiDocumentation()
+    fun createAdminDocumentation() = OpenApiDocumentation()
         .body<NewUser>(CONTENT_TYPE)
         .json("200", User::class.java)
         .result("400", ErrorResponse::class.java)
         .operation {
             it.addSecurityItem(SecurityRequirement().addList("BearerAuth"))
         }
-
 }

@@ -14,5 +14,4 @@ class ImageUploadException(cause: Throwable, val fileNamesWithErrors: List<Strin
 
         return mapOf("fileNamesWithErrors" to fileNamesWithErrors.toMutableList())
     }
-
 }

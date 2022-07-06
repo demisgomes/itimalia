@@ -4,7 +4,7 @@ import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.entities.user.UserRole
 
-interface AdminService{
+interface AdminService {
     fun add(newUser: NewUser, role: UserRole): User
-    fun get(id:Int): User
+    fun get(id: Int): User
 }

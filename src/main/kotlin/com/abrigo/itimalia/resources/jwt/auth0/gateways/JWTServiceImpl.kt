@@ -9,11 +9,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.TokenExpiredException
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 class JWTServiceImpl : JWTService {
 
-    companion object{
+    companion object {
         private val logger = LoggerFactory.getLogger(JWTServiceImpl::class.java)
         const val EMAIL_CLAIM = "email"
         const val ROLE_CLAIM = "role"
@@ -32,7 +33,6 @@ class JWTServiceImpl : JWTService {
     }
 
     override fun decode(token: String): Map<String, String> {
-
         try {
             val claims = mutableMapOf<String, String>()
 
@@ -44,30 +44,23 @@ class JWTServiceImpl : JWTService {
             val decodedJWT = verifier.verify(token)
 
             decodedJWT.claims.forEach { claim ->
-                if(claim.key == EMAIL_CLAIM || claim.key == ROLE_CLAIM){
+                if (claim.key == EMAIL_CLAIM || claim.key == ROLE_CLAIM) {
                     claims[claim.key] = claim.value.asString()
                 }
-
             }
 
             return claims
-        }
-
-        catch (exception:JWTDecodeException){
+        } catch (exception: JWTDecodeException) {
             logger.warn("The token cannot be decoded", exception)
             throw InvalidTokenException()
-        }
-
-        catch (exception:TokenExpiredException){
+        } catch (exception: TokenExpiredException) {
             logger.warn("The token expired", exception)
             throw InvalidTokenException()
         }
-
     }
 
     private fun convertToDate(minutes: Int): Date {
         val calendar = Calendar.getInstance()
         return Date(calendar.timeInMillis + minutes * 60000)
     }
-
 }

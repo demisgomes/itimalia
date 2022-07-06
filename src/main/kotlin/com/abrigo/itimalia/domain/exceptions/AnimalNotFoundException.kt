@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class AnimalNotFoundException : ApiException("Animal not found"){
+class AnimalNotFoundException : ApiException("Animal not found") {
 
     override fun httpStatus(): Int {
         return HttpStatus.NOT_FOUND_404

@@ -40,5 +40,4 @@ class AdminServiceImpl(private val userRepository: UserRepository, private val j
     override fun get(id: Int): User {
         return userRepository.get(id)
     }
-
 }

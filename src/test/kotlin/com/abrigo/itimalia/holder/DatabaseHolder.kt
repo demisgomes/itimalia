@@ -4,7 +4,6 @@ import com.abrigo.itimalia.application.config.DatabaseConfig
 import org.flywaydb.core.Flyway
 import org.h2.tools.Server
 
-
 object DatabaseHolder {
     private const val JDBC_URL = "jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1"
     private const val DATABASE_USERNAME = "sa"
@@ -37,5 +36,4 @@ object DatabaseHolder {
     fun stop() {
         Server.createPgServer().stop()
     }
-
 }

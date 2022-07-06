@@ -18,6 +18,7 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.File
 
+// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
 @Ignore
 class AnimalImageControllerTest {
 
@@ -35,7 +36,7 @@ class AnimalImageControllerTest {
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", 12345, filename, "png",  12345))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", 12345, filename, "png", 12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) } returns imageServiceResult
         animalImageController.addImage(contextMock)
 
@@ -45,18 +46,18 @@ class AnimalImageControllerTest {
 
     @Test(expected = ImageUploadException::class)
     fun `should throw an exception when do not images in request`() {
-       every { contextMock.uploadedFiles("files") } returns emptyList()
-       every { contextMock.pathParam("id") } returns "1"
-       every { animalService.get(1) } returns AnimalFactory.sampleDTO()
+        every { contextMock.uploadedFiles("files") } returns emptyList()
+        every { contextMock.pathParam("id") } returns "1"
+        every { animalService.get(1) } returns AnimalFactory.sampleDTO()
 
-       animalImageController.addImage(contextMock)
+        animalImageController.addImage(contextMock)
     }
 
     @Test(expected = ImageUploadException::class)
     fun `should throw an exception when one or more images surpass the max size`() {
         val content = ByteArrayInputStream("byteArray".encodeToByteArray())
         val filename = "filename.png"
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345678, filename, "png",  12345678))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345678, filename, "png", 12345678))
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(1) } returns AnimalFactory.sampleDTO()
@@ -73,7 +74,7 @@ class AnimalImageControllerTest {
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345, filename, "png",  12345))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345, filename, "png", 12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) } returns imageServiceResult
         animalImageController.addImage(contextMock)
 
@@ -89,16 +90,15 @@ class AnimalImageControllerTest {
         mockkObject(EnvironmentConfig)
 
         every { contextMock.uploadedFiles("files") } returns
-                listOf(
-                    UploadedFile(content, "png", 12345, filename, "png",  12345),
-                    UploadedFile(content, "png", 12345, filename, "png",  12345),
-                    UploadedFile(content, "png", 12345, filename, "png",  12345)
-                )
+            listOf(
+                UploadedFile(content, "png", 12345, filename, "png", 12345),
+                UploadedFile(content, "png", 12345, filename, "png", 12345),
+                UploadedFile(content, "png", 12345, filename, "png", 12345)
+            )
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
         every { EnvironmentConfig.maxNumberOfImages() } returns "2"
 
         animalImageController.addImage(contextMock)
-
     }
 }

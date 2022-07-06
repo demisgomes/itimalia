@@ -8,7 +8,7 @@ data class Animal(
     val id: Int?,
     val name: String,
     val age: Int?,
-    val timeUnit : TimeUnit?,
+    val timeUnit: TimeUnit?,
     val specie: Specie,
     val description: String,
     val creationDate: DateTime,
@@ -19,6 +19,6 @@ data class Animal(
     val size: AnimalSize,
     val castrated: Boolean,
     val createdById: Int,
-    val adoptedBy : UserPublicInfo? = null,
+    val adoptedBy: UserPublicInfo? = null,
     val images: List<Image> = emptyList()
 )

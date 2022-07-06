@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class UnauthorizedAdminRoleException:ApiException(message = "This resource requires administrative permissions") {
+class UnauthorizedAdminRoleException : ApiException(message = "This resource requires administrative permissions") {
     override fun httpStatus(): Int {
         return HttpStatus.FORBIDDEN_403
     }

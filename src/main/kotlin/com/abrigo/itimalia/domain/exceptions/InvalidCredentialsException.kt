@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class InvalidCredentialsException:ApiException(message = "Invalid user and/or password") {
+class InvalidCredentialsException : ApiException(message = "Invalid user and/or password") {
     override fun httpStatus(): Int {
         return HttpStatus.UNAUTHORIZED_401
     }

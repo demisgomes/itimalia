@@ -10,7 +10,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.jodatime.datetime
 
-object UserMap: IntIdTable("users") {
+object UserMap : IntIdTable("users") {
     val email = varchar("email", VARCHAR_LENGTH)
     val password = varchar("password", VARCHAR_LENGTH)
     val birthDate = datetime("birth_date")
@@ -23,7 +23,7 @@ object UserMap: IntIdTable("users") {
     val token = varchar("token", VARCHAR_LENGTH)
 }
 
-class UserEntity(id: EntityID<Int>): IntEntity(id) {
+class UserEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserEntity>(UserMap)
     var email by UserMap.email
     var password by UserMap.password
@@ -37,9 +37,13 @@ class UserEntity(id: EntityID<Int>): IntEntity(id) {
     var token by UserMap.token
     private val adoptedAnimals by AnimalEntity optionalReferrersOn AnimalMap.adoptedBy
 
-    fun toUser() = User(id.value, email, password, birthDate,
-        Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, modificationDate, token, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() })
+    fun toUser() = User(
+        id.value, email, password, birthDate,
+        Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, modificationDate, token, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() }
+    )
 
-    fun toUserPublicInfo() = UserPublicInfo(id.value, email, birthDate,
-        Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() })
+    fun toUserPublicInfo() = UserPublicInfo(
+        id.value, email, birthDate,
+        Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() }
+    )
 }

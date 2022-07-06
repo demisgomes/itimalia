@@ -5,7 +5,7 @@ import com.abrigo.itimalia.resources.validation.hibernate.entities.UserLoginRequ
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapMounter
 import javax.validation.Validator
 
-class UserLoginRequestConstraintValidator(private val javaxValidator: Validator, private val mapMounter: MapMounter): ConstraintValidator<UserLoginRequest> {
+class UserLoginRequestConstraintValidator(private val javaxValidator: Validator, private val mapMounter: MapMounter) : ConstraintValidator<UserLoginRequest> {
     override fun getConstraints(t: UserLoginRequest): HashMap<String, MutableList<String>> {
         val userLoginRequestModel = UserLoginRequestModel(t.email, t.password)
         val constraints = javaxValidator.validate(userLoginRequestModel)

@@ -20,7 +20,6 @@ object DatabaseConfig {
     }
 
     fun createTables() {
-
         val flyway = Flyway.configure().dataSource(
             EnvironmentConfig.jdbcUrl(),
             EnvironmentConfig.databaseUsername(),
@@ -30,4 +29,3 @@ object DatabaseConfig {
         flyway.migrate()
     }
 }
-

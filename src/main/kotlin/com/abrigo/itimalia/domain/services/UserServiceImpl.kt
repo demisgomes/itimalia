@@ -36,7 +36,7 @@ class UserServiceImpl(
         val userDTO = userRequest.toUser()
         try {
             val user = userRepository.findByEmail(userDTO.email)
-            //if found an email in another user, cannot update the email to other that exists
+            // if found an email in another user, cannot update the email to other that exists
             if (user.id != id) {
                 throw EmailAlreadyExistsException()
             } else {
@@ -69,21 +69,19 @@ class UserServiceImpl(
             }
             throw UnauthorizedDifferentUserChangeException()
         }
-
     }
 
     override fun login(userLoginRequest: UserLoginRequest): User {
         validatorUserLogin.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
         val user = userRepository.findByEmail(newUserLogin.email)
-        if (passwordService.verify(newUserLogin.password, user.password)){
+        if (passwordService.verify(newUserLogin.password, user.password)) {
             val token = jwtService.sign(user.email, user.role)
             val loggedUser = user.copy(token = token)
             userRepository.update(loggedUser.id!!, loggedUser)
             return userRepository.get(loggedUser.id)
         }
         throw UserNotFoundException()
-
     }
 
     override fun add(newUserRequest: NewUserRequest): User {
@@ -109,7 +107,6 @@ class UserServiceImpl(
             )
             return userRepository.add(newUserDTO)
         }
-
     }
 
     override fun delete(id: Int, role: UserRole, email: String) {
@@ -127,5 +124,4 @@ class UserServiceImpl(
     override fun get(id: Int): User {
         return userRepository.get(id)
     }
-
 }

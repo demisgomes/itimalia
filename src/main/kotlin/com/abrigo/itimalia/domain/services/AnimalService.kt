@@ -16,5 +16,4 @@ interface AnimalService {
     fun getByStatus(animalStatus: AnimalStatus): List<Animal>
     fun getBySpecie(specie: Specie): List<Animal>
     fun getByName(name: String): List<Animal>
-
 }

@@ -26,13 +26,13 @@ class NewAnimalRequestValidatorTest {
     )
 
     @Test
-    fun `given a valid new animal request, when try to validate it, then should pass`(){
+    fun `given a valid new animal request, when try to validate it, then should pass`() {
         val constraints = validator.validate(validNewAnimalRequest)
         assert(constraints.isEmpty())
     }
 
     @Test
-    fun `given a new animal request with null name, when try to validate it, then should have a constraint with message 'please fill with a name'`(){
+    fun `given a new animal request with null name, when try to validate it, then should have a constraint with message 'please fill with a name'`() {
         val emptyName = validNewAnimalRequest.copy(name = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -40,7 +40,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null specie, when try to validate it, then should have a constraint with message 'please fill with a valid specie cat or dog'`(){
+    fun `given a new animal request with null specie, when try to validate it, then should have a constraint with message 'please fill with a valid specie cat or dog'`() {
         val emptyName = validNewAnimalRequest.copy(specie = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -48,7 +48,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null description, when try to validate it, then should have a single constraint with message 'please fill with a description'`(){
+    fun `given a new animal request with null description, when try to validate it, then should have a single constraint with message 'please fill with a description'`() {
         val emptyName = validNewAnimalRequest.copy(description = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -56,7 +56,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null sex, when try to validate it, then should have a single constraint with message 'please fill with a sex male or female'`(){
+    fun `given a new animal request with null sex, when try to validate it, then should have a single constraint with message 'please fill with a sex male or female'`() {
         val emptyName = validNewAnimalRequest.copy(sex = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -64,7 +64,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null size, when try to validate it, then should have a single constraint with message '"please fill with a size tiny, small, medium, or large"'`(){
+    fun `given a new animal request with null size, when try to validate it, then should have a single constraint with message 'please fill with a size tiny, small, medium, or large'`() {
         val emptyName = validNewAnimalRequest.copy(size = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -72,7 +72,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null castrated, when try to validate it, then should have a single constraint with message 'please fill castrated with true or false'`(){
+    fun `given a new animal request with null castrated, when try to validate it, then should have a single constraint with message 'please fill castrated with true or false'`() {
         val emptyName = validNewAnimalRequest.copy(castrated = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -80,7 +80,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null name and specie, when try to validate it, then should have two constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog'`(){
+    fun `given a new animal request with null name and specie, when try to validate it, then should have two constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog'`() {
         val emptyNameAndSpecie = validNewAnimalRequest.copy(name = null, specie = null)
         val constraints = validator.validate(emptyNameAndSpecie)
         val constraintMessages = mutableListOf<String>()
@@ -95,7 +95,7 @@ class NewAnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null name, specie, and description when try to validate it, then should have three constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog', 'please fill with a description'`(){
+    fun `given a new animal request with null name, specie, and description when try to validate it, then should have three constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog', 'please fill with a description'`() {
         val emptyNameSpecieAndDescription = validNewAnimalRequest.copy(name = null, specie = null, description = null)
         val constraints = validator.validate(emptyNameSpecieAndDescription)
         val constraintMessages = mutableListOf<String>()
@@ -109,5 +109,4 @@ class NewAnimalRequestValidatorTest {
         assertTrue(constraintMessages.contains("please fill with a valid specie: cat or dog"))
         assertTrue(constraintMessages.contains("please fill with a description"))
     }
-
 }

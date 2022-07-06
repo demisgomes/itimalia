@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class AnimalDeadException:ApiException(message = "This animal unfortunately has passed away.") {
+class AnimalDeadException : ApiException(message = "This animal unfortunately has passed away.") {
     override fun httpStatus(): Int {
         return HttpStatus.FORBIDDEN_403
     }

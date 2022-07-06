@@ -23,9 +23,9 @@ import org.junit.Ignore
 import org.junit.Test
 import java.util.Calendar
 
+// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
 @Ignore
-//a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
-class AdminControllerTest{
+class AdminControllerTest {
     lateinit var adminServiceMock: AdminService
     lateinit var contextMock: Context
     lateinit var returnedAdminUser: User
@@ -33,30 +33,28 @@ class AdminControllerTest{
     lateinit var newAdminUser: NewUser
     lateinit var newLoginUser: UserLogin
     lateinit var jwtAccessManagerMock: JWTAccessManager
-    lateinit var actualDateTime:DateTime
+    lateinit var actualDateTime: DateTime
 
     @Before
-    fun setup(){
-        adminServiceMock = mockk(relaxed=true)
+    fun setup() {
+        adminServiceMock = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
-        jwtAccessManagerMock= mockk(relaxed = true)
+        jwtAccessManagerMock = mockk(relaxed = true)
 
         mockkStatic(Calendar::class)
-        actualDateTime= DateTime.now()
-
+        actualDateTime = DateTime.now()
 
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
-        val birthDate=formatter.parseDateTime("01/01/1990")
-        returnedAdminUser= UserFactory.sampleDTO(role = UserRole.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
+        val birthDate = formatter.parseDateTime("01/01/1990")
+        returnedAdminUser = UserFactory.sampleDTO(role = UserRole.ADMIN, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         newAdminUser = UserFactory.sampleNew()
         newLoginUser = UserFactory.sampleLogin()
         spyReturnedAdminUser = spyk(returnedAdminUser)
     }
 
     @Test
-    fun `when add a valid user with admin permissions should return the user with status 201`(){
-
-        every{ adminServiceMock.add(newAdminUser, UserRole.ADMIN)}.returns(spyReturnedAdminUser)
+    fun `when add a valid user with admin permissions should return the user with status 201`() {
+        every { adminServiceMock.add(newAdminUser, UserRole.ADMIN) }.returns(spyReturnedAdminUser)
 
         every { contextMock.body<NewUser>() }.returns(newAdminUser)
 
@@ -69,5 +67,4 @@ class AdminControllerTest{
         verify { contextMock.json(any<LoggedUser>()) }
         verify { contextMock.status(HttpStatus.CREATED_201) }
     }
-
 }

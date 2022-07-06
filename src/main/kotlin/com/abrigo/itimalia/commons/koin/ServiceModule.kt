@@ -10,13 +10,13 @@ import com.abrigo.itimalia.domain.services.AnimalServiceImpl
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.domain.services.UserServiceImpl
 import com.abrigo.itimalia.domain.validation.Validator
-import com.abrigo.itimalia.domain.validation.impl.AnimalDTORequestValidator
+import com.abrigo.itimalia.domain.validation.impl.AnimalRequestValidator
 import com.abrigo.itimalia.domain.validation.impl.NewAnimalRequestValidator
 import com.abrigo.itimalia.domain.validation.impl.NewUserRequestValidator
 import com.abrigo.itimalia.domain.validation.impl.UserDTORequestValidator
 import com.abrigo.itimalia.domain.validation.impl.UserLoginRequestValidator
 import com.abrigo.itimalia.resources.validation.hibernate.HibernateValidator
-import com.abrigo.itimalia.resources.validation.hibernate.gateways.AnimalDTORequestConstraintValidator
+import com.abrigo.itimalia.resources.validation.hibernate.gateways.AnimalRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewAnimalRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.NewUserRequestConstraintValidator
 import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserLoginRequestConstraintValidator
@@ -24,8 +24,7 @@ import com.abrigo.itimalia.resources.validation.hibernate.gateways.UserRequestCo
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapMounter
 import org.koin.dsl.module.module
 
-
-val serviceModule = module{
+val serviceModule = module {
     single {
         HibernateValidator.create()
     }
@@ -40,14 +39,16 @@ val serviceModule = module{
             get(),
             NewUserRequestValidator(NewUserRequestConstraintValidator(get(), get())) as Validator<NewUserRequest>,
             UserDTORequestValidator(UserRequestConstraintValidator(get(), get())) as Validator<UserRequest>,
-            UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(),get())) as Validator<UserLoginRequest>,
+            UserLoginRequestValidator(UserLoginRequestConstraintValidator(get(), get())) as Validator<UserLoginRequest>,
             get()
         ) as UserService
     }
-    single { AdminServiceImpl(get(), get (), get()) as AdminService }
+    single { AdminServiceImpl(get(), get(), get()) as AdminService }
     single {
-        AnimalServiceImpl(get(),
+        AnimalServiceImpl(
+            get(),
             NewAnimalRequestValidator(NewAnimalRequestConstraintValidator(get(), get())),
-            AnimalDTORequestValidator(AnimalDTORequestConstraintValidator(get(), get()))) as AnimalService
+            AnimalRequestValidator(AnimalRequestConstraintValidator(get(), get()))
+        ) as AnimalService
     }
 }

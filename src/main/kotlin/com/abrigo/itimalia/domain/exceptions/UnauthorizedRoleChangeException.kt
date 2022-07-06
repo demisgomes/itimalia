@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class UnauthorizedRoleChangeException :ApiException(message = "You do not have permission for change your role") {
+class UnauthorizedRoleChangeException : ApiException(message = "You do not have permission for change your role") {
     override fun httpStatus(): Int {
         return HttpStatus.FORBIDDEN_403
     }
@@ -14,5 +14,4 @@ class UnauthorizedRoleChangeException :ApiException(message = "You do not have p
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }

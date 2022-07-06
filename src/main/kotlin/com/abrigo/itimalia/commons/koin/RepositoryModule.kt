@@ -7,6 +7,6 @@ import com.abrigo.itimalia.resources.storage.exposed.gateways.UserRepositoryImpl
 import org.koin.dsl.module.module
 
 val repositoryModule = module {
-    single{ UserRepositoryImpl() as UserRepository}
+    single { UserRepositoryImpl() as UserRepository }
     single { AnimalRepositoryImpl(get()) as AnimalRepository }
 }

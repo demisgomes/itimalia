@@ -5,9 +5,9 @@ import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.validation.ConstraintValidator
 import com.abrigo.itimalia.domain.validation.Validator
 
-data class UserLoginRequestValidator(private val constraintValidator: ConstraintValidator<UserLoginRequest>): Validator<UserLoginRequest> {
+data class UserLoginRequestValidator(private val constraintValidator: ConstraintValidator<UserLoginRequest>) : Validator<UserLoginRequest> {
     override fun validate(t: UserLoginRequest) {
         val constraints = constraintValidator.getConstraints(t)
-        if(constraints.isNotEmpty()) throw ValidationException(constraints)
+        if (constraints.isNotEmpty()) throw ValidationException(constraints)
     }
 }

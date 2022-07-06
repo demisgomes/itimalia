@@ -26,13 +26,13 @@ object AnimalMap : IntIdTable("animals") {
     val modificationDate = datetime("modification_date")
     val status = varchar("status", VARCHAR_LENGTH)
     val sex = varchar("sex", VARCHAR_LENGTH)
-    val size =  varchar("size", VARCHAR_LENGTH)
+    val size = varchar("size", VARCHAR_LENGTH)
     val castrated = bool("castrated")
     val createdById = reference("created_by_id", UserMap.id, ReferenceOption.NO_ACTION)
     val adoptedBy = reference("adopted_by", UserMap).nullable()
 }
 
-class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
+class AnimalEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<AnimalEntity>(AnimalMap)
     var name by AnimalMap.name
     var age by AnimalMap.age
@@ -68,7 +68,7 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             createdById.value,
             adoptedBy?.toUserPublicInfo(),
             images.map { image -> image.toAnimalImage() }.toList()
-            )
+        )
 
     fun toAnimalWithoutAdopter() =
         AnimalWithoutAdopter(
@@ -88,5 +88,4 @@ class AnimalEntity(id: EntityID<Int>): IntEntity(id) {
             createdById.value,
             images.map { image -> image.toAnimalImage() }.toList()
         )
-
 }

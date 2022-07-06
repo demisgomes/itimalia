@@ -1,6 +1,5 @@
 package com.abrigo.itimalia.application.web.accessmanagers
 
-
 import com.abrigo.itimalia.application.web.accessmanagers.entities.RouteRole
 import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
@@ -11,15 +10,14 @@ import io.javalin.core.security.AccessManager
 import io.javalin.core.security.Role
 import io.javalin.http.Context
 import io.javalin.http.Handler
-import java.util.*
-
+import java.util.Optional
 
 class JWTAccessManager(
     private val rolesMapping: Map<String, UserRole>,
     private val defaultRole: UserRole,
     private val jwtService: JWTService
 ) : AccessManager {
-    companion object{
+    companion object {
         const val ROLE_FIELD = "role"
         const val EMAIL_FIELD = "email"
         const val AUTHORIZATION = "Authorization"
@@ -27,8 +25,8 @@ class JWTAccessManager(
     }
 
     override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<Role>) {
-        //if token has been expired and this handler requires admin or user permissions, return invalid token exception
-        //add and find does not requires token (Roles.ANYONE)
+        // if token has been expired and this handler requires admin or user permissions, return invalid token exception
+        // add and find does not requires token (Roles.ANYONE)
 
         if (ctx.matchedPath() == "/swagger") {
             handler.handle(ctx)
@@ -48,7 +46,6 @@ class JWTAccessManager(
                     .status(UnauthorizedUserRoleException().httpStatus())
             }
         }
-
     }
 
     fun extractRole(context: Context): UserRole {

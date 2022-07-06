@@ -39,11 +39,9 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
     }
 
     override fun add(newAnimal: Animal): Animal {
-
         val addedAnimalEntity = insertAnimalEntity(newAnimal)
 
         return populateAnimalWithDeficiencies(newAnimal.deficiencies, addedAnimalEntity)
-
     }
 
     private fun populateAnimalWithDeficiencies(
@@ -84,7 +82,6 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
 
     override fun update(id: Int, animal: Animal): Animal {
         val result = transaction {
-
             AnimalMap.update({ AnimalMap.id eq id }) { resultRow ->
                 resultRow[name] = animal.name
                 resultRow[age] = animal.age

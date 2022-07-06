@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class UnauthorizedDifferentUserChangeException :ApiException(message = "You do not have permissions for modifying another user") {
+class UnauthorizedDifferentUserChangeException : ApiException(message = "You do not have permissions for modifying another user") {
     override fun httpStatus(): Int {
         return HttpStatus.FORBIDDEN_403
     }
@@ -14,5 +14,4 @@ class UnauthorizedDifferentUserChangeException :ApiException(message = "You do n
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }

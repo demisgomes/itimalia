@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class InvalidGenderException:ApiException("Invalid gender. Choose male, female, or undefined"){
+class InvalidGenderException : ApiException("Invalid gender. Choose male, female, or undefined") {
 
     override fun httpStatus(): Int {
         return HttpStatus.UNPROCESSABLE_ENTITY_422
@@ -15,5 +15,4 @@ class InvalidGenderException:ApiException("Invalid gender. Choose male, female, 
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }
