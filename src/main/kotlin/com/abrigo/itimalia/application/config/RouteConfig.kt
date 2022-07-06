@@ -24,7 +24,6 @@ import io.javalin.plugin.openapi.dsl.documented
 
 class RouteConfig(private val userController: UserController, private val adminController: AdminController, private val animalController: AnimalController, private val animalImageController: AnimalImageController) {
     fun register(app: Javalin) {
-
         app.routes {
             ApiBuilder.path("users") {
                 ApiBuilder.post(documented(createUserDocumentation(), userController::addUser), roles(RouteRole.ANYONE))

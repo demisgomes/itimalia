@@ -33,7 +33,6 @@ class JWTServiceImpl : JWTService {
     }
 
     override fun decode(token: String): Map<String, String> {
-
         try {
             val claims = mutableMapOf<String, String>()
 

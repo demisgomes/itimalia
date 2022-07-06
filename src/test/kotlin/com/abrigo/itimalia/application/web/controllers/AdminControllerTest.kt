@@ -23,8 +23,8 @@ import org.junit.Ignore
 import org.junit.Test
 import java.util.Calendar
 
-@Ignore
 // a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
+@Ignore
 class AdminControllerTest {
     lateinit var adminServiceMock: AdminService
     lateinit var contextMock: Context
@@ -54,7 +54,6 @@ class AdminControllerTest {
 
     @Test
     fun `when add a valid user with admin permissions should return the user with status 201`() {
-
         every { adminServiceMock.add(newAdminUser, UserRole.ADMIN) }.returns(spyReturnedAdminUser)
 
         every { contextMock.body<NewUser>() }.returns(newAdminUser)

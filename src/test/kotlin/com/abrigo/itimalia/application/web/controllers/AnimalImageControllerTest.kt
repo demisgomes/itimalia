@@ -18,6 +18,7 @@ import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.File
 
+// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
 @Ignore
 class AnimalImageControllerTest {
 

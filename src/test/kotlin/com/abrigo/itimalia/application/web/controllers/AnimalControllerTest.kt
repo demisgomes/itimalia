@@ -20,8 +20,8 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-@Ignore
 // a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
+@Ignore
 class AnimalControllerTest {
 
     private lateinit var animalServiceMock: AnimalService

@@ -11,7 +11,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class AnimalImagesRepositoryImpl : AnimalImagesRepository {
     override fun addAll(newImages: List<Image>, newAnimalId: Int) {
-
         try {
             transaction {
                 newImages.forEach {

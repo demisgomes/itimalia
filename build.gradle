@@ -108,5 +108,9 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+ktlint{
+    enableExperimentalRules.set(true)
+}
+
 task stage(dependsOn: ['build', 'clean'])
 build.mustRunAfter clean

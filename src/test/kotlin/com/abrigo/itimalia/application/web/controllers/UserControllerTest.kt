@@ -26,8 +26,8 @@ import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 
-@Ignore
 // a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
+@Ignore
 class UserControllerTest {
     private lateinit var userServiceMock: UserService
     private lateinit var returnedUser: User
