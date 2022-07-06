@@ -15,7 +15,6 @@ import com.abrigo.itimalia.commons.koin.passwordModule
 import com.abrigo.itimalia.commons.koin.repositoryModule
 import com.abrigo.itimalia.commons.koin.serviceModule
 import com.abrigo.itimalia.domain.exceptions.ApiException
-import com.abrigo.itimalia.domain.services.PasswordService
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.BadRequestResponse
@@ -36,7 +35,6 @@ class ItimaliaApplication : KoinComponent {
     }
 
     fun startServer() {
-
         StandAloneContext.startKoin(
             listOf(
                 serviceModule,
