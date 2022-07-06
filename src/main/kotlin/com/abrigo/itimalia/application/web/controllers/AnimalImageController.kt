@@ -13,7 +13,6 @@ import java.io.InputStream
 import java.net.URLConnection
 import kotlin.streams.toList
 
-
 class AnimalImageController(private val imageService: ImageService, private val animalService: AnimalService) {
     fun addImage(context: Context) {
         val imageFilesToBeUploaded = context
@@ -77,7 +76,7 @@ class AnimalImageController(private val imageService: ImageService, private val 
         if (imageFilesToBeUploaded.isEmpty()) throw ImageUploadException(Throwable("There is no images to be uploaded"))
     }
 
-    private fun isImage(byteArray: ByteArray): Boolean{
+    private fun isImage(byteArray: ByteArray): Boolean {
         val inputStream: InputStream = BufferedInputStream(ByteArrayInputStream(byteArray))
         val mimeType: String? = URLConnection.guessContentTypeFromStream(inputStream)
         inputStream.close()

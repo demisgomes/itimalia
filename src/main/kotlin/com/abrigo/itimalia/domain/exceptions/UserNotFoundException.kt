@@ -14,5 +14,4 @@ class UserNotFoundException : ApiException("User not found") {
     override fun userResponseMessage(): String {
         return message!!
     }
-
 }

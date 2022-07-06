@@ -2,7 +2,7 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class AnimalAlreadyAdoptedException :ApiException(message = "This animal already was adopted") {
+class AnimalAlreadyAdoptedException : ApiException(message = "This animal already was adopted") {
     override fun httpStatus(): Int {
         return HttpStatus.UNAUTHORIZED_401
     }

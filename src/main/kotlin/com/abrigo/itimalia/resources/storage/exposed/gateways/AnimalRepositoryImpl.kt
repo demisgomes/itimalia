@@ -43,7 +43,6 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
         val addedAnimalEntity = insertAnimalEntity(newAnimal)
 
         return populateAnimalWithDeficiencies(newAnimal.deficiencies, addedAnimalEntity)
-
     }
 
     private fun populateAnimalWithDeficiencies(

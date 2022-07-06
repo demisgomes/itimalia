@@ -24,15 +24,15 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class AnimalRepositoryImplTest{
+class AnimalRepositoryImplTest {
     private lateinit var expectedAnimal: Animal
     private lateinit var actualDateTime: DateTime
     private val userRepositoryMock: UserRepository = mockk(relaxed = true)
     private val animalRepository = AnimalRepositoryImpl(userRepositoryMock)
 
     @Before
-    fun setup(){
-        actualDateTime= DateTime.now()
+    fun setup() {
+        actualDateTime = DateTime.now()
         expectedAnimal = AnimalFactory.sampleDTO()
         DatabaseHolder.tearDown()
     }
@@ -40,70 +40,70 @@ class AnimalRepositoryImplTest{
     companion object {
         @JvmStatic
         @BeforeClass
-        fun startDB(){
+        fun startDB() {
             DatabaseHolder.start()
         }
 
         @JvmStatic
         @AfterClass
-        fun stopDB(){
+        fun stopDB() {
             DatabaseHolder.stop()
         }
     }
 
     @Test
-    fun `when adds an animal in database, return it`(){
-        //given expectedAnimalDTO
+    fun `when adds an animal in database, return it`() {
+        // given expectedAnimalDTO
 
-        //when
-        val animalDTO=animalRepository.add(expectedAnimal)
+        // when
+        val animalDTO = animalRepository.add(expectedAnimal)
 
-        //then
+        // then
         assertEquals(expectedAnimal, animalDTO)
     }
 
     @Test
-    fun `when adds an animal in database with deficiency PARTIAL_BLINDNESS, return it with PARTIAL_BLINDESS deficiency`(){
-        //given expectedAnimalDTO
+    fun `when adds an animal in database with deficiency PARTIAL_BLINDNESS, return it with PARTIAL_BLINDESS deficiency`() {
+        // given expectedAnimalDTO
         val animalWithTwoDeficiencies = expectedAnimal.copy(deficiencies = listOf(AnimalDeficiency.PARTIAL_BLINDNESS))
 
-        //when
-        val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
+        // when
+        val animalDTO = animalRepository.add(animalWithTwoDeficiencies)
 
-        //then
+        // then
         assertEquals(animalWithTwoDeficiencies, animalDTO)
         assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.PARTIAL_BLINDNESS))
     }
 
     @Test
-    fun `when adds an animal in database with two deficiencies, return it with these two deficiencies`(){
-        //given expectedAnimalDTO
+    fun `when adds an animal in database with two deficiencies, return it with these two deficiencies`() {
+        // given expectedAnimalDTO
         val animalWithTwoDeficiencies = expectedAnimal.copy(deficiencies = listOf(AnimalDeficiency.DEAFNESS, AnimalDeficiency.PARALYSIS))
 
-        //when
-        val animalDTO=animalRepository.add(animalWithTwoDeficiencies)
+        // when
+        val animalDTO = animalRepository.add(animalWithTwoDeficiencies)
 
-        //then
+        // then
         assertEquals(animalWithTwoDeficiencies, animalDTO)
         assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.DEAFNESS))
         assertTrue(animalWithTwoDeficiencies.deficiencies.contains(AnimalDeficiency.PARALYSIS))
     }
 
     @Test
-    fun `when gets an previous added animal in database, return it`(){
-        //given expectedAnimalDTO
+    fun `when gets an previous added animal in database, return it`() {
+        // given expectedAnimalDTO
         animalRepository.add(expectedAnimal)
 
-        //when
-        val returnedAnimalDTO=animalRepository.get(1)
+        // when
+        val returnedAnimalDTO = animalRepository.get(1)
 
-        //then
+        // then
         assertEquals(expectedAnimal, returnedAnimalDTO)
     }
 
     @Test
-    fun `when add many animals in database, should return all via getAll()`(){
-        //given
+    fun `when add many animals in database, should return all via getAll()`() {
+        // given
         val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
         val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", age = 8, timeUnit = TimeUnit.YEAR)
         val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", age = 5, timeUnit = TimeUnit.YEAR)
@@ -114,48 +114,48 @@ class AnimalRepositoryImplTest{
 
         val listAnimals = listOf(mia, lala, emy)
 
-        //when
-        val returnedAnimals=animalRepository.getAll()
+        // when
+        val returnedAnimals = animalRepository.getAll()
 
-        //then
+        // then
         assertEquals(listAnimals, returnedAnimals)
     }
 
     @Test(expected = AnimalNotFoundException::class)
-    fun `when does not exist animal, an update call should return AnimalNotFoundException`(){
-        //given none
+    fun `when does not exist animal, an update call should return AnimalNotFoundException`() {
+        // given none
 
-        //when
+        // when
         animalRepository.update(1, expectedAnimal)
 
-        //then
-        //AnimalNotFoundException
+        // then
+        // AnimalNotFoundException
     }
 
     @Test(expected = AnimalNotFoundException::class)
-    fun `when does not exist animal, a delete call should return AnimalNotFoundException`(){
-        //given none
+    fun `when does not exist animal, a delete call should return AnimalNotFoundException`() {
+        // given none
 
-        //when
+        // when
         animalRepository.delete(1)
 
-        //then
-        //AnimalNotFoundException
+        // then
+        // AnimalNotFoundException
     }
 
     @Test
-    fun `when updates a previous animal should return the animal`(){
-        //given
+    fun `when updates a previous animal should return the animal`() {
+        // given
         val mia = AnimalFactory.sampleDTO(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
-        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
 
-        //when
+        // when
         animalRepository.add(mia)
-        animalRepository.update(1,lala)
+        animalRepository.update(1, lala)
 
         val updatedAnimal = animalRepository.get(1)
 
-        //then
+        // then
         assertEquals("Lala", updatedAnimal.name)
         assertEquals(8, updatedAnimal.age)
         assertEquals(TimeUnit.YEAR, updatedAnimal.timeUnit)
@@ -164,18 +164,18 @@ class AnimalRepositoryImplTest{
     }
 
     @Test
-    fun `when updates a previous animal with deficiency should return the animal with changed deficiency`(){
-        //given
+    fun `when updates a previous animal with deficiency should return the animal with changed deficiency`() {
+        // given
         val mia = AnimalFactory.sampleDTO(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime, deficiencies = listOf(AnimalDeficiency.DEAFNESS))
-        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
 
-        //when
+        // when
         animalRepository.add(mia)
-        animalRepository.update(1,lala)
+        animalRepository.update(1, lala)
 
         val updatedAnimal = animalRepository.get(1)
 
-        //then
+        // then
         assertEquals("Lala", updatedAnimal.name)
         assertEquals(8, updatedAnimal.age)
         assertEquals(TimeUnit.YEAR, updatedAnimal.timeUnit)
@@ -185,33 +185,33 @@ class AnimalRepositoryImplTest{
     }
 
     @Test(expected = AnimalNotFoundException::class)
-    fun `when remove an existent animal, remove it`(){
-        //given
+    fun `when remove an existent animal, remove it`() {
+        // given
         val mia = AnimalFactory.sampleDTO(name = "Mia", creationDate = actualDateTime, modificationDate = actualDateTime)
         animalRepository.add(mia)
 
-        //when
+        // when
         animalRepository.delete(1)
 
-        //then
+        // then
         animalRepository.get(1)
     }
 
     @Test
     @Ignore
-    //test do not pass in heroku and CI
-    fun `given a valid animal and an existent user, should adopt an animal`(){
-        //given
+    // test do not pass in heroku and CI
+    fun `given a valid animal and an existent user, should adopt an animal`() {
+        // given
         val userId = 1
-        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
 
         every { userRepositoryMock.get(userId) } returns UserFactory.sampleDTO()
 
-        //when
+        // when
         animalRepository.add(lala)
-        val adoptedAnimal = animalRepository.adopt(lala,userId)
+        val adoptedAnimal = animalRepository.adopt(lala, userId)
 
-        //then
+        // then
         assertEquals("Lala", adoptedAnimal.name)
         assertEquals(8, adoptedAnimal.age)
         assertEquals(TimeUnit.YEAR, adoptedAnimal.timeUnit)
@@ -223,32 +223,31 @@ class AnimalRepositoryImplTest{
     }
 
     @Test(expected = UserNotFoundException::class)
-    fun `given a valid animal and a non existent user, should expect an UserNotFoundException`(){
-        //given
+    fun `given a valid animal and a non existent user, should expect an UserNotFoundException`() {
+        // given
         val userId = 2
-        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
 
         animalRepository.add(lala)
 
         every { userRepositoryMock.get(userId) } throws UserNotFoundException()
-        //when
-        animalRepository.adopt(lala,userId)
+        // when
+        animalRepository.adopt(lala, userId)
 
-        //then
-        //UserNotFoundException
+        // then
+        // UserNotFoundException
     }
 
     @Test(expected = AnimalNotFoundException::class)
-    fun `given a non valid animal, should expect an AnimalNotFoundException when call adopt`(){
-        //given
+    fun `given a non valid animal, should expect an AnimalNotFoundException when call adopt`() {
+        // given
         val userId = 2
-        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime , modificationDate = actualDateTime)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", age = 8, timeUnit = TimeUnit.YEAR, creationDate = actualDateTime, modificationDate = actualDateTime)
 
-        //when
-        animalRepository.adopt(lala,userId)
+        // when
+        animalRepository.adopt(lala, userId)
 
-        //then
-        //AnimalNotFoundException
+        // then
+        // AnimalNotFoundException
     }
-
 }

@@ -10,8 +10,8 @@ import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserRole
 import org.joda.time.DateTime
 
-object UserFactory{
-    fun sampleDTO(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now() ): User {
+object UserFactory {
+    fun sampleDTO(id: Int? = 1, email: String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token: String? = "My token", birthDate: DateTime = DateTime.now(), creationDate: DateTime = DateTime.now(), modificationDate: DateTime = DateTime.now()): User {
         return User(
             id = id,
             email = email,
@@ -27,7 +27,7 @@ object UserFactory{
         )
     }
 
-    fun sampleNew(email:String = "myemail@email.com", password: String = "myPassword", birthDate:DateTime = DateTime.now() ): NewUser {
+    fun sampleNew(email: String = "myemail@email.com", password: String = "myPassword", birthDate: DateTime = DateTime.now()): NewUser {
         return NewUser(
             email = email,
             password = password,
@@ -38,7 +38,7 @@ object UserFactory{
         )
     }
 
-    fun sampleNewRequest(email:String = "myemail@email.com", password: String = "myPassword", birthDate:DateTime = DateTime.now() ): NewUserRequest {
+    fun sampleNewRequest(email: String = "myemail@email.com", password: String = "myPassword", birthDate: DateTime = DateTime.now()): NewUserRequest {
         return NewUserRequest(
             email = email,
             password = password,
@@ -49,21 +49,21 @@ object UserFactory{
         )
     }
 
-    fun sampleLogin(email:String = "myemail@email.com", password: String = "myPassword"): UserLogin {
+    fun sampleLogin(email: String = "myemail@email.com", password: String = "myPassword"): UserLogin {
         return UserLogin(
             email = email,
             password = password
         )
     }
 
-    fun sampleLoginRequest(email:String = "myemail@email.com", password: String = "myPassword"): UserLoginRequest {
+    fun sampleLoginRequest(email: String = "myemail@email.com", password: String = "myPassword"): UserLoginRequest {
         return UserLoginRequest(
             email = email,
             password = password
         )
     }
 
-    fun sampleDTORequest(id:Int? = 1, email:String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token:String? = "My token", birthDate:DateTime = DateTime.now(), creationDate:DateTime = DateTime.now(), modificationDate:DateTime = DateTime.now()): UserRequest {
+    fun sampleDTORequest(id: Int? = 1, email: String = "myemail@email.com", password: String = "myPassword", role: UserRole = UserRole.ANYONE, token: String? = "My token", birthDate: DateTime = DateTime.now(), creationDate: DateTime = DateTime.now(), modificationDate: DateTime = DateTime.now()): UserRequest {
         return UserRequest(
             id = id,
             email = email,

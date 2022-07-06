@@ -1,6 +1,6 @@
 name: ktlint
 on:
-  pull_request:
+  push:
     paths:
       - "**/*.kt"
       - ".github/workflows/ktlint.yml"

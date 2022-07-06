@@ -9,4 +9,5 @@ class NewAnimal(
     val deficiencies: List<AnimalDeficiency>,
     val sex: AnimalSex,
     val size: AnimalSize,
-    val castrated: Boolean)
+    val castrated: Boolean
+)

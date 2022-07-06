@@ -8,5 +8,5 @@ data class UserLoginRequestModel(
     @field:NotBlank(message = "please fill with an email")
     val email: String?,
     @field:NotBlank(message = "please fill with a password")
-    val password:String?
+    val password: String?
 )

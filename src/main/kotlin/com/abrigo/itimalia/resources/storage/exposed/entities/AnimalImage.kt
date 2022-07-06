@@ -17,7 +17,7 @@ object AnimalImage : IntIdTable("animal_images") {
     val animalId = reference("animal_id", AnimalMap, ReferenceOption.CASCADE)
 }
 
-class AnimalImageEntity(id: EntityID<Int>): IntEntity(id) {
+class AnimalImageEntity(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<AnimalImageEntity>(AnimalImage)
     var name by AnimalImage.name
     var path by AnimalImage.path

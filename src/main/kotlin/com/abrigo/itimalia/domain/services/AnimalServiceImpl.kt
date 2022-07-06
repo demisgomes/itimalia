@@ -46,14 +46,13 @@ class AnimalServiceImpl(
             AnimalStatus.DEAD -> throw AnimalDeadException()
             else -> throw AnimalGoneException()
         }
-
     }
 
     override fun get(id: Int): Animal {
         return animalRepository.get(id)
     }
 
-    override fun add(newAnimal: NewAnimalRequest, creatorId:Int): Animal {
+    override fun add(newAnimal: NewAnimalRequest, creatorId: Int): Animal {
         newAnimalValidator.validate(newAnimal)
 
         val animalToBeAddedDTO = Animal(
@@ -66,8 +65,8 @@ class AnimalServiceImpl(
             DateTime.now(),
             DateTime.now(),
             AnimalStatus.AVAILABLE,
-            newAnimal.deficiencies?: throw IllegalArgumentException(),
-            newAnimal.sex?: throw IllegalArgumentException(),
+            newAnimal.deficiencies ?: throw IllegalArgumentException(),
+            newAnimal.sex ?: throw IllegalArgumentException(),
             newAnimal.size ?: throw IllegalArgumentException(),
             newAnimal.castrated ?: throw IllegalArgumentException(),
             creatorId
@@ -109,5 +108,4 @@ class AnimalServiceImpl(
     override fun delete(id: Int) {
         return animalRepository.delete(id)
     }
-
 }

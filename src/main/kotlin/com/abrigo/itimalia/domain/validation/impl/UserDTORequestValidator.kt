@@ -5,11 +5,10 @@ import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.validation.ConstraintValidator
 import com.abrigo.itimalia.domain.validation.Validator
 
-class UserDTORequestValidator(private val constraintValidator: ConstraintValidator<UserRequest>):
-Validator<UserRequest>{
+class UserDTORequestValidator(private val constraintValidator: ConstraintValidator<UserRequest>) :
+    Validator<UserRequest> {
     override fun validate(t: UserRequest) {
         val constraints = constraintValidator.getConstraints(t)
-        if(constraints.isNotEmpty()) throw ValidationException(constraints)
+        if (constraints.isNotEmpty()) throw ValidationException(constraints)
     }
-
 }

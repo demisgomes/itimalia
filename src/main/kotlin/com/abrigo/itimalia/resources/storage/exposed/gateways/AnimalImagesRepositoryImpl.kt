@@ -9,10 +9,10 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class AnimalImagesRepositoryImpl : AnimalImagesRepository{
+class AnimalImagesRepositoryImpl : AnimalImagesRepository {
     override fun addAll(newImages: List<Image>, newAnimalId: Int) {
 
-        try{
+        try {
             transaction {
                 newImages.forEach {
                     AnimalImageEntity.new {
@@ -24,10 +24,8 @@ class AnimalImagesRepositoryImpl : AnimalImagesRepository{
                     }
                 }
             }
-        }
-        catch (exception: ExposedSQLException) {
+        } catch (exception: ExposedSQLException) {
             throw AnimalNotFoundException()
         }
-
     }
 }

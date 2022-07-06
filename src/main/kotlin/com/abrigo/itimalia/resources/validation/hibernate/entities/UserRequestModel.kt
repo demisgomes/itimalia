@@ -15,7 +15,7 @@ data class UserRequestModel(
     @field:NotBlank(message = "please fill with an email")
     var email: String?,
     @field:NotBlank(message = "please fill with a password")
-    val password:String?,
+    val password: String?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @field:MinimumAge(message = "please fill a birthDate with pattern yyyy-MM-dd of a user with more than 13 years old")
     val birthDate: DateTime?,
@@ -31,4 +31,5 @@ data class UserRequestModel(
     val creationDate: DateTime?,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val modificationDate: DateTime?,
-    var token:String?)
+    var token: String?
+)

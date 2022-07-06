@@ -12,7 +12,7 @@ data class NewAnimalRequestModel(
     @field:NotBlank(message = "please fill with a name")
     val name: String?,
     val age: Int?,
-    val timeUnit : TimeUnit?,
+    val timeUnit: TimeUnit?,
     @field:NotNull(message = "please fill with a valid specie: cat or dog")
     val specie: Specie?,
     @field:NotNull(message = "please fill with a description")
@@ -24,4 +24,4 @@ data class NewAnimalRequestModel(
     val size: AnimalSize?,
     @field:NotNull(message = "please fill castrated with true or false")
     val castrated: Boolean?
-    )
+)

@@ -11,21 +11,16 @@ import com.abrigo.itimalia.commons.koin.accessManagerModule
 import com.abrigo.itimalia.commons.koin.configModule
 import com.abrigo.itimalia.commons.koin.controllerModule
 import com.abrigo.itimalia.commons.koin.imageModule
+import com.abrigo.itimalia.commons.koin.passwordModule
 import com.abrigo.itimalia.commons.koin.repositoryModule
 import com.abrigo.itimalia.commons.koin.serviceModule
-import com.abrigo.itimalia.commons.koin.passwordModule
 import com.abrigo.itimalia.domain.exceptions.ApiException
 import com.abrigo.itimalia.domain.services.PasswordService
-import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity
-import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.http.BadRequestResponse
 import io.javalin.plugin.json.JavalinJackson
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.StandAloneContext
 import org.koin.standalone.inject
@@ -80,7 +75,6 @@ class ItimaliaApplication : KoinComponent {
         logger.info("Connecting to DB")
         initDB()
         logger.info("Connected with DB successfully")
-
     }
 }
 

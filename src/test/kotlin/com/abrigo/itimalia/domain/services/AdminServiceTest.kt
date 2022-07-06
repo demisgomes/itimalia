@@ -18,7 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class AdminServiceTest{
+class AdminServiceTest {
 
     private lateinit var userRepositoryMock: UserRepository
     private lateinit var newUserDTO: User
@@ -33,27 +33,25 @@ class AdminServiceTest{
     @Before
     fun setup() {
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
-        birthDate=formatter.parseDateTime("01/01/1990")
+        birthDate = formatter.parseDateTime("01/01/1990")
         mockkStatic(DateTime::class)
-        actualDateTime= DateTime.now()
+        actualDateTime = DateTime.now()
         newUserDTO = UserFactory.sampleDTO(id = null, birthDate = birthDate, creationDate = actualDateTime, modificationDate = actualDateTime)
         expectedUser = newUserDTO.copy(id = 1, token = "token_test", password = "encodedPassword")
 
         newUser = UserFactory.sampleNew(birthDate = birthDate)
 
-        userRepositoryMock= mockk(relaxed = true)
+        userRepositoryMock = mockk(relaxed = true)
 
-        jwtService= mockk(relaxed = true)
+        jwtService = mockk(relaxed = true)
 
         adminService = AdminServiceImpl(userRepositoryMock, jwtService, passwordServiceMock)
     }
 
-
     @Test
-    fun `when a valid user with admin permissions request a sign up, register it`(){
+    fun `when a valid user with admin permissions request a sign up, register it`() {
 
         every { DateTime.now() }.returns(actualDateTime)
-
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
@@ -61,15 +59,15 @@ class AdminServiceTest{
 
         every { jwtService.sign(newUserDTO.email, UserRole.ADMIN) }.returns("token_test")
 
-        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test", password = "encodedPassword"))  }.returns(expectedUser)
+        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test", password = "encodedPassword")) }.returns(expectedUser)
 
-        val userDTO=adminService.add(newUser, UserRole.ADMIN)
+        val userDTO = adminService.add(newUser, UserRole.ADMIN)
 
-        assertEquals(expectedUser,userDTO)
+        assertEquals(expectedUser, userDTO)
     }
 
     @Test(expected = EmailAlreadyExistsException::class)
-    fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`(){
+    fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`() {
         val unexpectedUserDTO = expectedUser
 
         every { DateTime.now() }.returns(actualDateTime)
@@ -80,16 +78,15 @@ class AdminServiceTest{
     }
 
     @Test(expected = UnauthorizedAdminRoleException::class)
-    fun `when a valid user tries to register a new user but does not have admin permissions, should expect UnauthorizedAdminRoleException`(){
+    fun `when a valid user tries to register a new user but does not have admin permissions, should expect UnauthorizedAdminRoleException`() {
         adminService.add(newUser, UserRole.USER)
     }
 
     @Test(expected = NoSuchElementException::class)
-    fun `when a user with invalid id was requested, throws UserNotFoundException`(){
-        val userException=NoSuchElementException()
-        every { userRepositoryMock.get(844)  }.throws(userException)
+    fun `when a user with invalid id was requested, throws UserNotFoundException`() {
+        val userException = NoSuchElementException()
+        every { userRepositoryMock.get(844) }.throws(userException)
 
         adminService.get(844)
     }
-
 }

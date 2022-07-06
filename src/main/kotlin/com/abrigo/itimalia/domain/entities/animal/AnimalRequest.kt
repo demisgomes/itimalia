@@ -6,7 +6,7 @@ data class AnimalRequest(
     val id: Int?,
     val name: String?,
     val age: Int?,
-    val timeUnit : TimeUnit?,
+    val timeUnit: TimeUnit?,
     val specie: Specie?,
     val description: String?,
     val creationDate: DateTime?,

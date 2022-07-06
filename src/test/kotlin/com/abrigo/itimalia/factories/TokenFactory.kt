@@ -3,7 +3,8 @@ package com.abrigo.itimalia.factories
 import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 object TokenFactory {
 
@@ -14,9 +15,8 @@ object TokenFactory {
             .create()
             .withIssuer(EnvironmentConfig.issuer())
             .withClaim("email", email)
-            .withClaim("role", role.toString())
+            .withClaim("role", role)
             .withExpiresAt(convertToDate(Integer.parseInt(EnvironmentConfig.jwtExpirationInMinutes()))).sign(algorithm)
-
     }
 
     fun buildInvalid() = "axyegebcaclacoamcoamcom"
@@ -35,7 +35,5 @@ object TokenFactory {
             .withClaim("email", "example")
             .withClaim("role", "user")
             .withExpiresAt(convertToDate(-1)).sign(algorithm)
-
     }
-
 }

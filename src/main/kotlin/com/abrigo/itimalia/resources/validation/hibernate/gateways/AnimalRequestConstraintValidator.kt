@@ -6,7 +6,7 @@ import com.abrigo.itimalia.resources.validation.hibernate.entities.AnimalRequest
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapMounter
 import javax.validation.Validator
 
-class AnimalDTORequestConstraintValidator(private val javaxValidator: Validator, private val mapMounter: MapMounter) :
+class AnimalRequestConstraintValidator(private val javaxValidator: Validator, private val mapMounter: MapMounter) :
     ConstraintValidator<AnimalRequest> {
     override fun getConstraints(t: AnimalRequest): HashMap<String, MutableList<String>> {
         val animalDTORequestModel = AnimalRequestModel(

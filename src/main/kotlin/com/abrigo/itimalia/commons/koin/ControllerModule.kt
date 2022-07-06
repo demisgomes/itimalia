@@ -6,7 +6,6 @@ import com.abrigo.itimalia.application.web.controllers.AnimalImageController
 import com.abrigo.itimalia.application.web.controllers.UserController
 import org.koin.dsl.module.module
 
-
 val controllerModule = module {
     single {
         UserController(
@@ -14,7 +13,7 @@ val controllerModule = module {
             get()
         )
     }
-    single { AdminController(get(),get()) }
+    single { AdminController(get(), get()) }
     single { AnimalController(get(), get(), get()) }
     single { AnimalImageController(get(), get()) }
 }

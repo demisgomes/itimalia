@@ -12,21 +12,20 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class JWTServiceImplTest{
+class JWTServiceImplTest {
 
     private val jwtService = JWTServiceImpl()
 
     @Before
-    fun mockEnvironmentConfig(){
+    fun mockEnvironmentConfig() {
         mockkObject(EnvironmentConfig)
 
         every { EnvironmentConfig.jwtSecret() } returns "mysecret"
         every { EnvironmentConfig.issuer() } returns "Itimalia-test"
-
     }
 
     @Test
-    fun `given a valid email and role, should sign the token`(){
+    fun `given a valid email and role, should sign the token`() {
 
         val email = "user@itimalia.org"
         val role = UserRole.USER
@@ -37,7 +36,7 @@ class JWTServiceImplTest{
     }
 
     @Test
-    fun `given a valid token, should decode the token and get email and role information`(){
+    fun `given a valid token, should decode the token and get email and role information`() {
 
         val email = "user@itimalia.org"
         val role = UserRole.USER
@@ -52,14 +51,14 @@ class JWTServiceImplTest{
     }
 
     @Test(expected = InvalidTokenException::class)
-    fun `given an invalid token, should expect InvalidTokenException`(){
+    fun `given an invalid token, should expect InvalidTokenException`() {
         val token = TokenFactory.buildInvalid()
 
         jwtService.decode(token)
     }
 
     @Test(expected = InvalidTokenException::class)
-    fun `given an expired token, should expect InvalidTokenException`(){
+    fun `given an expired token, should expect InvalidTokenException`() {
         val token = TokenFactory.buildExpired()
 
         jwtService.decode(token)

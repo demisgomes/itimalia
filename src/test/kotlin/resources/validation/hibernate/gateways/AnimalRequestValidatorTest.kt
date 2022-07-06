@@ -33,13 +33,13 @@ class AnimalRequestValidatorTest {
     )
 
     @Test
-    fun `given a valid new animal request, when try to validate it, then should pass`(){
+    fun `given a valid new animal request, when try to validate it, then should pass`() {
         val constraints = validator.validate(validAnimalDTORequest)
         assert(constraints.isEmpty())
     }
 
     @Test
-    fun `given a new animal request with null name, when try to validate it, then should have a constraint with message 'please fill with a name'`(){
+    fun `given a new animal request with null name, when try to validate it, then should have a constraint with message 'please fill with a name'`() {
         val emptyName = validAnimalDTORequest.copy(name = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -47,7 +47,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null specie, when try to validate it, then should have a constraint with message 'please fill with a valid specie cat or dog'`(){
+    fun `given a new animal request with null specie, when try to validate it, then should have a constraint with message 'please fill with a valid specie cat or dog'`() {
         val emptyName = validAnimalDTORequest.copy(specie = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -55,7 +55,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null description, when try to validate it, then should have a single constraint with message 'please fill with a description'`(){
+    fun `given a new animal request with null description, when try to validate it, then should have a single constraint with message 'please fill with a description'`() {
         val emptyName = validAnimalDTORequest.copy(description = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -63,7 +63,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null sex, when try to validate it, then should have a single constraint with message 'please fill with a sex male or female'`(){
+    fun `given a new animal request with null sex, when try to validate it, then should have a single constraint with message 'please fill with a sex male or female'`() {
         val emptyName = validAnimalDTORequest.copy(sex = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -71,7 +71,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null size, when try to validate it, then should have a single constraint with message '"please fill with a size tiny, small, medium, or large"'`(){
+    fun `given a new animal request with null size, when try to validate it, then should have a single constraint with message 'please fill with a size tiny, small, medium, or large'`() {
         val emptyName = validAnimalDTORequest.copy(size = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -79,16 +79,15 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null status, when try to validate it, then should have a single constraint with message 'please fill with a status gone, dead, adopted, or available'`(){
+    fun `given a new animal request with null status, when try to validate it, then should have a single constraint with message 'please fill with a status gone, dead, adopted, or available'`() {
         val emptyName = validAnimalDTORequest.copy(status = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
         assertEquals("please fill with a status: gone, dead, adopted, or available", constraints.first().message)
     }
 
-
     @Test
-    fun `given a new animal request with null castrated, when try to validate it, then should have a single constraint with message 'please fill castrated with true or false'`(){
+    fun `given a new animal request with null castrated, when try to validate it, then should have a single constraint with message 'please fill castrated with true or false'`() {
         val emptyName = validAnimalDTORequest.copy(castrated = null)
         val constraints = validator.validate(emptyName)
         assertEquals(1, constraints.size)
@@ -96,7 +95,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null name and specie, when try to validate it, then should have two constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog'`(){
+    fun `given a new animal request with null name and specie, when try to validate it, then should have two constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog'`() {
         val emptyNameAndSpecie = validAnimalDTORequest.copy(name = null, specie = null)
         val constraints = validator.validate(emptyNameAndSpecie)
         val constraintMessages = mutableListOf<String>()
@@ -111,7 +110,7 @@ class AnimalRequestValidatorTest {
     }
 
     @Test
-    fun `given a new animal request with null name, specie, and description when try to validate it, then should have three constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog', 'please fill with a description'`(){
+    fun `given a new animal request with null name, specie, and description when try to validate it, then should have three constraints with message 'please fill with a name', 'please fill with a valid specie cat or dog', 'please fill with a description'`() {
         val emptyNameSpecieAndDescription = validAnimalDTORequest.copy(name = null, specie = null, description = null)
         val constraints = validator.validate(emptyNameSpecieAndDescription)
         val constraintMessages = mutableListOf<String>()
@@ -125,5 +124,4 @@ class AnimalRequestValidatorTest {
         assertTrue(constraintMessages.contains("please fill with a valid specie: cat or dog"))
         assertTrue(constraintMessages.contains("please fill with a description"))
     }
-
 }

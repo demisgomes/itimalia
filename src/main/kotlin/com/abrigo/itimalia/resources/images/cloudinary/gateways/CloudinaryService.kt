@@ -10,7 +10,7 @@ import com.cloudinary.EagerTransformation
 import com.cloudinary.Transformation
 
 class CloudinaryService(private val cloudinary: Cloudinary, private val animalImagesRepository: AnimalImagesRepository) : ImageService {
-    override fun add(imageFiles: List<ImageToBeUploaded>, animalId: Int) : List<Image> {
+    override fun add(imageFiles: List<ImageToBeUploaded>, animalId: Int): List<Image> {
         val uploadedImages = imageFiles.map { uploadImage(it) }.toList()
         animalImagesRepository.addAll(uploadedImages, animalId)
         return uploadedImages
@@ -24,7 +24,6 @@ class CloudinaryService(private val cloudinary: Cloudinary, private val animalIm
                 .generate(uploadedImage["public_id"].toString() + "." + uploadedImageFormat)
                 ?: uploadedImage["url"].toString()
 
-
             return Image(
                 imageToBeUploaded.fileName,
                 uploadedImagePath,
@@ -34,6 +33,5 @@ class CloudinaryService(private val cloudinary: Cloudinary, private val animalIm
         } catch (exception: RuntimeException) {
             throw ImageUploadException(exception.cause ?: Throwable("Error on upload"))
         }
-
     }
 }
