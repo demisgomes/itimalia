@@ -298,6 +298,19 @@ class UserServiceTest {
         assertEquals(updatedTokenUser, userDTO)
     }
 
+    @Test
+    fun `when an user find by email and it is correct, return the user`() {
+        // given validUserLogin
+
+        // when
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+
+        val userDTO = userService.findByEmail(validUserLogin.email!!)
+
+        // then
+        assertEquals(expectedUser, userDTO)
+    }
+
     @Test(expected = UserNotFoundException::class)
     fun `when an user tries login with a valid email but not matches with any user, should expect UserNotFoundException`() {
         // given validUserLogin
