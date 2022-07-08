@@ -11,5 +11,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Check coverage metrics
-        run: ./gradlew koverMergedVerify
+      - name: Generate coverage report
+        run: ./gradlew koverMergedReport
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v2
+        with:
+          files: build/reports/kover/report.xml
