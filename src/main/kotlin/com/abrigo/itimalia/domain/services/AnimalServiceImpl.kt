@@ -16,7 +16,7 @@ import org.joda.time.DateTime
 
 class AnimalServiceImpl(
     private val animalRepository: AnimalRepository,
-    private val validatorRequest: ValidatorRequest<Request>,
+    private val validatorRequest: ValidatorRequest<Request>
 ) : AnimalService {
 
     override fun getBySpecie(specie: Specie): List<Animal> {
