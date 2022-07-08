@@ -1,5 +1,7 @@
 package com.abrigo.itimalia.domain.entities.animal
 
+import com.abrigo.itimalia.domain.validation.Request
+
 data class NewAnimalRequest(
     val name: String?,
     val age: Int?,
@@ -10,7 +12,7 @@ data class NewAnimalRequest(
     val sex: AnimalSex?,
     val size: AnimalSize?,
     val castrated: Boolean?
-)
+) : Request
 
 fun NewAnimalRequest.toNewAnimal() =
     NewAnimal(

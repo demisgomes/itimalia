@@ -14,7 +14,7 @@ import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.Validator
+import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import com.abrigo.itimalia.factories.UserFactory
 import io.mockk.every
 import io.mockk.mockk
@@ -49,9 +49,9 @@ class UserServiceTest {
     private lateinit var newUserRequest: UserRequest
     private lateinit var updatedUserRequest: UserRequest
     private lateinit var userService: UserService
-    private lateinit var validatorNewUser: Validator<NewUserRequest>
-    private lateinit var validatorUser: Validator<UserRequest>
-    private lateinit var validatorUserLogin: Validator<UserLoginRequest>
+    private lateinit var validatorNewUser: ValidatorRequest<NewUserRequest>
+    private lateinit var validatorUser: ValidatorRequest<UserRequest>
+    private lateinit var validatorUserLogin: ValidatorRequest<UserLoginRequest>
     private val passwordServiceMock: PasswordService = mockk(relaxed = true)
 
     private val defaultToken = "default_token"

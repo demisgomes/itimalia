@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.entities.animal
 
+import com.abrigo.itimalia.domain.validation.Request
 import org.joda.time.DateTime
 
 data class AnimalRequest(
@@ -17,4 +18,4 @@ data class AnimalRequest(
     val size: AnimalSize,
     val castrated: Boolean,
     val createdById: Int
-)
+) : Request

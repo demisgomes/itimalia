@@ -1,9 +1,8 @@
 package resources.validation.hibernate.gateways
 
-import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.resources.validation.hibernate.entities.UserLoginRequestModel
-import com.abrigo.itimalia.resources.validation.hibernate.gateways.ConstraintModelValidator
+import com.abrigo.itimalia.resources.validation.hibernate.gateways.ConstraintRequestValidator
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapModel
 import io.mockk.every
 import io.mockk.mockk
@@ -16,9 +15,9 @@ import javax.validation.Validator
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class ConstraintModelValidatorTest {
+class ConstraintRequestValidatorTest {
     private val javaxValidatorMock: Validator = mockk(relaxed = true)
-    private val constraintModelValidator = ConstraintModelValidator<UserLoginRequest>(javaxValidatorMock)
+    private val constraintRequestValidator = ConstraintRequestValidator(javaxValidatorMock)
     private val emailConstraintViolationMock: ConstraintViolation<UserLoginRequestModel> = mockk(relaxed = true)
     private val blankConstraintViolationMock: ConstraintViolation<UserLoginRequestModel> = mockk(relaxed = true)
     private val emailViolationMessage = "please fill with an email following the pattern: email@email.com"
@@ -35,7 +34,7 @@ class ConstraintModelValidatorTest {
         val userLoginRequestModel = UserLoginRequestModel("test", "12345")
         every { MapModel.getModel(userLoginRequest) } returns userLoginRequestModel
 
-        assertEquals(constraintModelValidator.getConstraints(userLoginRequest), emptyMap())
+        assertEquals(constraintRequestValidator.getConstraints(userLoginRequest), emptyMap())
     }
 
     @Test
@@ -52,7 +51,7 @@ class ConstraintModelValidatorTest {
         every { MapModel.getModel(userLoginRequest) } returns userLoginRequestModel
         every { javaxValidatorMock.validate(userLoginRequestModel) } returns javaxConstraints
 
-        val constraints = constraintModelValidator.getConstraints(userLoginRequest)
+        val constraints = constraintRequestValidator.getConstraints(userLoginRequest)
 
         val violationList = constraints.getValue("email: $invalidValue")
 
@@ -80,7 +79,7 @@ class ConstraintModelValidatorTest {
         every { MapModel.getModel(userLoginRequest) } returns userLoginRequestModel
         every { javaxValidatorMock.validate(userLoginRequestModel) } returns javaxConstraints
 
-        val constraints = constraintModelValidator.getConstraints(userLoginRequest)
+        val constraints = constraintRequestValidator.getConstraints(userLoginRequest)
 
         val violationList = constraints.getValue("email: $invalidValue")
 

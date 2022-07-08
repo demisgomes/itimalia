@@ -1,5 +1,6 @@
 package resources.validation.hibernate.utils
 
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.resources.validation.hibernate.entities.AnimalRequestModel
@@ -9,7 +10,6 @@ import com.abrigo.itimalia.resources.validation.hibernate.entities.UserLoginRequ
 import com.abrigo.itimalia.resources.validation.hibernate.entities.UserRequestModel
 import com.abrigo.itimalia.resources.validation.hibernate.utils.MapModel
 import org.junit.Test
-import java.lang.IllegalArgumentException
 import kotlin.test.assertTrue
 
 class MapModelTest {
@@ -54,7 +54,7 @@ class MapModelTest {
         assertTrue { userRequestModel is UserRequestModel }
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test(expected = ValidationException::class)
     fun `when getModel is called with an unmapped instance, expect IllegalArgumentException`() {
         val userRequest = Object()
         MapModel.getModel(userRequest)

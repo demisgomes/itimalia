@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.entities.user
 
+import com.abrigo.itimalia.domain.validation.Request
 import org.joda.time.DateTime
 
 data class UserRequest(
@@ -14,7 +15,7 @@ data class UserRequest(
     val creationDate: DateTime?,
     val modificationDate: DateTime?,
     var token: String?
-)
+) : Request
 
 fun UserRequest.toUser() =
     User(

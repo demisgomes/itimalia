@@ -14,15 +14,15 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
-import com.abrigo.itimalia.domain.validation.Validator
+import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import org.joda.time.DateTime
 
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val jwtService: JWTService,
-    private val validatorNewUser: Validator<NewUserRequest>,
-    private val validatorUser: Validator<UserRequest>,
-    private val validatorUserLogin: Validator<UserLoginRequest>,
+    private val validatorNewUser: ValidatorRequest<NewUserRequest>,
+    private val validatorUser: ValidatorRequest<UserRequest>,
+    private val validatorUserLogin: ValidatorRequest<UserLoginRequest>,
     private val passwordService: PasswordService
 ) : UserService {
 

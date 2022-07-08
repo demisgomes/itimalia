@@ -13,7 +13,7 @@ import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
-import com.abrigo.itimalia.domain.validation.Validator
+import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import com.abrigo.itimalia.factories.AnimalFactory
 import io.mockk.every
 import io.mockk.mockk
@@ -35,8 +35,8 @@ class AnimalServiceTest {
     private lateinit var newAnimalRequest: NewAnimalRequest
     private lateinit var animalService: AnimalService
     private lateinit var userServiceMock: UserService
-    private lateinit var newAnimalValidator: Validator<NewAnimalRequest>
-    private lateinit var animalValidator: Validator<AnimalRequest>
+    private lateinit var newAnimalValidator: ValidatorRequest<NewAnimalRequest>
+    private lateinit var animalValidator: ValidatorRequest<AnimalRequest>
     private lateinit var expectedAnimalRequest: AnimalRequest
 
     private val animalsList = listOf(
