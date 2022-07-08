@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.resources.validation.hibernate.entities
 
 import com.abrigo.itimalia.domain.entities.user.Gender
+import com.abrigo.itimalia.resources.validation.hibernate.Model
 import com.abrigo.itimalia.resources.validation.hibernate.constraints.MinimumAge
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
@@ -23,4 +24,4 @@ data class NewUserRequestModel(
     val name: String?,
     @field:NotBlank(message = "please fill with a phone")
     val phone: String?
-)
+) : Model

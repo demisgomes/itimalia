@@ -14,6 +14,7 @@ import com.abrigo.itimalia.commons.koin.imageModule
 import com.abrigo.itimalia.commons.koin.passwordModule
 import com.abrigo.itimalia.commons.koin.repositoryModule
 import com.abrigo.itimalia.commons.koin.serviceModule
+import com.abrigo.itimalia.commons.koin.validationModule
 import com.abrigo.itimalia.domain.exceptions.ApiException
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
@@ -44,7 +45,8 @@ class ItimaliaApplication : KoinComponent {
                 accessManagerModule,
                 repositoryModule,
                 imageModule,
-                passwordModule
+                passwordModule,
+                validationModule
             )
         )
 

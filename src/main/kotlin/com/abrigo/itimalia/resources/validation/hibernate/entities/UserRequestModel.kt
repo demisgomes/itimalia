@@ -2,6 +2,7 @@ package com.abrigo.itimalia.resources.validation.hibernate.entities
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.resources.validation.hibernate.Model
 import com.abrigo.itimalia.resources.validation.hibernate.constraints.MinimumAge
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
@@ -32,4 +33,4 @@ data class UserRequestModel(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm a z")
     val modificationDate: DateTime?,
     var token: String?
-)
+) : Model

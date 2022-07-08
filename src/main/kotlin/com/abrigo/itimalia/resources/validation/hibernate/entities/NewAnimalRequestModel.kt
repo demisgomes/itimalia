@@ -5,6 +5,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.resources.validation.hibernate.Model
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
@@ -24,4 +25,4 @@ data class NewAnimalRequestModel(
     val size: AnimalSize?,
     @field:NotNull(message = "please fill castrated with true or false")
     val castrated: Boolean?
-)
+) : Model
