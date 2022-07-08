@@ -14,6 +14,7 @@ import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
+import com.abrigo.itimalia.domain.validation.Request
 import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import com.abrigo.itimalia.factories.UserFactory
 import io.mockk.every
@@ -49,21 +50,15 @@ class UserServiceTest {
     private lateinit var newUserRequest: UserRequest
     private lateinit var updatedUserRequest: UserRequest
     private lateinit var userService: UserService
-    private lateinit var validatorNewUser: ValidatorRequest<NewUserRequest>
-    private lateinit var validatorUser: ValidatorRequest<UserRequest>
-    private lateinit var validatorUserLogin: ValidatorRequest<UserLoginRequest>
+    private lateinit var validatorRequest: ValidatorRequest<Request>
     private val passwordServiceMock: PasswordService = mockk(relaxed = true)
-
-    private val defaultToken = "default_token"
 
     @get:Rule
     val expectedEx = ExpectedException.none()
 
     @Before
     fun setup() {
-        validatorNewUser = mockk(relaxed = true)
-        validatorUser = mockk(relaxed = true)
-        validatorUserLogin = mockk(relaxed = true)
+        validatorRequest = mockk(relaxed = true)
         val formatter = DateTimeFormat.forPattern("dd/mm/yyyy")
         birthDate = formatter.parseDateTime("01/01/1990")
         mockkStatic(DateTime::class)
@@ -91,7 +86,7 @@ class UserServiceTest {
 
         jwtService = mockk(relaxed = true)
 
-        userService = UserServiceImpl(userRepositoryMock, jwtService, validatorNewUser, validatorUser, validatorUserLogin, passwordServiceMock)
+        userService = UserServiceImpl(userRepositoryMock, jwtService, validatorRequest, passwordServiceMock)
     }
 
     @Test
@@ -273,7 +268,7 @@ class UserServiceTest {
 
     @Test
     fun `when an user tries login with an invalid email, should expect a Validation exception with field email=invalid email`() {
-        every { validatorUserLogin.validate(invalidUserLogin) } throws ValidationException(hashMapOf("email: myemail.com" to mutableListOf("please fill with a valid email")))
+        every { validatorRequest.validate(invalidUserLogin) } throws ValidationException(hashMapOf("email: myemail.com" to mutableListOf("please fill with a valid email")))
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {email: myemail.com=[please fill with a valid email]}")
         userService.login(invalidUserLogin)

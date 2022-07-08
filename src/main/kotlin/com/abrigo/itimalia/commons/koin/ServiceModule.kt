@@ -15,8 +15,6 @@ val serviceModule = module {
             get(),
             get(),
             get(),
-            get(),
-            get()
         ) as UserService
     }
     single { AdminServiceImpl(get(), get(), get()) as AdminService }
@@ -24,7 +22,6 @@ val serviceModule = module {
         AnimalServiceImpl(
             get(),
             get(),
-            get()
         ) as AnimalService
     }
 }

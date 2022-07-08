@@ -14,15 +14,14 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
+import com.abrigo.itimalia.domain.validation.Request
 import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import org.joda.time.DateTime
 
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val jwtService: JWTService,
-    private val validatorNewUser: ValidatorRequest<NewUserRequest>,
-    private val validatorUser: ValidatorRequest<UserRequest>,
-    private val validatorUserLogin: ValidatorRequest<UserLoginRequest>,
+    private val validatorRequest: ValidatorRequest<Request>,
     private val passwordService: PasswordService
 ) : UserService {
 
@@ -31,7 +30,7 @@ class UserServiceImpl(
     }
 
     override fun update(id: Int, userRequest: UserRequest, role: UserRole, email: String): User {
-        validatorUser.validate(userRequest)
+        validatorRequest.validate(userRequest)
         val userToBeModified = userRepository.get(id)
         val userDTO = userRequest.toUser()
         try {
@@ -72,7 +71,7 @@ class UserServiceImpl(
     }
 
     override fun login(userLoginRequest: UserLoginRequest): User {
-        validatorUserLogin.validate(userLoginRequest)
+        validatorRequest.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
         val user = userRepository.findByEmail(newUserLogin.email)
         if (passwordService.verify(newUserLogin.password, user.password)) {
@@ -85,7 +84,7 @@ class UserServiceImpl(
     }
 
     override fun add(newUserRequest: NewUserRequest): User {
-        validatorNewUser.validate(newUserRequest)
+        validatorRequest.validate(newUserRequest)
         val newUser = newUserRequest.toNewUser()
         try {
             userRepository.findByEmail(newUser.email)

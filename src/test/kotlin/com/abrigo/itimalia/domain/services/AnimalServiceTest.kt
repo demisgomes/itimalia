@@ -13,6 +13,7 @@ import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
+import com.abrigo.itimalia.domain.validation.Request
 import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import com.abrigo.itimalia.factories.AnimalFactory
 import io.mockk.every
@@ -35,8 +36,7 @@ class AnimalServiceTest {
     private lateinit var newAnimalRequest: NewAnimalRequest
     private lateinit var animalService: AnimalService
     private lateinit var userServiceMock: UserService
-    private lateinit var newAnimalValidator: ValidatorRequest<NewAnimalRequest>
-    private lateinit var animalValidator: ValidatorRequest<AnimalRequest>
+    private lateinit var validatorRequest: ValidatorRequest<Request>
     private lateinit var expectedAnimalRequest: AnimalRequest
 
     private val animalsList = listOf(
@@ -47,7 +47,6 @@ class AnimalServiceTest {
     )
 
     private val defaultId = 1
-    private val invalidId = -959
 
     @get:Rule
     val expectedEx = ExpectedException.none()
@@ -58,14 +57,13 @@ class AnimalServiceTest {
         mockkStatic(DateTime::class)
         animalRepositoryMock = mockk(relaxed = true)
         userServiceMock = mockk(relaxed = true)
-        newAnimalValidator = mockk(relaxed = true)
-        animalValidator = mockk(relaxed = true)
+        validatorRequest = mockk(relaxed = true)
         newAnimal = AnimalFactory.sampleNew()
         newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
         expectedAnimalRequest =
             AnimalFactory.sampleRequest(creationDate = actualDateTime, modificationDate = actualDateTime)
-        animalService = AnimalServiceImpl(animalRepositoryMock, newAnimalValidator, animalValidator)
+        animalService = AnimalServiceImpl(animalRepositoryMock, validatorRequest)
     }
 
     @Test
@@ -236,7 +234,7 @@ class AnimalServiceTest {
         val id = 1
         val modifiedAnimalDTORequest = expectedAnimalRequest.copy(name = "")
 
-        every { animalValidator.validate(modifiedAnimalDTORequest) } throws ValidationException(
+        every { validatorRequest.validate(modifiedAnimalDTORequest) } throws ValidationException(
             hashMapOf(
                 "name: " to mutableListOf(
                     "please fill with a name"
@@ -261,7 +259,7 @@ class AnimalServiceTest {
         expectedEx.expect(ValidationException::class.java)
         expectedEx.expectMessage("The constraintValidator does not successful in following field(s): {specie: null=[please fill with a valid specie: cat or dog]}")
 
-        every { animalValidator.validate(modifiedAnimalDTORequest) } throws ValidationException(
+        every { validatorRequest.validate(modifiedAnimalDTORequest) } throws ValidationException(
             hashMapOf(
                 "specie: null" to mutableListOf(
                     "please fill with a valid specie: cat or dog"

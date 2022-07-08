@@ -10,13 +10,13 @@ import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
+import com.abrigo.itimalia.domain.validation.Request
 import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import org.joda.time.DateTime
 
 class AnimalServiceImpl(
     private val animalRepository: AnimalRepository,
-    private val newAnimalValidator: ValidatorRequest<NewAnimalRequest>,
-    private val animalValidator: ValidatorRequest<AnimalRequest>
+    private val validatorRequest: ValidatorRequest<Request>,
 ) : AnimalService {
 
     override fun getBySpecie(specie: Specie): List<Animal> {
@@ -53,7 +53,7 @@ class AnimalServiceImpl(
     }
 
     override fun add(newAnimal: NewAnimalRequest, creatorId: Int): Animal {
-        newAnimalValidator.validate(newAnimal)
+        validatorRequest.validate(newAnimal)
 
         val animalToBeAddedDTO = Animal(
             null,
@@ -83,7 +83,7 @@ class AnimalServiceImpl(
     }
 
     override fun update(id: Int, updatedAnimal: AnimalRequest): Animal {
-        animalValidator.validate(updatedAnimal)
+        validatorRequest.validate(updatedAnimal)
         val animalInDatabase = get(id)
 
         val animalToBeModifiedDTO = Animal(
