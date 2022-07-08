@@ -10,18 +10,10 @@ import org.koin.dsl.module.module
 
 val serviceModule = module {
     single {
-        UserServiceImpl(
-            get(),
-            get(),
-            get(),
-            get(),
-        ) as UserService
+        UserServiceImpl(get(), get(), get(), get()) as UserService
     }
     single { AdminServiceImpl(get(), get(), get()) as AdminService }
     single {
-        AnimalServiceImpl(
-            get(),
-            get(),
-        ) as AnimalService
+        AnimalServiceImpl(get(), get()) as AnimalService
     }
 }
