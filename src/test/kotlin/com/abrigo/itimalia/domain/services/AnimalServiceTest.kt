@@ -64,7 +64,7 @@ class AnimalServiceTest {
         newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
         expectedAnimalRequest =
-            AnimalFactory.sampleDTORequest(creationDate = actualDateTime, modificationDate = actualDateTime)
+            AnimalFactory.sampleRequest(creationDate = actualDateTime, modificationDate = actualDateTime)
         animalService = AnimalServiceImpl(animalRepositoryMock, newAnimalValidator, animalValidator)
     }
 

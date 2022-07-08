@@ -95,7 +95,7 @@ object AnimalFactory {
         )
     }
 
-    fun sampleDTORequest(
+    fun sampleRequest(
         id: Int = 1,
         name: String = "animal",
         age: Int? = 3,
