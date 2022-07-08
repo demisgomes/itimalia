@@ -17,4 +17,3 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           files: build/reports/kover/report.xml
-          version: "v0.1.15"
