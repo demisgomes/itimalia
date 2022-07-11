@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.domain.entities.user
 
+import com.abrigo.itimalia.domain.validation.Request
 import org.joda.time.DateTime
 
 data class NewUserRequest(
@@ -9,7 +10,7 @@ data class NewUserRequest(
     val gender: Gender?,
     val name: String?,
     val phone: String?
-)
+) : Request
 
 fun NewUserRequest.toNewUser() = NewUser(
     email ?: "",

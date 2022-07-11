@@ -6,6 +6,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.resources.validation.hibernate.Model
 import com.fasterxml.jackson.annotation.JsonFormat
 import org.joda.time.DateTime
 import javax.validation.constraints.NotBlank
@@ -35,4 +36,4 @@ data class AnimalRequestModel(
     @field:NotNull(message = "please fill castrated with true or false")
     val castrated: Boolean?,
     val createdById: Int
-)
+) : Model

@@ -1,5 +1,5 @@
 package com.abrigo.itimalia.domain.validation
 
-interface Validator<T> {
+interface ValidatorRequest<T : Request> {
     fun validate(t: T)
 }

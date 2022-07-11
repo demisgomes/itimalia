@@ -41,4 +41,21 @@ class CloudinaryServiceTest {
 
         cloudinaryService.add(listOf(imageToBeUploaded), 1)
     }
+
+    @Test
+    fun `given a valid list of byteArrays and a failure in transformation should return a list of images with default url`() {
+        val imageToBeUploaded = ImageToBeUploaded("test", "test".encodeToByteArray())
+        val imageBytes = 1232434L
+        val imageFormat = "png"
+        val animalId = 1
+
+        every { cloudinaryConfig.uploader().upload(imageToBeUploaded.byteArray, any()) } returns
+            mapOf("public_id" to imageToBeUploaded.fileName, "format" to imageFormat, "bytes" to "1232434", "url" to "http://res.cloudinary.com/idimage")
+        every { cloudinaryConfig.url().transformation(any()).generate(any()) } returns null
+        every { animalImagesRepositoryMock.addAll(any(), any()) } returns Unit
+
+        val imagesList = cloudinaryService.add(listOf(imageToBeUploaded), animalId)
+
+        assertTrue(imagesList.contains(Image(imageToBeUploaded.fileName, "http://res.cloudinary.com/idimage", imageFormat, imageBytes)))
+    }
 }
