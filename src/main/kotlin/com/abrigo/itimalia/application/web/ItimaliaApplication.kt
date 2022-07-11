@@ -54,6 +54,7 @@ class ItimaliaApplication : KoinComponent {
             .create { config ->
                 SwaggerConfig.registerPlugin(config)
                 config.accessManager(jwtAccessManager)
+                config.jsonMapper(JavalinJackson(objectMapper))
             }
             .exception(ApiException::class.java) { exception, ctx ->
                 errorHandler.handleApiException(exception, ctx)
@@ -68,8 +69,6 @@ class ItimaliaApplication : KoinComponent {
                 errorHandler.handleIllegalArgumentException(exception, ctx)
             }
             .start(getHerokuAssignedPort())
-
-        JavalinJackson.configure(objectMapper)
         routeConfig.register(app)
         logger.info("Connecting to DB")
         initDB()

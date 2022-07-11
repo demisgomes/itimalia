@@ -7,7 +7,6 @@ import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedUserRoleException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import io.javalin.core.security.AccessManager
-import io.javalin.core.security.Role
 import io.javalin.http.Context
 import io.javalin.http.Handler
 import java.util.Optional
@@ -24,7 +23,7 @@ class JWTAccessManager(
         const val BEARER = "Bearer"
     }
 
-    override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<Role>) {
+    override fun manage(handler: Handler, ctx: Context, permittedRoles: MutableSet<io.javalin.core.security.RouteRole>) {
         // if token has been expired and this handler requires admin or user permissions, return invalid token exception
         // add and find does not requires token (Roles.ANYONE)
 

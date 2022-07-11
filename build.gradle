@@ -20,7 +20,11 @@ sourceCompatibility = 1.8
 
 def excludedClasses = [
         "com.abrigo.itimalia.commons.koin.*",
-        "com.abrigo.itimalia.application.web.*",
+        "com.abrigo.itimalia.application.web.accessmanagers.*",
+        "com.abrigo.itimalia.application.web.handlers.*",
+        "com.abrigo.itimalia.application.web.swagger.*",
+        "com.abrigo.itimalia.application.web.ItimaliaApplication",
+        "com.abrigo.itimalia.application.web.ItimaliaApplicationKt",
         "com.abrigo.itimalia.domain.exceptions.*",
         "com.abrigo.itimalia.application.config.*",
         "com.abrigo.itimalia.resources.images.cloudinary.CloudinaryConfig"
@@ -30,16 +34,14 @@ repositories {
     mavenCentral()
 }
 
-
 configurations.implementation.setCanBeResolved(true)
 
 dependencies {
 
     //javalin
-    implementation 'io.javalin:javalin:3.13.3'
-    implementation 'io.javalin:javalin-openapi:3.13.3'
+    implementation 'io.javalin:javalin:4.6.1'
+    implementation 'io.javalin:javalin-openapi:4.6.1'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
-
 
     // Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
@@ -121,8 +123,7 @@ tasks.koverMergedVerify {
     rule {
         name = "Minimal line coverage rate in percent"
         bound {
-            minValue = 80
-            // valueType is COVERED_LINES_PERCENTAGE by default
+            minValue = 85
         }
     }
 

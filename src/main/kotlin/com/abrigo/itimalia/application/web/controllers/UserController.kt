@@ -23,7 +23,7 @@ class UserController(
     }
 
     fun addUser(context: Context) {
-        val newUserRequest = context.body<NewUserRequest>()
+        val newUserRequest = context.bodyAsClass<NewUserRequest>()
         val addedUser = userService.add(newUserRequest)
         context.json(addedUser.toLoggedUser())
         context.status(HttpStatus.CREATED_201)
@@ -31,7 +31,7 @@ class UserController(
 
     fun updateUser(context: Context) {
         val id: Int = context.pathParam("id").toInt()
-        val modifiedUserRequest = context.body<UserRequest>()
+        val modifiedUserRequest = context.bodyAsClass<UserRequest>()
         val returnedUser = userService.update(id, modifiedUserRequest, jwtAccessManager.extractRole(context), jwtAccessManager.extractEmail(context))
         context.json(returnedUser.toLoggedUser())
         context.status(HttpStatus.OK_200)
@@ -44,7 +44,7 @@ class UserController(
     }
 
     fun loginUser(context: Context) {
-        val newUserLoginRequest = context.body<UserLoginRequest>()
+        val newUserLoginRequest = context.bodyAsClass<UserLoginRequest>()
         val userLogged = userService.login(newUserLoginRequest)
         context.json(userLogged.toLoggedUser())
         context.status(HttpStatus.OK_200)
