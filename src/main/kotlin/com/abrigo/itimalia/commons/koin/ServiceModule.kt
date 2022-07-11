@@ -6,7 +6,7 @@ import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.AnimalServiceImpl
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.domain.services.UserServiceImpl
-import org.koin.dsl.module.module
+import org.koin.dsl.module
 
 val serviceModule = module {
     single {
