@@ -78,11 +78,7 @@ class ItimaliaApplication : KoinComponent {
 }
 
 fun main() {
-    try {
-        ItimaliaApplication().startServer()
-    } catch (exception: Exception) {
-        exception.printStackTrace()
-    }
+    ItimaliaApplication().startServer()
 }
 
 private fun getHerokuAssignedPort(): Int {
