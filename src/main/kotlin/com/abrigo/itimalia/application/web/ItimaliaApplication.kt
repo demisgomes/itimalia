@@ -21,9 +21,9 @@ import io.javalin.Javalin
 import io.javalin.http.BadRequestResponse
 import io.javalin.plugin.json.JavalinJackson
 import org.apache.logging.log4j.LogManager
-import org.koin.standalone.KoinComponent
-import org.koin.standalone.StandAloneContext
-import org.koin.standalone.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext.startKoin
 
 class ItimaliaApplication : KoinComponent {
     private val routeConfig: RouteConfig by inject()
@@ -36,8 +36,8 @@ class ItimaliaApplication : KoinComponent {
     }
 
     fun startServer() {
-        StandAloneContext.startKoin(
-            listOf(
+        startKoin {
+            modules(
                 serviceModule,
                 controllerModule,
                 configModule,
@@ -48,7 +48,7 @@ class ItimaliaApplication : KoinComponent {
                 passwordModule,
                 validationModule
             )
-        )
+        }
 
         val app = Javalin
             .create { config ->
@@ -78,11 +78,7 @@ class ItimaliaApplication : KoinComponent {
 }
 
 fun main() {
-    try {
-        ItimaliaApplication().startServer()
-    } catch (exception: Exception) {
-        exception.printStackTrace()
-    }
+    ItimaliaApplication().startServer()
 }
 
 private fun getHerokuAssignedPort(): Int {
