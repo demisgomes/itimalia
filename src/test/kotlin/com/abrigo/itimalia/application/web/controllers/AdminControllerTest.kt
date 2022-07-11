@@ -19,12 +19,9 @@ import org.eclipse.jetty.http.HttpStatus
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import java.util.Calendar
 
-// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
-@Ignore
 class AdminControllerTest {
     lateinit var adminServiceMock: AdminService
     lateinit var contextMock: Context

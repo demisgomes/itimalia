@@ -23,11 +23,8 @@ import org.eclipse.jetty.http.HttpStatus
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 
-// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
-@Ignore
 class UserControllerTest {
     private lateinit var userServiceMock: UserService
     private lateinit var returnedUser: User

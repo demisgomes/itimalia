@@ -13,13 +13,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.verify
-import org.junit.Ignore
 import org.junit.Test
 import java.io.ByteArrayInputStream
 import java.io.File
 
-// a particular behavior is breaking the tests: https://github.com/mockk/mockk/issues/502
-@Ignore
 class AnimalImageControllerTest {
 
     private val imageService = mockk<ImageService>(relaxed = true)
