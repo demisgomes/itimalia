@@ -2,7 +2,6 @@ package com.abrigo.itimalia.application.web.swagger
 
 import com.abrigo.itimalia.application.web.accessmanagers.entities.RouteRole
 import io.javalin.core.JavalinConfig
-import io.javalin.core.security.SecurityUtil.roles
 import io.javalin.plugin.openapi.OpenApiOptions
 import io.javalin.plugin.openapi.OpenApiPlugin
 import io.javalin.plugin.openapi.ui.SwaggerOptions
@@ -23,8 +22,8 @@ object SwaggerConfig {
         return securityScheme
     }
 
-    fun registerPlugin(config: JavalinConfig): JavalinConfig {
-        return config.registerPlugin(OpenApiPlugin(getOpenApiOptions()))
+    fun registerPlugin(config: JavalinConfig) {
+        config.registerPlugin(OpenApiPlugin(getOpenApiOptions()))
     }
 
     private fun getOpenApiOptions(): OpenApiOptions {
@@ -36,7 +35,7 @@ object SwaggerConfig {
 
         val openApiOptions = OpenApiOptions(initialConfigurationCreator)
         openApiOptions.path("/swagger-docs")
-        openApiOptions.swagger(SwaggerOptions("/swagger").title("Itimalia Documentation")).roles(roles(RouteRole.ANYONE))
+        openApiOptions.swagger(SwaggerOptions("/swagger").title("Itimalia Documentation")).roles(RouteRole.ANYONE)
 
         return openApiOptions
     }

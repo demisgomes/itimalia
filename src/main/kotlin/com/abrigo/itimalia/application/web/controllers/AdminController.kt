@@ -12,7 +12,7 @@ import org.eclipse.jetty.http.HttpStatus
 class AdminController(private val adminService: AdminService, private val jwtAccessManager: JWTAccessManager) {
     fun addAdminUser(context: Context) {
         try {
-            val newUser = context.body<NewUser>()
+            val newUser = context.bodyAsClass<NewUser>()
             val addedUser = adminService.add(newUser, jwtAccessManager.extractRole(context))
             context.json(addedUser.toLoggedUser())
             context.status(HttpStatus.CREATED_201)

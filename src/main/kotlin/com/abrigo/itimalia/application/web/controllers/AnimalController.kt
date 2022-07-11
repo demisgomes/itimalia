@@ -17,7 +17,7 @@ class AnimalController(
 ) {
 
     fun addAnimal(context: Context) {
-        val newAnimal = context.body<NewAnimalRequest>()
+        val newAnimal = context.bodyAsClass<NewAnimalRequest>()
         val email = jwtAccessManager.extractEmail(context)
         val user = userService.findByEmail(email)
         val newAnimalDTO = animalService.add(newAnimal, user.id ?: throw IllegalArgumentException())
@@ -25,26 +25,26 @@ class AnimalController(
     }
 
     fun findAnimal(context: Context) {
-        val id: Int = context.pathParam<Int>("id").get()
+        val id: Int = context.pathParam("id").toInt()
         val animal = animalService.get(id)
         context.json(animal).status(HttpStatus.OK_200)
     }
 
     fun updateAnimal(context: Context) {
-        val id: Int = context.pathParam<Int>("id").get()
-        val animalToBeUpdated = context.body<AnimalRequest>()
+        val id: Int = context.pathParam("id").toInt()
+        val animalToBeUpdated = context.bodyAsClass<AnimalRequest>()
         val updatedAnimal = animalService.update(id, animalToBeUpdated)
         context.json(updatedAnimal).status(HttpStatus.OK_200)
     }
 
     fun deleteAnimal(context: Context) {
-        val id: Int = context.pathParam<Int>("id").get()
+        val id: Int = context.pathParam("id").toInt()
         animalService.delete(id)
         context.status(HttpStatus.NO_CONTENT_204)
     }
 
     fun adopt(context: Context) {
-        val id: Int = context.pathParam<Int>("id").get()
+        val id: Int = context.pathParam("id").toInt()
         val email = jwtAccessManager.extractEmail(context)
         val user = userService.findByEmail(email)
         val adoptedAnimal = animalService.adopt(id, user.id ?: throw IllegalArgumentException())

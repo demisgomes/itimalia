@@ -77,7 +77,7 @@ class UserControllerTest {
     fun `when add a valid user should return the user with status 201`() {
         every { userServiceMock.add(newUserRequest) }.returns(spyReturnedUser)
 
-        every { contextMock.body<NewUserRequest>() }.returns(newUserRequest)
+        every { contextMock.bodyAsClass<NewUserRequest>() }.returns(newUserRequest)
 
         userController.addUser(contextMock)
 
@@ -97,7 +97,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserRequest>() }.returns(userRequest)
+        every { contextMock.bodyAsClass<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -117,7 +117,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserRequest>() }.returns(userRequest)
+        every { contextMock.bodyAsClass<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -137,7 +137,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserRequest>() }.returns(userRequest)
+        every { contextMock.bodyAsClass<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -157,7 +157,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<UserRequest>() }.returns(userRequest)
+        every { contextMock.bodyAsClass<UserRequest>() }.returns(userRequest)
 
         userController.updateUser(contextMock)
 
@@ -175,7 +175,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<User>() }.returns(returnedUser)
+        every { contextMock.bodyAsClass<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -190,7 +190,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<User>() }.returns(returnedUser)
+        every { contextMock.bodyAsClass<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -205,7 +205,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<User>() }.returns(returnedUser)
+        every { contextMock.bodyAsClass<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -220,7 +220,7 @@ class UserControllerTest {
 
         every { contextMock.pathParam("id") }.returns("1")
 
-        every { contextMock.body<User>() }.returns(returnedUser)
+        every { contextMock.bodyAsClass<User>() }.returns(returnedUser)
 
         userController.deleteUser(contextMock)
 
@@ -231,7 +231,7 @@ class UserControllerTest {
     fun `when a user with valid credentials log in, should return the logged user with status 200`() {
         every { userServiceMock.login(newLoginRequest) }.returns(spyReturnedUser)
 
-        every { contextMock.body<UserLoginRequest>() }.returns(newLoginRequest)
+        every { contextMock.bodyAsClass<UserLoginRequest>() }.returns(newLoginRequest)
 
         userController.loginUser(contextMock)
 

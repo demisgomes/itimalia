@@ -36,8 +36,8 @@ configurations.implementation.setCanBeResolved(true)
 dependencies {
 
     //javalin
-    implementation 'io.javalin:javalin:3.13.3'
-    implementation 'io.javalin:javalin-openapi:3.13.3'
+    implementation 'io.javalin:javalin:4.6.1'
+    implementation 'io.javalin:javalin-openapi:4.6.1'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
 
 

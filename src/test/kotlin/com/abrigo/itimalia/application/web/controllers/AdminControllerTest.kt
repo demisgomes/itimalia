@@ -56,7 +56,7 @@ class AdminControllerTest {
     fun `when add a valid user with admin permissions should return the user with status 201`() {
         every { adminServiceMock.add(newAdminUser, UserRole.ADMIN) }.returns(spyReturnedAdminUser)
 
-        every { contextMock.body<NewUser>() }.returns(newAdminUser)
+        every { contextMock.bodyAsClass<NewUser>() }.returns(newAdminUser)
 
         every { jwtAccessManagerMock.extractRole(contextMock) }.returns(UserRole.ADMIN)
 

@@ -36,7 +36,7 @@ class AnimalImageControllerTest {
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", 12345, filename, "png", 12345))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(sampleFile.inputStream(), "png", filename, "png", 12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, sampleFile.readBytes())), animalId) } returns imageServiceResult
         animalImageController.addImage(contextMock)
 
@@ -57,7 +57,7 @@ class AnimalImageControllerTest {
     fun `should throw an exception when one or more images surpass the max size`() {
         val content = ByteArrayInputStream("byteArray".encodeToByteArray())
         val filename = "filename.png"
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345678, filename, "png", 12345678))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", filename, "png", 12345678))
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(1) } returns AnimalFactory.sampleDTO()
@@ -74,7 +74,7 @@ class AnimalImageControllerTest {
 
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
-        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", 12345, filename, "png", 12345))
+        every { contextMock.uploadedFiles("files") } returns listOf(UploadedFile(content, "png", filename, "png", 12345))
         every { imageService.add(listOf(ImageToBeUploaded(filename, content.readBytes())), animalId) } returns imageServiceResult
         animalImageController.addImage(contextMock)
 
@@ -91,9 +91,9 @@ class AnimalImageControllerTest {
 
         every { contextMock.uploadedFiles("files") } returns
             listOf(
-                UploadedFile(content, "png", 12345, filename, "png", 12345),
-                UploadedFile(content, "png", 12345, filename, "png", 12345),
-                UploadedFile(content, "png", 12345, filename, "png", 12345)
+                UploadedFile(content, "png", filename, "png", 12345),
+                UploadedFile(content, "png", filename, "png", 12345),
+                UploadedFile(content, "png", filename, "png", 12345)
             )
         every { contextMock.pathParam("id") } returns "1"
         every { animalService.get(animalId) } returns AnimalFactory.sampleDTO()
