@@ -55,7 +55,7 @@ class JWTAccessManager(
         }
 
         val decodedJWT = jwtService.decode(optToken.get())
-        val userLevel = decodedJWT[ROLE_FIELD]?.toLowerCase()
+        val userLevel = decodedJWT[ROLE_FIELD]?.lowercase()
 
         return Optional.ofNullable(rolesMapping[userLevel]).orElse(defaultRole)
     }

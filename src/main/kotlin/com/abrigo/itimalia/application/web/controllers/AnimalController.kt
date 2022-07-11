@@ -63,13 +63,13 @@ class AnimalController(
 
     private fun findAnimalsByStatus(context: Context) {
         val name = context.queryParam("status").toString()
-        val animals = animalService.getByStatus(AnimalStatus.valueOf(name.toUpperCase()))
+        val animals = animalService.getByStatus(AnimalStatus.valueOf(name.uppercase()))
         context.json(animals).status(HttpStatus.OK_200)
     }
 
     private fun findAnimalsBySpecie(context: Context) {
         val specie = context.queryParam("specie").toString()
-        val animals = animalService.getBySpecie(Specie.valueOf(specie.toUpperCase()))
+        val animals = animalService.getBySpecie(Specie.valueOf(specie.uppercase()))
         context.json(animals).status(HttpStatus.OK_200)
     }
 
