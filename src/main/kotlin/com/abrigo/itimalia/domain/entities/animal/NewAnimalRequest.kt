@@ -13,16 +13,3 @@ data class NewAnimalRequest(
     val size: AnimalSize?,
     val castrated: Boolean?
 ) : Request
-
-fun NewAnimalRequest.toNewAnimal() =
-    NewAnimal(
-        name ?: "",
-        age,
-        timeUnit,
-        specie ?: Specie.DOG,
-        description ?: "",
-        deficiencies ?: emptyList(),
-        sex ?: AnimalSex.MALE,
-        size ?: AnimalSize.MEDIUM,
-        castrated ?: false
-    )
