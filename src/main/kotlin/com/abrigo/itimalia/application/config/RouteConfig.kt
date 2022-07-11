@@ -26,7 +26,7 @@ class RouteConfig(private val userController: UserController, private val adminC
         app.routes {
             ApiBuilder.path("users") {
                 ApiBuilder.post(documented(createUserDocumentation(), userController::addUser), RouteRole.ANYONE)
-                ApiBuilder.path(":id") {
+                ApiBuilder.path("{id}") {
                     ApiBuilder.get(documented(getUserDocumentation(), userController::findUser), RouteRole.ANYONE)
                     ApiBuilder.put(documented(updateUserDocumentation(), userController::updateUser), RouteRole.USER, RouteRole.ADMIN)
                     ApiBuilder.delete(documented(deleteUserDocumentation(), userController::deleteUser), RouteRole.USER, RouteRole.ADMIN)
@@ -40,7 +40,7 @@ class RouteConfig(private val userController: UserController, private val adminC
                 ApiBuilder.post(documented(createUserDocumentation(), adminController::addAdminUser), RouteRole.ADMIN)
             }
             ApiBuilder.path("animals") {
-                ApiBuilder.path(":id") {
+                ApiBuilder.path("{id}") {
                     ApiBuilder.get(documented(getAnimalDocumentation(), animalController::findAnimal), RouteRole.ANYONE)
                     ApiBuilder.put(documented(updateAnimalDocumentation(), animalController::updateAnimal), RouteRole.ADMIN)
                     ApiBuilder.delete(documented(deleteAnimalDocumentation(), animalController::deleteAnimal), RouteRole.ADMIN)
@@ -51,7 +51,7 @@ class RouteConfig(private val userController: UserController, private val adminC
                 ApiBuilder.post(documented(createAnimalDocumentation(), animalController::addAnimal), RouteRole.ADMIN)
                 ApiBuilder.get(documented(getAnimalsDocumentation(), animalController::findAllAnimals), RouteRole.ANYONE)
             }
-            ApiBuilder.path("animals/adopt/:id") {
+            ApiBuilder.path("animals/adopt/{id}") {
                 ApiBuilder.post(documented(adoptAnimalDocumentation(), animalController::adopt), RouteRole.USER)
             }
         }
