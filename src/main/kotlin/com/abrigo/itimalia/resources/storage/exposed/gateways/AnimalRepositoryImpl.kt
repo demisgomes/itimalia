@@ -50,6 +50,12 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             }
         }
 
+        filterOptions.size?.let { size ->
+            query.andWhere {
+                AnimalMap.size eq size.name
+            }
+        }
+
         query.where?.let { where ->
             return transaction {
                 AnimalEntity.find {
