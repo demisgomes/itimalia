@@ -44,6 +44,12 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             }
         }
 
+        filterOptions.sex?.let { sex ->
+            query.andWhere {
+                AnimalMap.sex eq sex.name
+            }
+        }
+
         query.where?.let { where ->
             return transaction {
                 AnimalEntity.find {

@@ -2,6 +2,7 @@ package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
@@ -142,6 +143,21 @@ class AnimalRepositoryImplTest {
 
         // when
         val result = animalRepository.getAll(FilterOptions(status = AnimalStatus.ADOPTED))
+
+        // then
+        assertEquals(dog, result.first())
+        assertEquals(1, result.size)
+    }
+
+    @Test
+    fun `when add a cat and a dog in database and the dog has sex male, when filter by this status, should return it`() {
+        // given expectedAnimalDTO
+        val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, sex = AnimalSex.MALE)
+        animalRepository.add(expectedAnimal)
+        animalRepository.add(dog)
+
+        // when
+        val result = animalRepository.getAll(FilterOptions(sex = AnimalSex.MALE))
 
         // then
         assertEquals(dog, result.first())
