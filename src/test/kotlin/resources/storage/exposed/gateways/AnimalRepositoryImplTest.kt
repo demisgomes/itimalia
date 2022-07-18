@@ -3,7 +3,9 @@ package resources.storage.exposed.gateways
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -99,6 +101,36 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(expectedAnimal, returnedAnimalDTO)
+    }
+
+    @Test
+    fun `when add a cat and a dog in database, should return a dog when filter it`() {
+        // given expectedAnimalDTO
+        val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, name = "Dog")
+        animalRepository.add(expectedAnimal)
+        animalRepository.add(dog)
+
+        // when
+        val result = animalRepository.getAll(FilterOptions(specie = Specie.DOG))
+
+        // then
+        assertEquals(dog, result.first())
+        assertEquals(1, result.size)
+    }
+
+    @Test
+    fun `when add a cat and a dog in database with name Dog, when filter by name Do, should return it`() {
+        // given expectedAnimalDTO
+        val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, name = "Dog")
+        animalRepository.add(expectedAnimal)
+        animalRepository.add(dog)
+
+        // when
+        val result = animalRepository.getAll(FilterOptions(name = "Do"))
+
+        // then
+        assertEquals(dog, result.first())
+        assertEquals(1, result.size)
     }
 
     @Test
