@@ -134,6 +134,21 @@ class AnimalRepositoryImplTest {
     }
 
     @Test
+    fun `when add a cat and a dog in database with status adopted, when filter by this status, should return it`() {
+        // given expectedAnimalDTO
+        val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, status = AnimalStatus.ADOPTED)
+        animalRepository.add(expectedAnimal)
+        animalRepository.add(dog)
+
+        // when
+        val result = animalRepository.getAll(FilterOptions(status = AnimalStatus.ADOPTED))
+
+        // then
+        assertEquals(dog, result.first())
+        assertEquals(1, result.size)
+    }
+
+    @Test
     fun `when add many animals in database, should return all via getAll()`() {
         // given
         val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")

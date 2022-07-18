@@ -38,6 +38,12 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             }
         }
 
+        filterOptions.status?.let { status ->
+            query.andWhere {
+                AnimalMap.status eq status.name
+            }
+        }
+
         query.where?.let { where ->
             return transaction {
                 AnimalEntity.find {
@@ -53,15 +59,6 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
                 animalEntity.toAnimal()
             }
         }
-
-//            query?.map { animalEntity ->
-//                animalEntity.
-//                animalEntity.toAnimal()
-//
-//            }
-//            AnimalEntity.all().map { animalEntity ->
-//                animalEntity.toAnimal()
-//            }
     }
 
     override fun get(id: Int): Animal {
