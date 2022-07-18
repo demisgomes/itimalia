@@ -56,6 +56,12 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             }
         }
 
+        filterOptions.castrated?.let { castrated ->
+            query.andWhere {
+                AnimalMap.castrated eq castrated
+            }
+        }
+
         query.where?.let { where ->
             return transaction {
                 AnimalEntity.find {
