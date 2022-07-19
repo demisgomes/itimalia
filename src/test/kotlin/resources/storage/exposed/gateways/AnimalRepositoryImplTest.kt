@@ -135,6 +135,20 @@ class AnimalRepositoryImplTest {
     }
 
     @Test
+    fun `when add a cat and a dog in database, and the dog has name Madonna, when filter by name Do, should return it`() {
+        val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, name = "Madonna")
+        animalRepository.add(expectedAnimal)
+        animalRepository.add(dog)
+
+        // when
+        val result = animalRepository.getAll(FilterOptions(name = "Do"))
+
+        // then
+        assertEquals(dog, result.first())
+        assertEquals(1, result.size)
+    }
+
+    @Test
     fun `when add a cat and a dog in database with status adopted, when filter by this status, should return it`() {
         val dog = expectedAnimal.copy(id = 2, specie = Specie.DOG, status = AnimalStatus.ADOPTED)
         animalRepository.add(expectedAnimal)
@@ -208,6 +222,102 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(listAnimals, returnedAnimals)
+    }
+
+    @Test
+    fun `when add three animals and filter by dogs castrated, should return one result`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", specie = Specie.DOG)
+        val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", specie = Specie.DOG, castrated = false)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+
+        val castratedDogAnimals = listOf(lala)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG, castrated = true))
+
+        // then
+        assertEquals(castratedDogAnimals, returnedAnimals)
+    }
+
+    @Test
+    fun `when add six animals and filter by females available with name that contains Mi, should return two results`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+        val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", specie = Specie.DOG, castrated = false)
+        val minerva = AnimalFactory.sampleDTO(id = 4, name = "Minerva")
+        val mimi = AnimalFactory.sampleDTO(id = 4, name = "Mimi", sex = AnimalSex.MALE, specie = Specie.DOG)
+        val milk = AnimalFactory.sampleDTO(id = 5, name = "Milk", status = AnimalStatus.ADOPTED)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+        animalRepository.add(minerva)
+        animalRepository.add(mimi)
+        animalRepository.add(milk)
+
+        val femaleAvailablesThatHaveMi = listOf(mia, minerva)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(FilterOptions(sex = AnimalSex.FEMALE, name = "Mi", status = AnimalStatus.AVAILABLE))
+
+        // then
+        assertEquals(femaleAvailablesThatHaveMi, returnedAnimals)
+    }
+
+    @Test
+    fun `when add three animals and filter by filters that does not match, should return an empty list`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+        val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", specie = Specie.DOG, castrated = false)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG, size = AnimalSize.LARGE))
+
+        // then
+        assertEquals(emptyList(), returnedAnimals)
+    }
+
+    @Test
+    fun `when add two animals and apply one filter that does not match, should return an empty list`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG))
+
+        // then
+        assertEquals(emptyList(), returnedAnimals)
+    }
+
+    @Test
+    fun `when add two animals and apply filter name that does not match, should return an empty list`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(FilterOptions(name = "emy"))
+
+        // then
+        assertEquals(emptyList(), returnedAnimals)
     }
 
     @Test(expected = AnimalNotFoundException::class)

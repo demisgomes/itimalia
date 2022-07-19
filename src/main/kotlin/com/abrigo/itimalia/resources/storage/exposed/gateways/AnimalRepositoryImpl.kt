@@ -15,8 +15,10 @@ import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -24,6 +26,24 @@ import org.joda.time.DateTime
 
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
     override fun getAll(filterOptions: FilterOptions): List<Animal> {
+        val query = queryFilterBuilder(filterOptions)
+
+        query.where?.let { where ->
+            return transaction {
+                AnimalEntity.find { where }.map { animalEntity ->
+                    animalEntity.toAnimal()
+                }
+            }
+        }
+
+        return transaction {
+            AnimalEntity.all().map { animalEntity ->
+                animalEntity.toAnimal()
+            }
+        }
+    }
+
+    private fun queryFilterBuilder(filterOptions: FilterOptions): Query {
         val query = AnimalMap.selectAll()
 
         filterOptions.specie?.let { specie ->
@@ -34,7 +54,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
 
         filterOptions.name?.let { name ->
             query.andWhere {
-                AnimalMap.name like "%$name%"
+                AnimalMap.name.lowerCase() like "%$name%".lowercase()
             }
         }
 
@@ -61,22 +81,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
                 AnimalMap.castrated eq castrated
             }
         }
-
-        query.where?.let { where ->
-            return transaction {
-                AnimalEntity.find {
-                    where
-                }.map { animalEntity ->
-                    animalEntity.toAnimal()
-                }
-            }
-        }
-
-        return transaction {
-            AnimalEntity.all().map { animalEntity ->
-                animalEntity.toAnimal()
-            }
-        }
+        return query
     }
 
     override fun get(id: Int): Animal {
