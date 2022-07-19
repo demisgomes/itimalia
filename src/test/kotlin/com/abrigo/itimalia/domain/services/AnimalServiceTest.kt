@@ -7,6 +7,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimal
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
@@ -91,6 +92,22 @@ class AnimalServiceTest {
         assertEquals(2, cats.size)
         assertEquals(Specie.CAT, cats.first().specie)
         assertEquals(Specie.CAT, cats[1].specie)
+    }
+
+    @Test
+    fun `when request an animal by specie dog, should return the animal`() {
+        // given filterOptions
+        val filterOptions = FilterOptions(specie = Specie.DOG)
+        val lala = AnimalFactory.sampleDTO(name = "Lala", specie = Specie.DOG)
+
+        // when
+        every { animalRepositoryMock.getAll(filterOptions) }.returns(listOf(lala))
+
+        val returnedList = animalService.getAll(filterOptions)
+
+        // then
+        assertEquals(1, returnedList.size)
+        assertEquals(Specie.DOG, returnedList.first().specie)
     }
 
     @Test
