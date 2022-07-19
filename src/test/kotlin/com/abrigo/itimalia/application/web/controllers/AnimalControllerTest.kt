@@ -3,9 +3,13 @@ package com.abrigo.itimalia.application.web.controllers
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
+import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
+import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.factories.AnimalFactory
@@ -200,5 +204,100 @@ class AnimalControllerTest {
 
         // then
         verify { contextMock.json(expectedAdoptedAnimalDTO).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals, should return them`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+
+        every { animalServiceMock.getAll() } returns animalsList
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with status filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(status = AnimalStatus.AVAILABLE)
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("status") } returns "available"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with specie filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(specie = Specie.DOG)
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("specie") } returns "dog"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with name filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(name = "animal")
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("name") } returns "animal"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with sex filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(sex = AnimalSex.FEMALE)
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("sex") } returns "female"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with size filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(size = AnimalSize.MEDIUM)
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("size") } returns "medium"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with castrated filter, should return filtered`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val filterOptions = FilterOptions(castrated = true)
+
+        every { animalServiceMock.getAll(filterOptions) } returns animalsList
+
+        every { contextMock.queryParam("castrated") } returns "true"
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
     }
 }
