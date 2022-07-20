@@ -1,4 +1,4 @@
-package com.abrigo.itimalia.application.web.extensions
+package com.abrigo.itimalia.application.web.extensions.context
 
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import io.javalin.http.Context

@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
-import com.abrigo.itimalia.application.web.extensions.queryParamAsEnum
+import com.abrigo.itimalia.application.web.extensions.context.queryParamAsEnum
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
