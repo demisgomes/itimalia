@@ -3,6 +3,7 @@ package com.abrigo.itimalia.resources.storage.exposed.gateways
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
+import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
@@ -14,18 +15,73 @@ import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalMap
 import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.lowerCase
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
-    override fun getAll(): List<Animal> {
+    override fun getAll(filterOptions: FilterOptions): List<Animal> {
+        val query = queryFilterBuilder(filterOptions)
+
+        query.where?.let { where ->
+            return transaction {
+                AnimalEntity.find { where }.map { animalEntity ->
+                    animalEntity.toAnimal()
+                }
+            }
+        }
+
         return transaction {
             AnimalEntity.all().map { animalEntity ->
                 animalEntity.toAnimal()
             }
         }
+    }
+
+    private fun queryFilterBuilder(filterOptions: FilterOptions): Query {
+        val query = AnimalMap.selectAll()
+
+        filterOptions.specie?.let { specie ->
+            query.andWhere {
+                AnimalMap.specie eq specie.name
+            }
+        }
+
+        filterOptions.name?.let { name ->
+            query.andWhere {
+                AnimalMap.name.lowerCase() like "%$name%".lowercase()
+            }
+        }
+
+        filterOptions.status?.let { status ->
+            query.andWhere {
+                AnimalMap.status eq status.name
+            }
+        }
+
+        filterOptions.sex?.let { sex ->
+            query.andWhere {
+                AnimalMap.sex eq sex.name
+            }
+        }
+
+        filterOptions.size?.let { size ->
+            query.andWhere {
+                AnimalMap.size eq size.name
+            }
+        }
+
+        filterOptions.castrated?.let { castrated ->
+            query.andWhere {
+                AnimalMap.castrated eq castrated
+            }
+        }
+        return query
     }
 
     override fun get(id: Int): Animal {

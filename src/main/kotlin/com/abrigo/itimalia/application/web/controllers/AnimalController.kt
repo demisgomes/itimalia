@@ -1,10 +1,14 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
+import com.abrigo.itimalia.application.web.extensions.context.queryParamAsEnum
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
+import com.abrigo.itimalia.domain.entities.animal.AnimalSize
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
+import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
@@ -52,30 +56,26 @@ class AnimalController(
     }
 
     fun findAllAnimals(context: Context) {
-        val animals = animalService.getAll()
-        when {
-            context.queryParam("status") != null -> return findAnimalsByStatus(context)
-            context.queryParam("specie") != null -> return findAnimalsBySpecie(context)
-            context.queryParam("name") != null -> return(findAnimalsByName(context))
-        }
+        val filterOptions = buildFilterOptions(context)
+        val animals = animalService.getAll(filterOptions)
         context.json(animals).status(HttpStatus.OK_200)
     }
 
-    private fun findAnimalsByStatus(context: Context) {
-        val name = context.queryParam("status").toString()
-        val animals = animalService.getByStatus(AnimalStatus.valueOf(name.uppercase()))
-        context.json(animals).status(HttpStatus.OK_200)
-    }
+    private fun buildFilterOptions(context: Context): FilterOptions {
+        val status = context.queryParamAsEnum<AnimalStatus>("status")
+        val specie = context.queryParamAsEnum<Specie>("specie")
+        val sex = context.queryParamAsEnum<AnimalSex>("sex")
+        val size = context.queryParamAsEnum<AnimalSize>("size")
+        val name = context.queryParam("name")
+        val castrated = context.queryParam("castrated")
 
-    private fun findAnimalsBySpecie(context: Context) {
-        val specie = context.queryParam("specie").toString()
-        val animals = animalService.getBySpecie(Specie.valueOf(specie.uppercase()))
-        context.json(animals).status(HttpStatus.OK_200)
-    }
-
-    private fun findAnimalsByName(context: Context) {
-        val name = context.queryParam("name").toString()
-        val animals = animalService.getByName(name)
-        context.json(animals).status(HttpStatus.OK_200)
+        return FilterOptions(
+            name = if (name.isNullOrBlank()) null else name,
+            specie,
+            status,
+            sex,
+            size,
+            castrated = if (castrated.isNullOrBlank()) null else castrated.toBoolean()
+        )
     }
 }

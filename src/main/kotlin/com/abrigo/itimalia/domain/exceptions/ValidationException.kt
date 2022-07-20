@@ -3,7 +3,7 @@ package com.abrigo.itimalia.domain.exceptions
 import org.eclipse.jetty.http.HttpStatus
 
 class ValidationException(
-    val errorDetails: HashMap<String, MutableList<String>>
+    private val errorDetails: Map<String, MutableList<String>>
 ) :
     ApiException("The constraintValidator does not successful in following field(s): $errorDetails") {
 
