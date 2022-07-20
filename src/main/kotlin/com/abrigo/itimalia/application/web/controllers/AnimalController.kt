@@ -8,6 +8,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
@@ -63,14 +64,23 @@ class AnimalController(
         val castrated = context.queryParam("castrated")
 
         val filterOptions = FilterOptions(
-            status = if (status.isNullOrBlank()) null else AnimalStatus.valueOf(status.uppercase()),
-            specie = if (specie.isNullOrBlank()) null else Specie.valueOf(specie.uppercase()),
-            sex = if (sex.isNullOrBlank()) null else AnimalSex.valueOf(sex.uppercase()),
-            size = if (size.isNullOrBlank()) null else AnimalSize.valueOf(size.uppercase()),
+            status = if (status.isNullOrBlank()) null else getEnumFrom<AnimalStatus>(status),
+            specie = if (specie.isNullOrBlank()) null else getEnumFrom<Specie>(specie),
+            sex = if (sex.isNullOrBlank()) null else getEnumFrom<AnimalSex>(sex),
+            size = if (size.isNullOrBlank()) null else getEnumFrom<AnimalSize>(size),
             name = if (name.isNullOrBlank()) null else name,
             castrated = if (castrated.isNullOrBlank()) null else castrated.toBoolean()
         )
         val animals = animalService.getAll(filterOptions)
         context.json(animals).status(HttpStatus.OK_200)
+    }
+
+    private inline fun <reified E : Enum<E>> getEnumFrom(string: String): E {
+        return try {
+            enumValueOf(string.uppercase())
+        } catch (exception: IllegalArgumentException) {
+            // log this error
+            throw ValidationException(mapOf("field" to mutableListOf("Invalid field '$string'. Please update this value with expected values: ${enumValues<E>().map { it.name }}")))
+        }
     }
 }

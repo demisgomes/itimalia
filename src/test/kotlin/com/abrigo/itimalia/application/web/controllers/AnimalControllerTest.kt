@@ -10,6 +10,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import com.abrigo.itimalia.factories.AnimalFactory
@@ -299,5 +300,34 @@ class AnimalControllerTest {
         animalController.findAllAnimals(contextMock)
 
         verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    // the next methods not validate the message due to future upgrade to JUnit 5
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with an invalid specie filter, should throw ValidationException`() {
+        every { contextMock.queryParam("specie") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with an invalid status filter, should throw ValidationException`() {
+        every { contextMock.queryParam("status") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with an invalid sex filter, should throw ValidationException`() {
+        every { contextMock.queryParam("sex") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with an invalid size filter, should throw ValidationException`() {
+        every { contextMock.queryParam("size") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
     }
 }
