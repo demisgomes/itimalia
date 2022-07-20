@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
+import com.abrigo.itimalia.application.web.extensions.queryParamAsEnum
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalSex
 import com.abrigo.itimalia.domain.entities.animal.AnimalSize
@@ -8,7 +9,6 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
-import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
@@ -56,31 +56,26 @@ class AnimalController(
     }
 
     fun findAllAnimals(context: Context) {
-        val status = context.queryParam("status")
-        val specie = context.queryParam("specie")
-        val sex = context.queryParam("sex")
-        val size = context.queryParam("size")
-        val name = context.queryParam("name")
-        val castrated = context.queryParam("castrated")
-
-        val filterOptions = FilterOptions(
-            status = if (status.isNullOrBlank()) null else getEnumFrom<AnimalStatus>(status),
-            specie = if (specie.isNullOrBlank()) null else getEnumFrom<Specie>(specie),
-            sex = if (sex.isNullOrBlank()) null else getEnumFrom<AnimalSex>(sex),
-            size = if (size.isNullOrBlank()) null else getEnumFrom<AnimalSize>(size),
-            name = if (name.isNullOrBlank()) null else name,
-            castrated = if (castrated.isNullOrBlank()) null else castrated.toBoolean()
-        )
+        val filterOptions = buildFilterOptions(context)
         val animals = animalService.getAll(filterOptions)
         context.json(animals).status(HttpStatus.OK_200)
     }
 
-    private inline fun <reified E : Enum<E>> getEnumFrom(string: String): E {
-        return try {
-            enumValueOf(string.uppercase())
-        } catch (exception: IllegalArgumentException) {
-            // log this error
-            throw ValidationException(mapOf("field" to mutableListOf("Invalid field '$string'. Please update this value with expected values: ${enumValues<E>().map { it.name }}")))
-        }
+    private fun buildFilterOptions(context: Context): FilterOptions {
+        val status = context.queryParamAsEnum<AnimalStatus>("status")
+        val specie = context.queryParamAsEnum<Specie>("specie")
+        val sex = context.queryParamAsEnum<AnimalSex>("sex")
+        val size = context.queryParamAsEnum<AnimalSize>("size")
+        val name = context.queryParam("name")
+        val castrated = context.queryParam("castrated")
+
+        return FilterOptions(
+            name = if (name.isNullOrBlank()) null else name,
+            specie,
+            status,
+            sex,
+            size,
+            castrated = if (castrated.isNullOrBlank()) null else castrated.toBoolean()
+        )
     }
 }
