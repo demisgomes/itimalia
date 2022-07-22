@@ -8,6 +8,7 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -318,6 +319,61 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(emptyList(), returnedAnimals)
+    }
+
+    @Test
+    fun `when add two animals and apply paging limited by 1, should return a list with 1 element and dog mia`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(pagingOptions = PagingOptions(limit = 1))
+
+        // then
+        assertEquals(listOf(mia), returnedAnimals)
+    }
+
+    @Test
+    fun `when add two animals and apply paging limited by 1 to get second page should return a list with 1 element and dog lala`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(pagingOptions = PagingOptions(limit = 1, page = 2))
+
+        // then
+        assertEquals(listOf(lala), returnedAnimals)
+    }
+
+    @Test
+    fun `when add four animals and apply filter for large animals and paging limited by 1 to get second page should return a list with 1 element and dog emy`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val july = AnimalFactory.sampleDTO(id = 2, name = "July")
+        val lala = AnimalFactory.sampleDTO(id = 3, name = "Lala", size = AnimalSize.LARGE)
+        val emy = AnimalFactory.sampleDTO(id = 4, name = "Emy", size = AnimalSize.LARGE)
+
+        animalRepository.add(mia)
+        animalRepository.add(july)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(
+            filterOptions = FilterOptions(size = AnimalSize.LARGE),
+            pagingOptions = PagingOptions(limit = 1, page = 2)
+        )
+
+        // then
+        assertEquals(listOf(emy), returnedAnimals)
     }
 
     @Test(expected = AnimalNotFoundException::class)

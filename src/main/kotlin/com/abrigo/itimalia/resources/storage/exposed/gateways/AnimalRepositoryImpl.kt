@@ -4,6 +4,7 @@ import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
@@ -25,19 +26,22 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
-    override fun getAll(filterOptions: FilterOptions): List<Animal> {
+    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): List<Animal> {
         val query = queryFilterBuilder(filterOptions)
+
+        val limit = pagingOptions.limit
+        val offset = ((pagingOptions.page - 1) * limit).toLong()
 
         query.where?.let { where ->
             return transaction {
-                AnimalEntity.find { where }.map { animalEntity ->
+                AnimalEntity.find { where }.limit(pagingOptions.limit, offset).map { animalEntity ->
                     animalEntity.toAnimal()
                 }
             }
         }
 
         return transaction {
-            AnimalEntity.all().map { animalEntity ->
+            AnimalEntity.all().limit(pagingOptions.limit, offset).map { animalEntity ->
                 animalEntity.toAnimal()
             }
         }
