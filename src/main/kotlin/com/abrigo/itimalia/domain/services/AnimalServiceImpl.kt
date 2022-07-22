@@ -7,6 +7,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
@@ -35,8 +36,8 @@ class AnimalServiceImpl(
         return allAnimals.filter { it.status == animalStatus }
     }
 
-    override fun getAll(filterOptions: FilterOptions): List<Animal> {
-        return animalRepository.getAll(filterOptions)
+    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): List<Animal> {
+        return animalRepository.getAll(filterOptions, pagingOptions)
     }
 
     override fun adopt(id: Int, adopterId: Int): Animal {

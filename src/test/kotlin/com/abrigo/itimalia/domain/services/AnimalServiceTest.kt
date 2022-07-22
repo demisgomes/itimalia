@@ -8,6 +8,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
 import com.abrigo.itimalia.domain.exceptions.AnimalGoneException
@@ -104,6 +105,22 @@ class AnimalServiceTest {
         every { animalRepositoryMock.getAll(filterOptions) }.returns(listOf(lala))
 
         val returnedList = animalService.getAll(filterOptions)
+
+        // then
+        assertEquals(1, returnedList.size)
+        assertEquals(Specie.DOG, returnedList.first().specie)
+    }
+
+    @Test
+    fun `when request an animal passing paging options, should return the animal`() {
+        // given animal
+        val lala = AnimalFactory.sampleDTO(name = "Lala", specie = Specie.DOG)
+        val pagingOptions = PagingOptions(1, 1)
+
+        // when
+        every { animalRepositoryMock.getAll(pagingOptions = pagingOptions) }.returns(listOf(lala))
+
+        val returnedList = animalService.getAll(pagingOptions = pagingOptions)
 
         // then
         assertEquals(1, returnedList.size)
