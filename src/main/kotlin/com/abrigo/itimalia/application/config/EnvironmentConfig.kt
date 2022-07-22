@@ -41,4 +41,8 @@ object EnvironmentConfig {
     fun hashSalt(): String {
         return getenv("HASH_SALT", "12")
     }
+
+    fun maxPageLimit(): String {
+        return getenv("MAX_PAGE_LIMIT", "50")
+    }
 }

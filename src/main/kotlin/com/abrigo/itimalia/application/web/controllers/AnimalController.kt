@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.application.web.extensions.context.queryParamAsEnum
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
@@ -9,10 +10,13 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
+import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
+import java.lang.NumberFormatException
 
 class AnimalController(
     private val animalService: AnimalService,
@@ -56,9 +60,40 @@ class AnimalController(
     }
 
     fun findAllAnimals(context: Context) {
+        val pagingOptions = buildPagingOptions(context)
         val filterOptions = buildFilterOptions(context)
-        val animals = animalService.getAll(filterOptions)
+        val animals = animalService.getAll(filterOptions, pagingOptions)
         context.json(animals).status(HttpStatus.OK_200)
+    }
+
+    private fun buildPagingOptions(context: Context): PagingOptions {
+        val limitParam = context.queryParam("limit") ?: "10"
+        val pageParam = context.queryParam("page") ?: "1"
+
+        try {
+            val pagingOptions = PagingOptions(
+                if (limitParam.isBlank()) 10 else limitParam.toInt(),
+                if (pageParam.isBlank()) 1 else pageParam.toInt()
+            )
+
+            // put this as validator. We will change this when pass validator to controllers.
+            validatePaging(pagingOptions)
+            return pagingOptions
+        } catch (exception: NumberFormatException) {
+            throw ValidationException(mapOf("limit/page" to mutableListOf("Please put an integer for limit or page attributes.")))
+        }
+    }
+
+    private fun validatePaging(pagingOptions: PagingOptions) {
+        val maxPageLimit = EnvironmentConfig.maxPageLimit().toInt()
+
+        if (pagingOptions.page < 1) {
+            throw ValidationException(mapOf("page" to mutableListOf("page must be greater than 0")))
+        }
+
+        if (pagingOptions.limit !in 1..maxPageLimit) {
+            throw ValidationException(mapOf("limit" to mutableListOf("limit must be greater than 0 and lower than $maxPageLimit")))
+        }
     }
 
     private fun buildFilterOptions(context: Context): FilterOptions {

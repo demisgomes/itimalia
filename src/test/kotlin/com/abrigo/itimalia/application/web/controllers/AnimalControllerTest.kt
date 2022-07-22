@@ -1,5 +1,6 @@
 package com.abrigo.itimalia.application.web.controllers
 
+import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
@@ -10,6 +11,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
@@ -327,6 +329,80 @@ class AnimalControllerTest {
     @Test(expected = ValidationException::class)
     fun `when request all animals with an invalid size filter, should throw ValidationException`() {
         every { contextMock.queryParam("size") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test
+    fun `when request all animals without paging limits, should call animalService passing default values`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+
+        every { animalServiceMock.getAll() } returns animalsList
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with page limit = 1, should call return one animal`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pagingOptions = PagingOptions(1)
+
+        every { contextMock.queryParam("limit") } returns "1"
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns animalsList
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with page = 2 and limit = 1, should return the page with one animal`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pagingOptions = PagingOptions(1, 2)
+
+        every { contextMock.queryParam("limit") } returns "1"
+        every { contextMock.queryParam("page") } returns "2"
+
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns animalsList
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with limit invalid, should call validation exception`() {
+        every { contextMock.queryParam("limit") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with page invalid , should call validation exception`() {
+        every { contextMock.queryParam("page") } returns "invalid"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with page less than 1, should call validation exception`() {
+        every { contextMock.queryParam("page") } returns "0"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with limit less than 1, should call validation exception`() {
+        every { contextMock.queryParam("limit") } returns "0"
+
+        animalController.findAllAnimals(contextMock)
+    }
+
+    @Test(expected = ValidationException::class)
+    fun `when request all animals with limit higher than MAX_LIMIT, should call validation exception`() {
+        every { contextMock.queryParam("limit") } returns (EnvironmentConfig.maxPageLimit().toInt() + 1).toString()
 
         animalController.findAllAnimals(contextMock)
     }
