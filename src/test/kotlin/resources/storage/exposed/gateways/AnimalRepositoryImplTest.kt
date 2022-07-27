@@ -319,6 +319,11 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(emptyList(), returnedAnimals.content)
+        assertEquals(1, returnedAnimals.pagination.page)
+        assertEquals(10, returnedAnimals.pagination.limit)
+        assertEquals(0, returnedAnimals.pagination.numberOfPages)
+        assertEquals(null, returnedAnimals.pagination.nextPage)
+        assertEquals(0, returnedAnimals.pagination.total)
     }
 
     @Test
@@ -351,6 +356,42 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(listOf(lala), returnedAnimals.content)
+        assertEquals(2, returnedAnimals.pagination.page)
+        assertEquals(1, returnedAnimals.pagination.limit)
+        assertEquals(2, returnedAnimals.pagination.numberOfPages)
+        assertEquals(null, returnedAnimals.pagination.nextPage)
+        assertEquals(2, returnedAnimals.pagination.total)
+    }
+
+    @Test
+    fun `when add seven animals and paging by limit = 2 should have correct pagination`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val lala = AnimalFactory.sampleDTO(id = 2, name = "Lala", sex = AnimalSex.MALE)
+        val emy = AnimalFactory.sampleDTO(id = 3, name = "Emy", specie = Specie.DOG, castrated = false)
+        val minerva = AnimalFactory.sampleDTO(id = 4, name = "Minerva")
+        val mimi = AnimalFactory.sampleDTO(id = 5, name = "Mimi", sex = AnimalSex.MALE, specie = Specie.DOG)
+        val milk = AnimalFactory.sampleDTO(id = 6, name = "Milk", status = AnimalStatus.ADOPTED)
+        val taranjulas = AnimalFactory.sampleDTO(id = 7, name = "Taranjulas", status = AnimalStatus.ADOPTED)
+
+        animalRepository.add(mia)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+        animalRepository.add(minerva)
+        animalRepository.add(mimi)
+        animalRepository.add(milk)
+        animalRepository.add(taranjulas)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(pagingOptions = PagingOptions(limit = 2))
+
+        // then
+        assertEquals(2, returnedAnimals.content.size)
+        assertEquals(1, returnedAnimals.pagination.page)
+        assertEquals(2, returnedAnimals.pagination.limit)
+        assertEquals(4, returnedAnimals.pagination.numberOfPages)
+        assertEquals(2, returnedAnimals.pagination.nextPage)
+        assertEquals(7, returnedAnimals.pagination.total)
     }
 
     @Test

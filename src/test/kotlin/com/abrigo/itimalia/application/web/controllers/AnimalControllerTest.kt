@@ -215,95 +215,102 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals, should return them`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
 
-        every { animalServiceMock.getAll() } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll() } returns pageAnimals
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with status filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(status = AnimalStatus.AVAILABLE)
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("status") } returns "available"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with specie filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(specie = Specie.DOG)
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("specie") } returns "dog"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with name filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(name = "animal")
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("name") } returns "animal"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with sex filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(sex = AnimalSex.FEMALE)
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("sex") } returns "female"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with size filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(size = AnimalSize.MEDIUM)
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("size") } returns "medium"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with castrated filter, should return filtered`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
         val filterOptions = FilterOptions(castrated = true)
 
-        every { animalServiceMock.getAll(filterOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(filterOptions) } returns pageAnimals
 
         every { contextMock.queryParam("castrated") } returns "true"
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     // the next methods not validate the message due to future upgrade to JUnit 5
@@ -338,30 +345,33 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals without paging limits, should call animalService passing default values`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
 
-        every { animalServiceMock.getAll() } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll() } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with page limit = 1, should call return one animal`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, Pagination(1, 1, null, 1, 1))
         val pagingOptions = PagingOptions(1)
 
         every { contextMock.queryParam("limit") } returns "1"
-        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, Pagination(1, 1, null, 1, 1))
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test
     fun `when request all animals with page = 2 and limit = 1, should return the page with one animal`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2))
         val pagingOptions = PagingOptions(1, 2)
 
         every { contextMock.queryParam("limit") } returns "1"
@@ -371,7 +381,7 @@ class AnimalControllerTest {
 
         animalController.findAllAnimals(contextMock)
 
-        verify { contextMock.json(animalsList).status(HttpStatus.OK_200) }
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 
     @Test(expected = ValidationException::class)

@@ -27,6 +27,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
+import kotlin.math.ceil
 
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
     override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): Page<Animal> {
@@ -45,7 +46,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             val animals = animalEntities.limit(limit, offset).map { animalEntity -> animalEntity.toAnimal() }
 
             val total = count[0].second.toInt()
-            val numberOfPages = total / limit
+            val numberOfPages = ceil(total.toDouble() / limit).toInt()
             val nextPage = if (page < numberOfPages) page + 1 else null
             val pagination = Pagination(page, limit, nextPage, total, numberOfPages)
 
