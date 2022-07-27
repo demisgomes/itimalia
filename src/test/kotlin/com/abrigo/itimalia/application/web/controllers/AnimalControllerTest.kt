@@ -11,6 +11,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Direction
 import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
@@ -417,5 +418,22 @@ class AnimalControllerTest {
         every { contextMock.queryParam("limit") } returns (EnvironmentConfig.maxPageLimit().toInt() + 1).toString()
 
         animalController.findAllAnimals(contextMock)
+    }
+
+    @Test
+    fun `when request all animals with direction desc should return list in desc order`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2))
+        val pagingOptions = PagingOptions(1, 2, direction = Direction.DESC)
+
+        every { contextMock.queryParam("limit") } returns "1"
+        every { contextMock.queryParam("page") } returns "2"
+        every { contextMock.queryParam("direction") } returns "desc"
+
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, Pagination(2, 1, null, 1, 2))
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
     }
 }

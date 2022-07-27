@@ -19,6 +19,7 @@ import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Query
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.andWhere
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
@@ -42,8 +43,9 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             val countExpression = AnimalMap.id.count()
             val count = query.map { "count" to it[countExpression] }
 
+            val column = AnimalMap.columns.firstOrNull { it.name == pagingOptions.orderBy } ?: throw IllegalArgumentException()
             val animalEntities = if (query.where != null) AnimalEntity.find { query.where!! } else AnimalEntity.all()
-            val animals = animalEntities.limit(limit, offset).map { animalEntity -> animalEntity.toAnimal() }
+            val animals = animalEntities.limit(limit, offset).orderBy(column to SortOrder.valueOf(pagingOptions.direction.name.uppercase())).map { animalEntity -> animalEntity.toAnimal() }
 
             val total = count[0].second.toInt()
             val numberOfPages = ceil(total.toDouble() / limit).toInt()
