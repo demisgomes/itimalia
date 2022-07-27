@@ -8,6 +8,8 @@ import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Direction
+import com.abrigo.itimalia.domain.entities.paging.OrderBy
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
@@ -415,6 +417,50 @@ class AnimalRepositoryImplTest {
 
         // then
         assertEquals(listOf(emy), returnedAnimals.content)
+    }
+
+    @Test
+    fun `when add four animals and apply order by name and get first element, should be Emy`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia")
+        val july = AnimalFactory.sampleDTO(id = 2, name = "July")
+        val lala = AnimalFactory.sampleDTO(id = 3, name = "Lala", size = AnimalSize.LARGE)
+        val emy = AnimalFactory.sampleDTO(id = 4, name = "Emy", size = AnimalSize.LARGE)
+
+        animalRepository.add(mia)
+        animalRepository.add(july)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(
+            pagingOptions = PagingOptions(orderBy = OrderBy.NAME)
+        )
+
+        // then
+        assertEquals(emy, returnedAnimals.content.first())
+    }
+
+    @Test
+    fun `when add four animals and apply order by modification date desc, should order by date`() {
+        // given
+        val mia = AnimalFactory.sampleDTO(id = 1, name = "Mia", modificationDate = DateTime(2016, 1, 1, 0, 0))
+        val july = AnimalFactory.sampleDTO(id = 2, name = "July", modificationDate = DateTime(2017, 1, 1, 0, 0))
+        val lala = AnimalFactory.sampleDTO(id = 3, name = "Lala", modificationDate = DateTime(2015, 1, 1, 0, 0))
+        val emy = AnimalFactory.sampleDTO(id = 4, name = "Emy", modificationDate = DateTime(2019, 1, 1, 0, 0))
+
+        animalRepository.add(mia)
+        animalRepository.add(july)
+        animalRepository.add(lala)
+        animalRepository.add(emy)
+
+        // when
+        val returnedAnimals = animalRepository.getAll(
+            pagingOptions = PagingOptions(orderBy = OrderBy.MODIFICATION_DATE, direction = Direction.DESC)
+        )
+
+        // then
+        assertEquals(listOf(emy, july, mia, lala), returnedAnimals.content)
     }
 
     @Test(expected = AnimalNotFoundException::class)
