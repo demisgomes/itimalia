@@ -43,7 +43,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             val countExpression = AnimalMap.id.count()
             val count = query.map { "count" to it[countExpression] }
 
-            val column = AnimalMap.columns.firstOrNull { it.name == pagingOptions.orderBy } ?: throw IllegalArgumentException()
+            val column = AnimalMap.columns.firstOrNull { it.name == pagingOptions.orderBy.name.lowercase() } ?: throw IllegalArgumentException()
             val animalEntities = if (query.where != null) AnimalEntity.find { query.where!! } else AnimalEntity.all()
             val animals = animalEntities.limit(limit, offset).orderBy(column to SortOrder.valueOf(pagingOptions.direction.name.uppercase())).map { animalEntity -> animalEntity.toAnimal() }
 

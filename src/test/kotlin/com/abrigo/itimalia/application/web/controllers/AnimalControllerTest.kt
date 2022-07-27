@@ -12,6 +12,7 @@ import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.entities.paging.Direction
+import com.abrigo.itimalia.domain.entities.paging.OrderBy
 import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
@@ -431,6 +432,36 @@ class AnimalControllerTest {
         every { contextMock.queryParam("direction") } returns "desc"
 
         every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, Pagination(2, 1, null, 1, 2))
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with orderBy name should return list in order`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
+        val pagingOptions = PagingOptions(orderBy = OrderBy.NAME)
+
+        every { contextMock.queryParam("order_by") } returns "name"
+
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, defaultPagination)
+
+        animalController.findAllAnimals(contextMock)
+
+        verify { contextMock.json(pageAnimals).status(HttpStatus.OK_200) }
+    }
+
+    @Test
+    fun `when request all animals with orderBy modificationDate should return list in order`() {
+        val animalsList = listOf(AnimalFactory.sampleDTO())
+        val pageAnimals = Page(animalsList, defaultPagination)
+        val pagingOptions = PagingOptions(orderBy = OrderBy.MODIFICATION_DATE)
+
+        every { contextMock.queryParam("order_by") } returns "modification_date"
+
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, defaultPagination)
 
         animalController.findAllAnimals(contextMock)
 

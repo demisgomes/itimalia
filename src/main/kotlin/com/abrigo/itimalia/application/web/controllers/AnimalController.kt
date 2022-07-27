@@ -11,6 +11,7 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.entities.paging.Direction
+import com.abrigo.itimalia.domain.entities.paging.OrderBy
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.ValidationException
 import com.abrigo.itimalia.domain.services.AnimalService
@@ -70,14 +71,14 @@ class AnimalController(
     private fun buildPagingOptions(context: Context): PagingOptions {
         val limitParam = context.queryParam("limit") ?: "10"
         val pageParam = context.queryParam("page") ?: "1"
-        val orderBy = context.queryParam("orderBy") ?: "modification_date"
+        val orderBy = context.queryParamAsEnum("order_by") ?: OrderBy.ID
         val direction = context.queryParamAsEnum("direction") ?: Direction.ASC
 
         try {
             val pagingOptions = PagingOptions(
                 if (limitParam.isBlank()) 10 else limitParam.toInt(),
                 if (pageParam.isBlank()) 1 else pageParam.toInt(),
-                orderBy.ifBlank { "modification_date" },
+                orderBy,
                 direction
             )
 
