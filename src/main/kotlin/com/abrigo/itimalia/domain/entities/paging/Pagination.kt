@@ -5,5 +5,7 @@ data class Pagination(
     val limit: Int,
     val nextPage: Int?,
     val total: Int,
-    val numberOfPages: Int
+    val numberOfPages: Int,
+    val orderBy: OrderBy,
+    val direction: Direction
 )

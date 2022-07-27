@@ -39,7 +39,7 @@ class AnimalControllerTest {
     private lateinit var animalController: AnimalController
     private lateinit var jwtAccessManager: JWTAccessManager
     private lateinit var userService: UserService
-    private val defaultPagination = Pagination(1, 10, null, 1, 1)
+    private val defaultPagination = Pagination(1, 10, null, 1, 1, OrderBy.ID, Direction.ASC)
 
     private val contextMock: Context = mockk(relaxed = true)
 
@@ -359,7 +359,7 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals with page limit = 1, should call return one animal`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
-        val pageAnimals = Page(animalsList, Pagination(1, 1, null, 1, 1))
+        val pageAnimals = Page(animalsList, Pagination(1, 1, null, 1, 1, OrderBy.ID, Direction.ASC))
         val pagingOptions = PagingOptions(1)
 
         every { contextMock.queryParam("limit") } returns "1"
@@ -373,13 +373,13 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals with page = 2 and limit = 1, should return the page with one animal`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
-        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2))
+        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2, OrderBy.ID, Direction.ASC))
         val pagingOptions = PagingOptions(1, 2)
 
         every { contextMock.queryParam("limit") } returns "1"
         every { contextMock.queryParam("page") } returns "2"
 
-        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, Pagination(2, 1, null, 1, 2))
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 
@@ -424,14 +424,14 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals with direction desc should return list in desc order`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
-        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2))
+        val pageAnimals = Page(animalsList, Pagination(2, 1, null, 1, 2, OrderBy.ID, Direction.ASC))
         val pagingOptions = PagingOptions(1, 2, direction = Direction.DESC)
 
         every { contextMock.queryParam("limit") } returns "1"
         every { contextMock.queryParam("page") } returns "2"
         every { contextMock.queryParam("direction") } returns "desc"
 
-        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, Pagination(2, 1, null, 1, 2))
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 
@@ -441,12 +441,12 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals with orderBy name should return list in order`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
-        val pageAnimals = Page(animalsList, defaultPagination)
+        val pageAnimals = Page(animalsList, defaultPagination.copy(orderBy = OrderBy.NAME))
         val pagingOptions = PagingOptions(orderBy = OrderBy.NAME)
 
         every { contextMock.queryParam("order_by") } returns "name"
 
-        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 
@@ -456,12 +456,12 @@ class AnimalControllerTest {
     @Test
     fun `when request all animals with orderBy modificationDate should return list in order`() {
         val animalsList = listOf(AnimalFactory.sampleDTO())
-        val pageAnimals = Page(animalsList, defaultPagination)
+        val pageAnimals = Page(animalsList, defaultPagination.copy(orderBy = OrderBy.MODIFICATION_DATE))
         val pagingOptions = PagingOptions(orderBy = OrderBy.MODIFICATION_DATE)
 
         every { contextMock.queryParam("order_by") } returns "modification_date"
 
-        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns Page(animalsList, defaultPagination)
+        every { animalServiceMock.getAll(pagingOptions = pagingOptions) } returns pageAnimals
 
         animalController.findAllAnimals(contextMock)
 

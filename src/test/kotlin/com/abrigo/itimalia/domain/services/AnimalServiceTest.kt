@@ -8,6 +8,8 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Direction
+import com.abrigo.itimalia.domain.entities.paging.OrderBy
 import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
@@ -42,7 +44,7 @@ class AnimalServiceTest {
     private lateinit var userServiceMock: UserService
     private lateinit var validatorRequest: ValidatorRequest<Request>
     private lateinit var expectedAnimalRequest: AnimalRequest
-    private val defaultPagination = Pagination(1, 10, null, 1, 1)
+    private val defaultPagination = Pagination(1, 10, null, 1, 1, OrderBy.ID, Direction.DESC)
 
     private val animalsList = listOf(
         AnimalFactory.sampleDTO(),

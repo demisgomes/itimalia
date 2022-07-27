@@ -52,7 +52,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
             val total = count[0].second.toInt()
             val numberOfPages = ceil(total.toDouble() / limit).toInt()
             val nextPage = if (page < numberOfPages) page + 1 else null
-            val pagination = Pagination(page, limit, nextPage, total, numberOfPages)
+            val pagination = Pagination(page, limit, nextPage, total, numberOfPages, pagingOptions.orderBy, pagingOptions.direction)
 
             Page(animals, pagination)
         }
