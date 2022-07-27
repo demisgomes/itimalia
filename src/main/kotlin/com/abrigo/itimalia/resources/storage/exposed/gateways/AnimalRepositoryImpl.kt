@@ -4,6 +4,8 @@ import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalDeficiency
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Page
+import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
@@ -18,6 +20,7 @@ import org.jetbrains.exposed.dao.exceptions.EntityNotFoundException
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.andWhere
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.lowerCase
 import org.jetbrains.exposed.sql.selectAll
@@ -26,29 +29,32 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalRepository {
-    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): List<Animal> {
+    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): Page<Animal> {
         val query = queryFilterBuilder(filterOptions)
 
         val limit = pagingOptions.limit
-        val offset = ((pagingOptions.page - 1) * limit).toLong()
+        val page = pagingOptions.page
 
-        query.where?.let { where ->
-            return transaction {
-                AnimalEntity.find { where }.limit(pagingOptions.limit, offset).map { animalEntity ->
-                    animalEntity.toAnimal()
-                }
-            }
-        }
+        val offset = ((page - 1) * limit).toLong()
 
         return transaction {
-            AnimalEntity.all().limit(pagingOptions.limit, offset).map { animalEntity ->
-                animalEntity.toAnimal()
-            }
+            val countExpression = AnimalMap.id.count()
+            val count = query.map { "count" to it[countExpression] }
+
+            val animalEntities = if (query.where != null) AnimalEntity.find { query.where!! } else AnimalEntity.all()
+            val animals = animalEntities.limit(limit, offset).map { animalEntity -> animalEntity.toAnimal() }
+
+            val total = count[0].second.toInt()
+            val numberOfPages = total / limit
+            val nextPage = if (page < numberOfPages) page + 1 else null
+            val pagination = Pagination(page, limit, nextPage, total, numberOfPages)
+
+            Page(animals, pagination)
         }
     }
 
     private fun queryFilterBuilder(filterOptions: FilterOptions): Query {
-        val query = AnimalMap.selectAll()
+        val query = AnimalMap.slice(AnimalMap.id.count()).selectAll()
 
         filterOptions.specie?.let { specie ->
             query.andWhere {

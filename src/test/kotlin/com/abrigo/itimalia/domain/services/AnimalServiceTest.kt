@@ -8,6 +8,8 @@ import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Page
+import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
@@ -40,6 +42,7 @@ class AnimalServiceTest {
     private lateinit var userServiceMock: UserService
     private lateinit var validatorRequest: ValidatorRequest<Request>
     private lateinit var expectedAnimalRequest: AnimalRequest
+    private val defaultPagination = Pagination(1, 10, null, 1, 1)
 
     private val animalsList = listOf(
         AnimalFactory.sampleDTO(),
@@ -82,33 +85,19 @@ class AnimalServiceTest {
     }
 
     @Test
-    fun `when request an animal by specie, should return the animals`() {
-        // given animalsList
-
-        // when
-        every { animalRepositoryMock.getAll() }.returns(animalsList)
-        val cats = animalService.getBySpecie(Specie.CAT)
-
-        // then
-        assertEquals(2, cats.size)
-        assertEquals(Specie.CAT, cats.first().specie)
-        assertEquals(Specie.CAT, cats[1].specie)
-    }
-
-    @Test
     fun `when request an animal by specie dog, should return the animal`() {
         // given filterOptions
         val filterOptions = FilterOptions(specie = Specie.DOG)
         val lala = AnimalFactory.sampleDTO(name = "Lala", specie = Specie.DOG)
 
         // when
-        every { animalRepositoryMock.getAll(filterOptions) }.returns(listOf(lala))
+        every { animalRepositoryMock.getAll(filterOptions) } returns Page(listOf(lala), defaultPagination)
 
         val returnedList = animalService.getAll(filterOptions)
 
         // then
-        assertEquals(1, returnedList.size)
-        assertEquals(Specie.DOG, returnedList.first().specie)
+        assertEquals(1, returnedList.content.size)
+        assertEquals(Specie.DOG, returnedList.content.first().specie)
     }
 
     @Test
@@ -118,42 +107,13 @@ class AnimalServiceTest {
         val pagingOptions = PagingOptions(1, 1)
 
         // when
-        every { animalRepositoryMock.getAll(pagingOptions = pagingOptions) }.returns(listOf(lala))
+        every { animalRepositoryMock.getAll(pagingOptions = pagingOptions) } returns Page(listOf(lala), defaultPagination)
 
         val returnedList = animalService.getAll(pagingOptions = pagingOptions)
 
         // then
-        assertEquals(1, returnedList.size)
-        assertEquals(Specie.DOG, returnedList.first().specie)
-    }
-
-    @Test
-    fun `when request an animal by status, should return the animals`() {
-        // given animalsList
-
-        // when
-        every { animalRepositoryMock.getAll() }.returns(animalsList)
-        val availables = animalService.getByStatus(AnimalStatus.AVAILABLE)
-
-        // then
-        assertEquals(2, availables.size)
-        assertEquals(AnimalStatus.AVAILABLE, availables.first().status)
-        assertEquals(AnimalStatus.AVAILABLE, availables[1].status)
-    }
-
-    @Test
-    fun `when request an animal by name, should return the animals`() {
-        // given animalsList
-        val query = "animal"
-        // when
-        every { animalRepositoryMock.getAll() }.returns(animalsList)
-        val names = animalService.getByName(query)
-
-        // then
-        assertEquals(3, names.size)
-        assertEquals(query, names.first().name)
-        assertEquals(query, names[1].name)
-        assertEquals(query, names[2].name)
+        assertEquals(1, returnedList.content.size)
+        assertEquals(Specie.DOG, returnedList.content.first().specie)
     }
 
     @Test
@@ -161,10 +121,10 @@ class AnimalServiceTest {
         // given animalsList
 
         // when
-        every { animalRepositoryMock.getAll() }.returns(animalsList)
+        every { animalRepositoryMock.getAll() } returns Page(animalsList, defaultPagination)
         val animals = animalService.getAll()
         // then
-        assertEquals(animals, animalsList)
+        assertEquals(animals.content, animalsList)
     }
 
     @Test(expected = AnimalNotFoundException::class)

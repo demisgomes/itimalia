@@ -4,9 +4,9 @@ import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
 import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimalRequest
-import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.animal.TimeUnit
 import com.abrigo.itimalia.domain.entities.filter.FilterOptions
+import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
 import com.abrigo.itimalia.domain.exceptions.AnimalAlreadyAdoptedException
 import com.abrigo.itimalia.domain.exceptions.AnimalDeadException
@@ -21,22 +21,7 @@ class AnimalServiceImpl(
     private val validatorRequest: ValidatorRequest<Request>
 ) : AnimalService {
 
-    override fun getBySpecie(specie: Specie): List<Animal> {
-        val allAnimals = animalRepository.getAll()
-        return allAnimals.filter { it.specie == specie }
-    }
-
-    override fun getByName(name: String): List<Animal> {
-        val allAnimals = animalRepository.getAll()
-        return allAnimals.filter { it.name.contains(name) }
-    }
-
-    override fun getByStatus(animalStatus: AnimalStatus): List<Animal> {
-        val allAnimals = animalRepository.getAll()
-        return allAnimals.filter { it.status == animalStatus }
-    }
-
-    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): List<Animal> {
+    override fun getAll(filterOptions: FilterOptions, pagingOptions: PagingOptions): Page<Animal> {
         return animalRepository.getAll(filterOptions, pagingOptions)
     }
 

@@ -117,8 +117,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(specie = Specie.DOG))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -131,8 +131,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(name = "Do"))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -145,8 +145,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(name = "Do"))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -159,8 +159,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(status = AnimalStatus.ADOPTED))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -173,8 +173,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(sex = AnimalSex.MALE))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -187,8 +187,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(size = AnimalSize.TINY))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -201,8 +201,8 @@ class AnimalRepositoryImplTest {
         val result = animalRepository.getAll(FilterOptions(castrated = false))
 
         // then
-        assertEquals(dog, result.first())
-        assertEquals(1, result.size)
+        assertEquals(dog, result.content.first())
+        assertEquals(1, result.content.size)
     }
 
     @Test
@@ -222,7 +222,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll()
 
         // then
-        assertEquals(listAnimals, returnedAnimals)
+        assertEquals(listAnimals, returnedAnimals.content)
     }
 
     @Test
@@ -242,7 +242,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG, castrated = true))
 
         // then
-        assertEquals(castratedDogAnimals, returnedAnimals)
+        assertEquals(castratedDogAnimals, returnedAnimals.content)
     }
 
     @Test
@@ -268,7 +268,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(FilterOptions(sex = AnimalSex.FEMALE, name = "Mi", status = AnimalStatus.AVAILABLE))
 
         // then
-        assertEquals(femaleAvailablesThatHaveMi, returnedAnimals)
+        assertEquals(femaleAvailablesThatHaveMi, returnedAnimals.content)
     }
 
     @Test
@@ -286,7 +286,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG, size = AnimalSize.LARGE))
 
         // then
-        assertEquals(emptyList(), returnedAnimals)
+        assertEquals(emptyList(), returnedAnimals.content)
     }
 
     @Test
@@ -302,7 +302,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(FilterOptions(specie = Specie.DOG))
 
         // then
-        assertEquals(emptyList(), returnedAnimals)
+        assertEquals(emptyList(), returnedAnimals.content)
     }
 
     @Test
@@ -318,7 +318,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(FilterOptions(name = "emy"))
 
         // then
-        assertEquals(emptyList(), returnedAnimals)
+        assertEquals(emptyList(), returnedAnimals.content)
     }
 
     @Test
@@ -334,7 +334,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(pagingOptions = PagingOptions(limit = 1))
 
         // then
-        assertEquals(listOf(mia), returnedAnimals)
+        assertEquals(listOf(mia), returnedAnimals.content)
     }
 
     @Test
@@ -350,7 +350,7 @@ class AnimalRepositoryImplTest {
         val returnedAnimals = animalRepository.getAll(pagingOptions = PagingOptions(limit = 1, page = 2))
 
         // then
-        assertEquals(listOf(lala), returnedAnimals)
+        assertEquals(listOf(lala), returnedAnimals.content)
     }
 
     @Test
@@ -373,7 +373,7 @@ class AnimalRepositoryImplTest {
         )
 
         // then
-        assertEquals(listOf(emy), returnedAnimals)
+        assertEquals(listOf(emy), returnedAnimals.content)
     }
 
     @Test(expected = AnimalNotFoundException::class)
