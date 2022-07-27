@@ -36,26 +36,35 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
 
         val limit = pagingOptions.limit
         val page = pagingOptions.page
-
         val offset = ((page - 1) * limit).toLong()
 
         return transaction {
-            val countExpression = AnimalMap.id.count()
-            val count = query.map { "count" to it[countExpression] }
-
+            val total = getTotalCount(query)
             val column = AnimalMap.columns.first { it.name == pagingOptions.orderBy.name.lowercase() }
             val animalEntities = if (query.where != null) AnimalEntity.find { query.where!! } else AnimalEntity.all()
             val animals = animalEntities.limit(limit, offset)
                 .orderBy(column to SortOrder.valueOf(pagingOptions.direction.name.uppercase()))
                 .map { animalEntity -> animalEntity.toAnimal() }
 
-            val total = count[0].second.toInt()
-            val numberOfPages = ceil(total.toDouble() / limit).toInt()
-            val nextPage = if (page < numberOfPages) page + 1 else null
-            val pagination = Pagination(page, limit, nextPage, total, numberOfPages, pagingOptions.orderBy, pagingOptions.direction)
+            val pagination = buildPagination(pagingOptions, total)
 
             Page(animals, pagination)
         }
+    }
+
+    private fun getTotalCount(query: Query): Int {
+        val countExpression = AnimalMap.id.count()
+        val count = query.map { "count" to it[countExpression] }
+        return count.first().second.toInt()
+    }
+
+    private fun buildPagination(pagingOptions: PagingOptions, total: Int): Pagination {
+        val limit = pagingOptions.limit
+        val page = pagingOptions.page
+
+        val numberOfPages = ceil(total.toDouble() / limit).toInt()
+        val nextPage = if (page < numberOfPages) page + 1 else null
+        return Pagination(page, limit, nextPage, total, numberOfPages, pagingOptions.orderBy, pagingOptions.direction)
     }
 
     private fun queryFilterBuilder(filterOptions: FilterOptions): Query {

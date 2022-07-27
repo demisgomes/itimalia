@@ -10,6 +10,6 @@ inline fun <reified E : Enum<E>> Context.queryParamAsEnum(key: String): E? {
         enumValueOf<E>(value.uppercase())
     } catch (exception: IllegalArgumentException) {
         // log this error
-        throw ValidationException(mapOf(key to mutableListOf("Invalid field '$value'. Please update this value with expected values: ${enumValues<E>().map { it.name }}")))
+        throw ValidationException(mapOf(key to mutableListOf("Invalid field '$value'. Please update this value with expected values: ${enumValues<E>().map { it.name.lowercase() }}")))
     }
 }
