@@ -123,7 +123,7 @@ The application has a default admin user with the following fields:
 The application was deployed in Heroku and can be accessed in https://afternoon-caverns-61373.herokuapp.com/
 On the image below, we can see the current architecture. Itimalia has a connection with PostgreSQL database and both them are hosted on Heroku. Itimalia saves the image in Cloudinary that compress images and generate a link for access them.
 
-![Itimalia architecture on Heroku]()
+![Itimalia architecture on Heroku](https://user-images.githubusercontent.com/13547352/181644604-a9a91b06-1b24-4b70-a954-4e7c4aae519b.png)
 
 
 ### API documentation
