@@ -1,8 +1,15 @@
 package com.abrigo.itimalia.application.web.swagger
 
 import com.abrigo.itimalia.domain.entities.animal.Animal
+import com.abrigo.itimalia.domain.entities.animal.AnimalSex
+import com.abrigo.itimalia.domain.entities.animal.AnimalSize
+import com.abrigo.itimalia.domain.entities.animal.AnimalStatus
 import com.abrigo.itimalia.domain.entities.animal.NewAnimal
+import com.abrigo.itimalia.domain.entities.animal.Specie
 import com.abrigo.itimalia.domain.entities.image.Image
+import com.abrigo.itimalia.domain.entities.paging.Direction
+import com.abrigo.itimalia.domain.entities.paging.OrderBy
+import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation
 import io.swagger.v3.oas.models.security.SecurityRequirement
@@ -40,10 +47,17 @@ object SwaggerAnimalDocumentation {
         .json("200", Animal::class.java)
 
     fun getAnimalsDocumentation() = OpenApiDocumentation()
-        .queryParam("specie", String::class.java)
-        .queryParam("status", String::class.java)
+        .queryParam("specie", Specie::class.java)
+        .queryParam("status", AnimalStatus::class.java)
         .queryParam("name", String::class.java)
-        .json("200", Animal::class.java)
+        .queryParam("castrated", Boolean::class.java)
+        .queryParam("size", AnimalSize::class.java)
+        .queryParam("sex", AnimalSex::class.java)
+        .queryParam("page", Int::class.java)
+        .queryParam("limit", Int::class.java)
+        .queryParam("orderBy", OrderBy::class.java)
+        .queryParam("direction", Direction::class.java)
+        .json("200", Page::class.java)
 
     fun adoptAnimalDocumentation() = OpenApiDocumentation()
         .pathParam("id", String::class.java)
