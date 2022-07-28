@@ -1,48 +1,109 @@
 # itimalia
 Backend application for an animal shelter
 
-### Operations
+<p align="center">
+<img src="https://img.shields.io/github/workflow/status/demisgomes/itimalia/Build%20CI">
+<img src="https://img.shields.io/github/deployments/demisgomes/itimalia/afternoon-caverns-61373">
+<img src="https://img.shields.io/codecov/c/github/demisgomes/itimalia">
+</p>
+
+## Topics
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Stack](#stack)
+- [Usage](#usage)
+- [Application Deployed](#application-deployed)
+- [API Documentation](#api-documentation)
+
+### Introduction
+
+Itimalia is a personal project that aims to build a backend application with the best practices to study about them. The motivation came from close friends that help animals in shelters. The stack not follows well-known Spring Boot due to need to study new technologies and know backend techniques more in-depth.
+
+### Features
 
 #### User
-- Create an user in database
+
+- Create a user in database
 - Grant/remove admin permissions
-- Modify an user (admin can modify any user)
+- Modify a user (admin can modify any user)
 - Delete an user (admin can delete any user)
-- Get an user by id
+- Get a user by id
 
 #### Animal
 - Add an animal in shelter by an admin (cat or dog)
 - Modify the status of the animal (only admin) (gone, dead, adopted)
 - Remove an animal from shelter (only admin)
-- Search an animal by name, status, or specie
+- Search an animal and filter by some attributes
 - Adopt an animal (only user)
 - Add photos to animal (default max: 8)
 
+#### Technical
+
+- Unit tests with a minimum coverage of 90% (excluding some files)
+- Lint check
+- Database migration
+- Filter animals by name, status, specie, size, sex, or castrated
+- Paging animals search
+- Order by id, name, or modification date, giving option to order ascending or descending
+- Github actions to check build, lint and coverage
+- Automatic deploy after successful build in master on Heroku
+- Dependency Injection
+- Hash passwords
+
 ### Stack
 
-- Javalin
-- Exposed
-- Hikari
-- Jackson
-- Swagger
-- Koin
-- Mockk (tests)
-- H2 (tests)
-- Cloudinary (images)
-- ktlint
-- BCrypt (hash passwords)
+- [Javalin](https://javalin.io/) - Web Framework
+- [Exposed](https://github.com/JetBrains/Exposed) - ORM
+- [Swagger](https://swagger.io/) - Documentation
+- [Koin](https://insert-koin.io/) - Dependency Injection
+- [Mockk](https://mockk.io/) - Mocking Library
+- [Cloudinary](https://cloudinary.com/) - Images Library
+- [ktlint](https://ktlint.github.io/) - Lint
+- [kover](https://github.com/Kotlin/kotlinx-kover) - Coverage tests
 
 ### Usage
 
-Run docker compose (or install postgres in your machine)
+#### Run locally
+Run docker compose
 
 `docker-compose up`
 
+or install a PostgreSQL application in your machine with `DATABASE_USERNAME=user` and `DATABASE_PASSWORD=password`
+
+Load environment variables:
+
+```
+JDBC_URL=jdbc:postgresql://localhost:5432/database
+DATABASE_USERNAME=user
+DATABASE_PASSWORD=password
+```
+
+This would run the application without support to save animal images. To save images, make a Cloudinary Account and add your API credentials:
+
+```
+CLOUDINARY_API_KEY=<api_key>
+CLOUDINARY_API_SECRET=<api_secret>
+CLOUDINARY_CLOUD_NAME=<cloud_name>
+```
+
 Run the application
 
-`./gradle run`
+`./gradlew run`
 
-If you want to check lint, run `./gradle ktlintCheck`.
+#### Tests
+
+`./gradlew test`
+
+#### Lint and coverage
+
+If you want to check lint, run `./gradlew ktlintCheck`
+
+You can format your code to agree with ktlint rules with `./gradlew ktlintFormat`
+
+To generate coverage reports, run `./gradlew koverMergedReport`
+You should see a message like `Kover: merged HTML report file:///<your_file_location>/itimalia/build/reports/kover/html/index.html
+`
 
 The application has a default admin user with the following fields:
 ```json
@@ -60,11 +121,17 @@ The application has a default admin user with the following fields:
 
 ### Application deployed
 The application was deployed in Heroku and can be accessed in https://afternoon-caverns-61373.herokuapp.com/
+On the image below, we can see the current architecture. Itimalia has a connection with PostgreSQL database and both them are hosted on Heroku. Itimalia saves the image in Cloudinary that compress images and generate a link for access them.
+
+![Itimalia architecture on Heroku]()
+
 
 ### API documentation
 
 - Local:
     http://localhost:7000/swagger
 
-- Heroku Example:
+- Heroku:
     https://afternoon-caverns-61373.herokuapp.com/swagger
+
+You also can see Postman collections in this repository in folder `/postman`.
