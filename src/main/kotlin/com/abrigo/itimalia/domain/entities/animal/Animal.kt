@@ -1,7 +1,7 @@
 package com.abrigo.itimalia.domain.entities.animal
 
 import com.abrigo.itimalia.domain.entities.image.Image
-import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
+import com.abrigo.itimalia.domain.entities.user.UserWithoutAnimals
 import org.joda.time.DateTime
 
 data class Animal(
@@ -19,6 +19,6 @@ data class Animal(
     val size: AnimalSize,
     val castrated: Boolean,
     val createdById: Int,
-    val adoptedBy: UserPublicInfo? = null,
+    val adoptedBy: UserWithoutAnimals? = null,
     val images: List<Image> = emptyList()
 )

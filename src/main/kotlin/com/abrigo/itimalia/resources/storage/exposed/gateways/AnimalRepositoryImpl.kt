@@ -7,7 +7,7 @@ import com.abrigo.itimalia.domain.entities.filter.FilterOptions
 import com.abrigo.itimalia.domain.entities.paging.Page
 import com.abrigo.itimalia.domain.entities.paging.Pagination
 import com.abrigo.itimalia.domain.entities.paging.PagingOptions
-import com.abrigo.itimalia.domain.entities.user.toUserPublicInfo
+import com.abrigo.itimalia.domain.entities.user.toUserWithoutAnimals
 import com.abrigo.itimalia.domain.exceptions.AnimalNotFoundException
 import com.abrigo.itimalia.domain.repositories.AnimalRepository
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -198,7 +198,7 @@ class AnimalRepositoryImpl(private val userRepository: UserRepository) : AnimalR
 
     override fun adopt(animal: Animal, adopterId: Int): Animal {
         val adopterUser = userRepository.get(adopterId)
-        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now(), adoptedBy = adopterUser.toUserPublicInfo())
+        val adoptedAnimal = animal.copy(status = AnimalStatus.ADOPTED, modificationDate = DateTime.now(), adoptedBy = adopterUser.toUserWithoutAnimals())
 
         return update(animal.id ?: throw IllegalArgumentException(), adoptedAnimal)
     }

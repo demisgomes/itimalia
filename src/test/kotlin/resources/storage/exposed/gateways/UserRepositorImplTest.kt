@@ -2,9 +2,15 @@ package resources.storage.exposed.gateways
 
 import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
+import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.factories.UserFactory
 import com.abrigo.itimalia.holder.DatabaseHolder
+import com.abrigo.itimalia.resources.storage.exposed.entities.AnimalEntity
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserEntity
+import com.abrigo.itimalia.resources.storage.exposed.entities.UserMap
 import com.abrigo.itimalia.resources.storage.exposed.gateways.UserRepositoryImpl
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
@@ -75,6 +81,39 @@ class UserRepositorImplTest {
 
         // then
         assertEquals(expectedUser, user)
+    }
+
+    @Test
+    fun `given an valid user in database, when find by its id and have an adopted animal, should return the user`() {
+        // given userDTO
+        val userDTO = UserFactory.sampleDTO()
+        val addedUser = userRepository.add(userDTO)
+        val animal = AnimalFactory.sampleDTO(name = "adopted animal")
+
+        transaction {
+            AnimalEntity.new {
+                name = animal.name
+                age = animal.age
+                timeUnit = animal.timeUnit?.toString()
+                specie = animal.specie.toString()
+                description = animal.description
+                creationDate = animal.creationDate
+                modificationDate = animal.modificationDate
+                status = animal.status.toString()
+                sex = animal.sex.toString()
+                size = animal.size.toString()
+                castrated = animal.castrated
+                createdById = EntityID(animal.createdById, UserMap)
+                adoptedBy = addedUser.id?.let { UserEntity[it] }
+            }
+        }
+
+        // when
+        val user = addedUser.id?.let { userRepository.get(it) }
+
+        // then
+        assertEquals(1, user?.adoptedAnimals?.size)
+        assertEquals("adopted animal", user?.adoptedAnimals?.first()?.name)
     }
 
     @Test(expected = InvalidCredentialsException::class)

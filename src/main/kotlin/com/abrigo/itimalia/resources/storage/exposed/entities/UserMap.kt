@@ -2,8 +2,8 @@ package com.abrigo.itimalia.resources.storage.exposed.entities
 
 import com.abrigo.itimalia.domain.entities.user.Gender
 import com.abrigo.itimalia.domain.entities.user.User
-import com.abrigo.itimalia.domain.entities.user.UserPublicInfo
 import com.abrigo.itimalia.domain.entities.user.UserRole
+import com.abrigo.itimalia.domain.entities.user.UserWithoutAnimals
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -42,8 +42,14 @@ class UserEntity(id: EntityID<Int>) : IntEntity(id) {
         Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, modificationDate, token, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() }
     )
 
-    fun toUserPublicInfo() = UserPublicInfo(
-        id.value, email, birthDate,
-        Gender.valueOf(gender), name, phone, UserRole.valueOf(role), creationDate, adoptedAnimals.map { adoptedAnimal -> adoptedAnimal.toAnimalWithoutAdopter() }
+    fun toUserWithoutAnimals() = UserWithoutAnimals(
+        id.value,
+        email,
+        birthDate,
+        Gender.valueOf(gender),
+        name,
+        phone,
+        UserRole.valueOf(role),
+        creationDate
     )
 }

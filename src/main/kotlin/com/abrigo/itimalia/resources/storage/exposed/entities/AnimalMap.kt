@@ -66,7 +66,7 @@ class AnimalEntity(id: EntityID<Int>) : IntEntity(id) {
             AnimalSize.valueOf(size),
             castrated,
             createdById.value,
-            adoptedBy?.toUserPublicInfo(),
+            adoptedBy?.toUserWithoutAnimals(),
             images.map { image -> image.toAnimalImage() }.toList()
         )
 

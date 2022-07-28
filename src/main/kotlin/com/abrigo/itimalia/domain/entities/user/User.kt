@@ -30,6 +30,17 @@ fun User.toUserPublicInfo() = UserPublicInfo(
     adoptedAnimals = adoptedAnimals
 )
 
+fun User.toUserWithoutAnimals() = UserWithoutAnimals(
+    email = email,
+    birthDate = birthDate,
+    role = role,
+    creationDate = creationDate,
+    name = name,
+    gender = gender,
+    id = id,
+    phone = phone
+)
+
 fun User.toLoggedUser() = LoggedUser(
     email = email,
     birthDate = birthDate,
