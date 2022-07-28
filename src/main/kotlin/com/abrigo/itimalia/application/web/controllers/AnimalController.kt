@@ -102,11 +102,11 @@ class AnimalController(
         val specie = context.queryParamAsEnum<Specie>("specie")
         val sex = context.queryParamAsEnum<AnimalSex>("sex")
         val size = context.queryParamAsEnum<AnimalSize>("size")
-        val name = context.queryParam("name")
+        val name = context.queryParam("name") ?: ""
         val castrated = context.queryParam("castrated")
 
         return FilterOptions(
-            name = if (name.isNullOrBlank()) null else name,
+            name.ifBlank { null },
             specie,
             status,
             sex,
