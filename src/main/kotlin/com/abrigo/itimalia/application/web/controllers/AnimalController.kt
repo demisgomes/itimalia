@@ -18,7 +18,6 @@ import com.abrigo.itimalia.domain.services.AnimalService
 import com.abrigo.itimalia.domain.services.UserService
 import io.javalin.http.Context
 import org.eclipse.jetty.http.HttpStatus
-import java.lang.NumberFormatException
 
 class AnimalController(
     private val animalService: AnimalService,
@@ -74,20 +73,16 @@ class AnimalController(
         val orderBy = context.queryParamAsEnum("order_by") ?: OrderBy.ID
         val direction = context.queryParamAsEnum("direction") ?: Direction.ASC
 
-        try {
-            val pagingOptions = PagingOptions(
-                if (limitParam.isBlank()) 10 else limitParam.toInt(),
-                if (pageParam.isBlank()) 1 else pageParam.toInt(),
-                orderBy,
-                direction
-            )
+        val pagingOptions = PagingOptions(
+            limitParam.toIntOrNull() ?: 10,
+            pageParam.toIntOrNull() ?: 1,
+            orderBy,
+            direction
+        )
 
-            // put this as validator. We will change this when pass validator to controllers.
-            validatePaging(pagingOptions)
-            return pagingOptions
-        } catch (exception: NumberFormatException) {
-            throw ValidationException(mapOf("limit/page" to mutableListOf("Please put an integer for limit or page attributes.")))
-        }
+        // put this as validator. We will change this when pass validator to controllers.
+        validatePaging(pagingOptions)
+        return pagingOptions
     }
 
     private fun validatePaging(pagingOptions: PagingOptions) {

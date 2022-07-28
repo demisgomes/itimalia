@@ -387,20 +387,6 @@ class AnimalControllerTest {
     }
 
     @Test(expected = ValidationException::class)
-    fun `when request all animals with limit invalid, should call validation exception`() {
-        every { contextMock.queryParam("limit") } returns "invalid"
-
-        animalController.findAllAnimals(contextMock)
-    }
-
-    @Test(expected = ValidationException::class)
-    fun `when request all animals with page invalid , should call validation exception`() {
-        every { contextMock.queryParam("page") } returns "invalid"
-
-        animalController.findAllAnimals(contextMock)
-    }
-
-    @Test(expected = ValidationException::class)
     fun `when request all animals with page less than 1, should call validation exception`() {
         every { contextMock.queryParam("page") } returns "0"
 
