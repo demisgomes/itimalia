@@ -55,7 +55,7 @@ object SwaggerAnimalDocumentation {
         .queryParam("sex", AnimalSex::class.java)
         .queryParam("page", Int::class.java)
         .queryParam("limit", Int::class.java)
-        .queryParam("orderBy", OrderBy::class.java)
+        .queryParam("order_by", OrderBy::class.java)
         .queryParam("direction", Direction::class.java)
         .json("200", Page::class.java)
 
