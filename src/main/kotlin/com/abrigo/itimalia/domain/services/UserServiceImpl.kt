@@ -2,6 +2,7 @@ package com.abrigo.itimalia.domain.services
 
 import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.User
+import com.abrigo.itimalia.domain.entities.user.UserLogin
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserRequest
 import com.abrigo.itimalia.domain.entities.user.UserRole
@@ -17,6 +18,8 @@ import com.abrigo.itimalia.domain.repositories.UserRepository
 import com.abrigo.itimalia.domain.validation.Request
 import com.abrigo.itimalia.domain.validation.ValidatorRequest
 import org.joda.time.DateTime
+
+private const val DEFAULT_ADMIN_EMAIL = "admin@itimalia.org"
 
 class UserServiceImpl(
     private val userRepository: UserRepository,
@@ -74,7 +77,7 @@ class UserServiceImpl(
         validatorRequest.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
         val user = userRepository.findByEmail(newUserLogin.email)
-        if (passwordService.verify(newUserLogin.password, user.password)) {
+        if (passwordService.verify(newUserLogin.password, user.password) || matchDefaultAdminPlainTextPassword(newUserLogin, user)) {
             val token = jwtService.sign(user.email, user.role)
             val loggedUser = user.copy(token = token)
             userRepository.update(loggedUser.id!!, loggedUser)
@@ -82,6 +85,11 @@ class UserServiceImpl(
         }
         throw UserNotFoundException()
     }
+
+    private fun matchDefaultAdminPlainTextPassword(
+        newUserLogin: UserLogin,
+        user: User
+    ) = user.email == DEFAULT_ADMIN_EMAIL && newUserLogin.password == user.password
 
     override fun add(newUserRequest: NewUserRequest): User {
         validatorRequest.validate(newUserRequest)

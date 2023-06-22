@@ -294,6 +294,27 @@ class UserServiceTest {
     }
 
     @Test
+    fun `when an user tries login with default admin, should verify the password without encryption too`() {
+        // given adminUserLogin
+        val adminEmail = "admin@itimalia.org"
+        val adminUserLogin = UserLoginRequest(adminEmail, "admin")
+
+        // when
+        every { userRepositoryMock.findByEmail(adminUserLogin.email!!) }.returns(expectedAdminModifiedUser.copy(email = adminEmail, password = "admin"))
+        every { jwtService.sign(validUserLogin.email!!, UserRole.ADMIN) }.returns("token_updated")
+        val updatedTokenUser = expectedAdminModifiedUser.copy(token = "token_updated")
+
+        every { passwordServiceMock.verify(adminUserLogin.password!!, any()) } returns false
+        every { userRepositoryMock.update(expectedAdminModifiedUser.id!!, updatedTokenUser) }.returns(updatedTokenUser)
+        every { userRepositoryMock.get(expectedAdminModifiedUser.id!!) }.returns(updatedTokenUser)
+
+        val userDTO = userService.login(adminUserLogin)
+
+        // then
+        assertEquals(updatedTokenUser, userDTO)
+    }
+
+    @Test
     fun `when an user find by email and it is correct, return the user`() {
         // given validUserLogin
 
