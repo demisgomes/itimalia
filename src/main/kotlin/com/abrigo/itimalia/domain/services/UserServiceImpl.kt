@@ -95,7 +95,7 @@ class UserServiceImpl(
         validatorRequest.validate(newUserRequest)
         val newUser = newUserRequest.toNewUser()
 
-        if (userRepository.findByEmail(newUser.email).isPresent)  throw EmailAlreadyExistsException()
+        if (userRepository.findByEmail(newUser.email).isPresent) throw EmailAlreadyExistsException()
 
         val actualDate = DateTime.now()
         val newUserDTO = User(
