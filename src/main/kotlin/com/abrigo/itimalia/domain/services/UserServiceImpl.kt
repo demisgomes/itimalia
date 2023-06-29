@@ -37,41 +37,38 @@ class UserServiceImpl(
         validatorRequest.validate(userRequest)
         val userToBeModified = userRepository.get(id)
         val userDTO = userRequest.toUser()
-        try {
-            val optionalUser = userRepository.findByEmail(userDTO.email)
-            // if found an email in another user, cannot update the email to other that exists
-            if (optionalUser.get().id != id) {
-                throw EmailAlreadyExistsException()
-            } else {
-                throw UserNotFoundException()
-            }
-        } catch (exception: UserNotFoundException) {
-            val newUserDTO = User(
-                userToBeModified.id,
-                userDTO.email,
-                userToBeModified.password,
-                userDTO.birthDate,
-                userDTO.gender,
-                userDTO.name,
-                userDTO.phone,
-                userDTO.role,
-                userToBeModified.creationDate,
-                DateTime.now(),
-                jwtService.sign(userDTO.email, userDTO.role)
-            )
+        val optionalUser = userRepository.findByEmail(userDTO.email)
 
-            if (role == UserRole.ADMIN) {
+        // if found an email in another user, cannot update the email to other that exists
+        if (optionalUser.isPresent && optionalUser.get().id != id) {
+            throw EmailAlreadyExistsException()
+        }
+
+        val newUserDTO = User(
+            userToBeModified.id,
+            userDTO.email,
+            userToBeModified.password,
+            userDTO.birthDate,
+            userDTO.gender,
+            userDTO.name,
+            userDTO.phone,
+            userDTO.role,
+            userToBeModified.creationDate,
+            DateTime.now(),
+            jwtService.sign(userDTO.email, userDTO.role)
+        )
+
+        if (role == UserRole.ADMIN) {
+            return userRepository.update(id, newUserDTO)
+        }
+
+        if (userToBeModified.email == email) {
+            if (userToBeModified.role == newUserDTO.role) {
                 return userRepository.update(id, newUserDTO)
             }
-
-            if (userToBeModified.email == email) {
-                if (userToBeModified.role == newUserDTO.role) {
-                    return userRepository.update(id, newUserDTO)
-                }
-                throw UnauthorizedRoleChangeException()
-            }
-            throw UnauthorizedDifferentUserChangeException()
+            throw UnauthorizedRoleChangeException()
         }
+        throw UnauthorizedDifferentUserChangeException()
     }
 
     override fun login(userLoginRequest: UserLoginRequest): User {
@@ -97,26 +94,25 @@ class UserServiceImpl(
     override fun add(newUserRequest: NewUserRequest): User {
         validatorRequest.validate(newUserRequest)
         val newUser = newUserRequest.toNewUser()
-        try {
-            userRepository.findByEmail(newUser.email)
-            throw EmailAlreadyExistsException()
-        } catch (exception: UserNotFoundException) {
-            val actualDate = DateTime.now()
-            val newUserDTO = User(
-                null,
-                newUser.email,
-                passwordService.encode(newUser.password),
-                newUser.birthDate,
-                newUser.gender,
-                newUser.name,
-                newUser.phone,
-                UserRole.USER,
-                actualDate,
-                actualDate,
-                jwtService.sign(newUser.email, UserRole.USER)
-            )
-            return userRepository.add(newUserDTO)
-        }
+
+        if (userRepository.findByEmail(newUser.email).isPresent)  throw EmailAlreadyExistsException()
+
+        val actualDate = DateTime.now()
+        val newUserDTO = User(
+            null,
+            newUser.email,
+            passwordService.encode(newUser.password),
+            newUser.birthDate,
+            newUser.gender,
+            newUser.name,
+            newUser.phone,
+            UserRole.USER,
+            actualDate,
+            actualDate,
+            jwtService.sign(newUser.email, UserRole.USER)
+        )
+
+        return userRepository.add(newUserDTO)
     }
 
     override fun delete(id: Int, role: UserRole, email: String) {

@@ -97,7 +97,7 @@ class UserServiceTest {
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
-        every { userRepositoryMock.findByEmail(newUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(newUser.email) }.returns(Optional.empty())
 
         every { jwtService.sign(newUser.email, UserRole.USER) }.returns("token_test")
 
@@ -123,7 +123,7 @@ class UserServiceTest {
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUser.email) }.returns(Optional.of(unexpectedUserDTO))
+        every { newUserRequest.email?.let { userRepositoryMock.findByEmail(it) } }.returns(Optional.of(unexpectedUserDTO))
 
         userService.add(newUserRequest)
     }
@@ -135,8 +135,7 @@ class UserServiceTest {
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedUser.email) }.throws(UserNotFoundException())
-
+        every { userRepositoryMock.findByEmail(updatedUser.email) }.returns(Optional.empty())
         every { userRepositoryMock.update(1, updatedUser) }.returns(expectedModifiedUser)
 
         val userDTO = userService.update(1, updatedUserRequest, UserRole.USER, updatedUser.email)
@@ -169,7 +168,7 @@ class UserServiceTest {
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
         every { userRepositoryMock.update(1, updatedAdminUser) }.returns(expectedAdminModifiedUser)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.ADMIN, updatedAdminUser.email + "A")
@@ -187,7 +186,7 @@ class UserServiceTest {
         every { jwtService.sign(updatedAdminUser.email, updatedAdminUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.USER, updatedAdminUser.email + "A")
@@ -205,7 +204,7 @@ class UserServiceTest {
         every { jwtService.sign(updatedAdminUser.email, updatedAdminUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(expectedUser.email) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(expectedUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.USER, updatedAdminUser.email)
@@ -334,7 +333,7 @@ class UserServiceTest {
         // given validUserLogin
 
         // when
-        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.throws(UserNotFoundException())
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(Optional.empty())
         userService.login(validUserLogin)
 
         // then UserNotFoundException
