@@ -15,6 +15,7 @@ import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import java.util.Optional
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -55,15 +56,15 @@ class UserRepositorImplTest {
         val expectedUser = userDTO.copy(id = 2)
 
         // then
-        assertEquals(expectedUser, user)
+        assertEquals(expectedUser, user.get())
     }
 
-    @Test(expected = UserNotFoundException::class)
-    fun `given an nonexistent email, when request it via findByEmail, should expect a UserNotFoundException`() {
+    @Test
+    fun `given an nonexistent email, when request it via findByEmail, should expect a Optional empty()`() {
         // given none
 
         // when
-        userRepository.findByEmail(email)
+        assertEquals(Optional.empty(), userRepository.findByEmail(email))
 
         // then exception
     }

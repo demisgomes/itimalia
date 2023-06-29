@@ -12,18 +12,20 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
+import java.util.Optional
+import kotlin.NoSuchElementException
 
 class UserRepositoryImpl : UserRepository {
 
-    override fun findByEmail(email: String): User {
-        try {
-            return transaction {
+    override fun findByEmail(email: String): Optional<User> {
+        return try {
+            transaction {
                 UserEntity.find { UserMap.email eq email }.map { userEntity ->
-                    userEntity.toUser()
+                    Optional.of(userEntity.toUser())
                 }.first()
             }
         } catch (exception: NoSuchElementException) {
-            throw UserNotFoundException()
+            Optional.empty()
         }
     }
 

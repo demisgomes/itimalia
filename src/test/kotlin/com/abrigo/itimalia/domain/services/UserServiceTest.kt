@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExpectedException
+import java.util.Optional
 import kotlin.test.assertEquals
 
 class UserServiceTest {
@@ -122,7 +123,7 @@ class UserServiceTest {
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUser.email) }.returns(unexpectedUserDTO)
+        every { userRepositoryMock.findByEmail(newUser.email) }.returns(Optional.of(unexpectedUserDTO))
 
         userService.add(newUserRequest)
     }
@@ -150,7 +151,7 @@ class UserServiceTest {
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedUser.email) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(updatedUser.email) }.returns(Optional.of(expectedUser))
 
         every { userRepositoryMock.update(1, updatedUser) }.returns(expectedModifiedUser)
 
@@ -206,8 +207,6 @@ class UserServiceTest {
         every { userRepositoryMock.get(1) }.returns(expectedUser)
         every { userRepositoryMock.findByEmail(expectedUser.email) }.throws(UserNotFoundException())
 
-        // every { userRepositoryMock.update(1,updatedAdminUserDTO) }.returns(expectedAdminModifiedUserDTO)
-
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.USER, updatedAdminUser.email)
 
@@ -223,10 +222,11 @@ class UserServiceTest {
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
 
-        val usedEmailUser = expectedUser.copy(id = 2, email = expectedUser.email + "A")
-        every { userRepositoryMock.findByEmail(expectedUser.email) }.returns(usedEmailUser)
+        val usedEmail = expectedUser.email + "A"
+        val usedEmailUser = expectedUser.copy(id = 2, email = usedEmail)
+        every { userRepositoryMock.findByEmail(usedEmail) }.returns(Optional.of(usedEmailUser))
 
-        val modifiedUserDTO = expectedUserRequest.copy(email = expectedUser.email + "A")
+        val modifiedUserDTO = expectedUserRequest.copy(email = usedEmail)
 
         // when
         userService.update(1, modifiedUserDTO, UserRole.USER, expectedUser.email)
@@ -279,7 +279,7 @@ class UserServiceTest {
         // given validUserLogin
 
         // when
-        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(Optional.of(expectedUser))
         every { jwtService.sign(validUserLogin.email!!, UserRole.USER) }.returns("token_updated")
         val updatedTokenUser = expectedUser.copy(token = "token_updated")
 
@@ -300,7 +300,9 @@ class UserServiceTest {
         val adminUserLogin = UserLoginRequest(adminEmail, "admin")
 
         // when
-        every { userRepositoryMock.findByEmail(adminUserLogin.email!!) }.returns(expectedAdminModifiedUser.copy(email = adminEmail, password = "admin"))
+        every { userRepositoryMock.findByEmail(adminUserLogin.email!!) }.returns(
+            Optional.of(expectedAdminModifiedUser.copy(email = adminEmail, password = "admin"))
+        )
         every { jwtService.sign(validUserLogin.email!!, UserRole.ADMIN) }.returns("token_updated")
         val updatedTokenUser = expectedAdminModifiedUser.copy(token = "token_updated")
 
@@ -319,7 +321,7 @@ class UserServiceTest {
         // given validUserLogin
 
         // when
-        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(Optional.of(expectedUser))
 
         val userDTO = userService.findByEmail(validUserLogin.email!!)
 
@@ -343,7 +345,7 @@ class UserServiceTest {
         // given validUserLogin
 
         // when
-        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(expectedUser)
+        every { userRepositoryMock.findByEmail(validUserLogin.email!!) }.returns(Optional.of(expectedUser))
         every { passwordServiceMock.verify(validUserLogin.password!!, expectedUser.password) } returns false
         userService.login(validUserLogin)
 

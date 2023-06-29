@@ -29,7 +29,8 @@ class UserServiceImpl(
 ) : UserService {
 
     override fun findByEmail(email: String): User {
-        return userRepository.findByEmail(email)
+        val optionalUser = userRepository.findByEmail(email)
+        return optionalUser.orElseThrow { UserNotFoundException() }
     }
 
     override fun update(id: Int, userRequest: UserRequest, role: UserRole, email: String): User {
@@ -37,9 +38,9 @@ class UserServiceImpl(
         val userToBeModified = userRepository.get(id)
         val userDTO = userRequest.toUser()
         try {
-            val user = userRepository.findByEmail(userDTO.email)
+            val optionalUser = userRepository.findByEmail(userDTO.email)
             // if found an email in another user, cannot update the email to other that exists
-            if (user.id != id) {
+            if (optionalUser.get().id != id) {
                 throw EmailAlreadyExistsException()
             } else {
                 throw UserNotFoundException()
@@ -76,7 +77,9 @@ class UserServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): User {
         validatorRequest.validate(userLoginRequest)
         val newUserLogin = userLoginRequest.toUserLogin()
-        val user = userRepository.findByEmail(newUserLogin.email)
+        val optionalUser = userRepository.findByEmail(newUserLogin.email)
+
+        val user = optionalUser.orElseThrow { UserNotFoundException() }
         if (passwordService.verify(newUserLogin.password, user.password) || matchDefaultAdminPlainTextPassword(newUserLogin, user)) {
             val token = jwtService.sign(user.email, user.role)
             val loggedUser = user.copy(token = token)

@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.domain.repositories
 
 import com.abrigo.itimalia.domain.entities.user.User
+import java.util.Optional
 
 interface UserRepository {
     fun add(user: User): User
@@ -8,5 +9,5 @@ interface UserRepository {
     fun get(id: Int): User
     fun delete(id: Int)
     fun findByCredentials(email: String, password: String): User
-    fun findByEmail(email: String): User
+    fun findByEmail(email: String): Optional<User>
 }
