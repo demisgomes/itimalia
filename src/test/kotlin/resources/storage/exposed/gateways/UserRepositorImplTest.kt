@@ -1,6 +1,6 @@
 package resources.storage.exposed.gateways
 
-import com.abrigo.itimalia.domain.exceptions.InvalidCredentialsException
+import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.factories.AnimalFactory
 import com.abrigo.itimalia.factories.UserFactory
@@ -70,21 +70,6 @@ class UserRepositorImplTest {
     }
 
     @Test
-    fun `given an valid user in database, when correctly find by credentials, should return the user`() {
-        // given userDTO
-        val userDTO = UserFactory.sampleDTO(email = email, password = password)
-        userRepository.add(userDTO)
-
-        // when
-        val user = userRepository.findByCredentials(email, password)
-
-        val expectedUser = userDTO.copy(id = 2)
-
-        // then
-        assertEquals(expectedUser, user)
-    }
-
-    @Test
     fun `given an valid user in database, when find by its id and have an adopted animal, should return the user`() {
         // given userDTO
         val userDTO = UserFactory.sampleDTO()
@@ -115,18 +100,6 @@ class UserRepositorImplTest {
         // then
         assertEquals(1, user?.adoptedAnimals?.size)
         assertEquals("adopted animal", user?.adoptedAnimals?.first()?.name)
-    }
-
-    @Test(expected = InvalidCredentialsException::class)
-    fun `given an valid user in database, when did not find by credentials, should return InvalidCredentialsException`() {
-        // given userDTO
-        val userDTO = UserFactory.sampleDTO(email = email, password = password)
-        userRepository.add(userDTO)
-
-        // when
-        userRepository.findByCredentials(email, "n")
-
-        // then exception
     }
 
     @Test
@@ -172,5 +145,35 @@ class UserRepositorImplTest {
         // then
         userRepository.get(1)
         // throws exception
+    }
+
+    @Test(expected = EmailAlreadyExistsException::class)
+    fun `given a user that exists in database, when call a add operation with same email, should return unique exception`() {
+        // given userDTO
+        val userDTO = UserFactory.sampleDTO()
+        userRepository.add(userDTO)
+
+        // when
+        userRepository.add(userDTO)
+
+        // then throws exception
+    }
+
+    @Test(expected = EmailAlreadyExistsException::class)
+    fun `given two users in database, when call a update operation changing the first user email to same email of the second user, should return email exists exception`() {
+        // given userDTO
+        val secondUserEmail = "secondUser@mail.com"
+
+        val firstUser = UserFactory.sampleDTO()
+        val addedFirstUser = userRepository.add(firstUser)
+
+        val secondUser = UserFactory.sampleDTO(email = secondUserEmail)
+
+        userRepository.add(secondUser)
+
+        // when
+        userRepository.update(addedFirstUser.id!!, addedFirstUser.copy(email = secondUser.email))
+
+        // then throws exception
     }
 }

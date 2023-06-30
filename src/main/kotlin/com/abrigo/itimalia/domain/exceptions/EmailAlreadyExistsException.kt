@@ -2,7 +2,13 @@ package com.abrigo.itimalia.domain.exceptions
 
 import org.eclipse.jetty.http.HttpStatus
 
-class EmailAlreadyExistsException : ApiException(message = "This email already exists") {
+private const val THIS_EMAIL_ALREADY_EXISTS = "This email already exists"
+
+class EmailAlreadyExistsException : ApiException {
+
+    constructor() : super(THIS_EMAIL_ALREADY_EXISTS)
+    constructor(cause: Throwable) : super (message = THIS_EMAIL_ALREADY_EXISTS, cause)
+
     override fun httpStatus(): Int {
         return HttpStatus.UNAUTHORIZED_401
     }
