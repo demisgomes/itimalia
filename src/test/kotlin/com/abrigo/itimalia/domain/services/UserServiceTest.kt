@@ -1,7 +1,5 @@
 package com.abrigo.itimalia.domain.services
 
-import com.abrigo.itimalia.domain.entities.user.Gender
-import com.abrigo.itimalia.domain.entities.user.NewUserRequest
 import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.entities.user.UserLoginRequest
 import com.abrigo.itimalia.domain.entities.user.UserRequest
@@ -97,8 +95,6 @@ class UserServiceTest {
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
-        every { userRepositoryMock.findByEmail(newUser.email) }.returns(Optional.empty())
-
         every { jwtService.sign(newUser.email, UserRole.USER) }.returns("token_test")
 
         every { userRepositoryMock.add(newUser.copy(role = UserRole.USER, token = "token_test", password = "encodedPassword")) }.returns(expectedUser)
@@ -110,22 +106,20 @@ class UserServiceTest {
 
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`() {
-        val newUserRequest = NewUserRequest(
-            "newUser@com.abrigo.itimalia.domain.com",
-            "password",
-            birthDate,
-            Gender.MALE,
-            "New User",
-            "81823183183"
-        )
-
-        val unexpectedUserDTO = expectedUser
+        val userRequest = UserFactory.sampleNewRequest(birthDate = birthDate)
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { newUserRequest.email?.let { userRepositoryMock.findByEmail(it) } }.returns(Optional.of(unexpectedUserDTO))
+        every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
-        userService.add(newUserRequest)
+        every { jwtService.sign(newUser.email, UserRole.USER) }.returns("token_test")
+
+        every { userRepositoryMock.add(
+            newUser.copy(role = UserRole.USER, token = "token_test", password = "encodedPassword")
+        ) }.throws(EmailAlreadyExistsException())
+
+        userService.add(userRequest)
+        //then exception
     }
 
     @Test
@@ -135,7 +129,6 @@ class UserServiceTest {
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedUser.email) }.returns(Optional.empty())
         every { userRepositoryMock.update(1, updatedUser) }.returns(expectedModifiedUser)
 
         val userDTO = userService.update(1, updatedUserRequest, UserRole.USER, updatedUser.email)
@@ -150,7 +143,6 @@ class UserServiceTest {
         every { jwtService.sign(updatedUser.email, updatedUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedUser.email) }.returns(Optional.of(expectedUser))
 
         every { userRepositoryMock.update(1, updatedUser) }.returns(expectedModifiedUser)
 
@@ -168,7 +160,6 @@ class UserServiceTest {
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
         every { userRepositoryMock.update(1, updatedAdminUser) }.returns(expectedAdminModifiedUser)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.ADMIN, updatedAdminUser.email + "A")
@@ -186,7 +177,6 @@ class UserServiceTest {
         every { jwtService.sign(updatedAdminUser.email, updatedAdminUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(updatedAdminUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.USER, updatedAdminUser.email + "A")
@@ -204,7 +194,6 @@ class UserServiceTest {
         every { jwtService.sign(updatedAdminUser.email, updatedAdminUser.role) }.returns("token_test")
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
-        every { userRepositoryMock.findByEmail(expectedUser.email) }.returns(Optional.empty())
 
         // when
         val userDTO = userService.update(1, updatedAdminUserRequest, UserRole.USER, updatedAdminUser.email)
@@ -216,19 +205,22 @@ class UserServiceTest {
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when an user without admin permission tries to modify its email by another email used, should expect EmailAlreadyExistsException`() {
         // given
+        val usedEmail = expectedUser.email + "A"
+
+        val usedEmailUser = expectedUser.copy(email = usedEmail)
+
+        val usedEmailRequest = expectedUserRequest.copy(email = usedEmail)
 
         every { DateTime.now() }.returns(actualDateTime)
 
         every { userRepositoryMock.get(1) }.returns(expectedUser)
 
-        val usedEmail = expectedUser.email + "A"
-        val usedEmailUser = expectedUser.copy(id = 2, email = usedEmail)
-        every { userRepositoryMock.findByEmail(usedEmail) }.returns(Optional.of(usedEmailUser))
+        every { jwtService.sign(usedEmail, updatedUser.role) }.returns("token_test")
 
-        val modifiedUserDTO = expectedUserRequest.copy(email = usedEmail)
+        every { userRepositoryMock.update(1, usedEmailUser) }.throws(EmailAlreadyExistsException())
 
         // when
-        userService.update(1, modifiedUserDTO, UserRole.USER, expectedUser.email)
+        userService.update(1, usedEmailRequest, UserRole.USER, expectedUser.email)
 
         // then EmailAlreadyExistsException
     }

@@ -37,12 +37,6 @@ class UserServiceImpl(
         validatorRequest.validate(userRequest)
         val userToBeModified = userRepository.get(id)
         val userDTO = userRequest.toUser()
-        val optionalUser = userRepository.findByEmail(userDTO.email)
-
-        // if found an email in another user, cannot update the email to other that exists
-        if (optionalUser.isPresent && optionalUser.get().id != id) {
-            throw EmailAlreadyExistsException()
-        }
 
         val newUserDTO = User(
             userToBeModified.id,
@@ -94,8 +88,6 @@ class UserServiceImpl(
     override fun add(newUserRequest: NewUserRequest): User {
         validatorRequest.validate(newUserRequest)
         val newUser = newUserRequest.toNewUser()
-
-        if (userRepository.findByEmail(newUser.email).isPresent) throw EmailAlreadyExistsException()
 
         val actualDate = DateTime.now()
         val newUserDTO = User(
