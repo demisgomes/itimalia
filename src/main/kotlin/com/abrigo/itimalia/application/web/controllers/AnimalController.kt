@@ -22,7 +22,8 @@ import org.eclipse.jetty.http.HttpStatus
 class AnimalController(
     private val animalService: AnimalService,
     private val jwtAccessManager: JWTAccessManager,
-    private val userService: UserService
+    private val userService: UserService,
+    private val environmentConfig: EnvironmentConfig
 ) {
 
     fun addAnimal(context: Context) {
@@ -86,7 +87,7 @@ class AnimalController(
     }
 
     private fun validatePaging(pagingOptions: PagingOptions) {
-        val maxPageLimit = EnvironmentConfig.maxPageLimit().toInt()
+        val maxPageLimit = environmentConfig.maxPageLimit().toInt()
 
         if (pagingOptions.page < 1) {
             throw ValidationException(mapOf("page" to mutableListOf("page must be greater than 0")))

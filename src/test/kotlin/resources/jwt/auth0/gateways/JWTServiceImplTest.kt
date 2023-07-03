@@ -6,7 +6,7 @@ import com.abrigo.itimalia.domain.exceptions.InvalidTokenException
 import com.abrigo.itimalia.factories.TokenFactory
 import com.abrigo.itimalia.resources.jwt.auth0.gateways.JWTServiceImpl
 import io.mockk.every
-import io.mockk.mockkObject
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,14 +14,15 @@ import kotlin.test.assertNotNull
 
 class JWTServiceImplTest {
 
-    private val jwtService = JWTServiceImpl()
+    private val environmentConfigMock = mockk<EnvironmentConfig>(relaxed = true)
+    private val jwtService = JWTServiceImpl(environmentConfigMock)
 
     @Before
     fun mockEnvironmentConfig() {
-        mockkObject(EnvironmentConfig)
 
-        every { EnvironmentConfig.jwtSecret() } returns "mysecret"
-        every { EnvironmentConfig.issuer() } returns "Itimalia-test"
+        every { environmentConfigMock.jwtSecret() } returns "mysecret"
+        every { environmentConfigMock.issuer() } returns "Itimalia-test"
+        every { environmentConfigMock.jwtExpirationInMinutes() } returns "5"
     }
 
     @Test

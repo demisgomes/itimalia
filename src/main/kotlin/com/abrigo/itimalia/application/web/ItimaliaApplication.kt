@@ -110,7 +110,8 @@ class ItimaliaApplication : KoinComponent {
                 imageModule,
                 passwordModule,
                 validationModule,
-                databaseModule
+                databaseModule,
+                envModule
             )
         }
     }

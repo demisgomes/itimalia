@@ -21,9 +21,9 @@ class ItimaliaPostgresqlContainer :
 
     override fun start() {
         super.start()
-        container?.jdbcUrl?.let { System.setProperty("JDBC_URL", it) };
-        container?.username?.let { System.setProperty("DATABASE_USERNAME", it) };
-        container?.password?.let { System.setProperty("DATABASE_PASSWORD", it) };
+        container?.jdbcUrl?.let { System.setProperty("JDBC_URL", it) }
+        container?.username?.let { System.setProperty("DATABASE_USERNAME", it) }
+        container?.password?.let { System.setProperty("DATABASE_PASSWORD", it) }
     }
 
     override fun stop() {

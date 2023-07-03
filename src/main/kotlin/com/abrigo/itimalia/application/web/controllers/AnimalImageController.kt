@@ -13,7 +13,11 @@ import java.io.InputStream
 import java.net.URLConnection
 import kotlin.streams.toList
 
-class AnimalImageController(private val imageService: ImageService, private val animalService: AnimalService) {
+class AnimalImageController(
+    private val imageService: ImageService,
+    private val animalService: AnimalService,
+    private val environmentConfig: EnvironmentConfig
+) {
     fun addImage(context: Context) {
         val imageFilesToBeUploaded = context
             .uploadedFiles("files")
@@ -40,7 +44,7 @@ class AnimalImageController(private val imageService: ImageService, private val 
     ) {
         val animal = animalService.get(animalId)
 
-        val maxNumberOfImages = EnvironmentConfig.maxNumberOfImages().toInt()
+        val maxNumberOfImages = environmentConfig.maxNumberOfImages().toInt()
 
         if (animal.images.size + imageFilesToBeUploaded.size > maxNumberOfImages) {
             throw ImageUploadException(
@@ -65,7 +69,7 @@ class AnimalImageController(private val imageService: ImageService, private val 
     private fun checkIfImagesSurpassMaxSize(context: Context) {
         val imagesBiggerThanLimit = context
             .uploadedFiles("files").stream().filter {
-                it.size > EnvironmentConfig.maxFileSize().toInt()
+                it.size > environmentConfig.maxFileSize().toInt()
             }.map { it.filename }.toList()
 
         if (imagesBiggerThanLimit.isNotEmpty()) {

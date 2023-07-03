@@ -5,5 +5,5 @@ import com.abrigo.itimalia.resources.password.bcrypt.BCryptPasswordService
 import org.koin.dsl.module
 
 val passwordModule = module {
-    single { BCryptPasswordService() as PasswordService }
+    single { BCryptPasswordService(get()) as PasswordService }
 }

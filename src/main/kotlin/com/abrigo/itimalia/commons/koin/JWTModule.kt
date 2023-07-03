@@ -5,5 +5,5 @@ import com.abrigo.itimalia.resources.jwt.auth0.gateways.JWTServiceImpl
 import org.koin.dsl.module
 
 val JWTModule = module {
-    single { JWTServiceImpl() as JWTService }
+    single { JWTServiceImpl(get()) as JWTService }
 }

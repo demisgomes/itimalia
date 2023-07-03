@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 import java.util.Calendar
 import java.util.Date
 
-class JWTServiceImpl : JWTService {
+class JWTServiceImpl(private val environmentConfig: EnvironmentConfig) : JWTService {
 
     companion object {
         private val logger = LoggerFactory.getLogger(JWTServiceImpl::class.java)
@@ -21,14 +21,14 @@ class JWTServiceImpl : JWTService {
     }
 
     override fun sign(email: String, role: UserRole): String {
-        val algorithm = Algorithm.HMAC256(EnvironmentConfig.jwtSecret())
+        val algorithm = Algorithm.HMAC256(environmentConfig.jwtSecret())
 
         return JWT
             .create()
-            .withIssuer(EnvironmentConfig.issuer())
+            .withIssuer(environmentConfig.issuer())
             .withClaim(EMAIL_CLAIM, email)
             .withClaim(ROLE_CLAIM, role.toString())
-            .withExpiresAt(convertToDate(Integer.parseInt(EnvironmentConfig.jwtExpirationInMinutes())))
+            .withExpiresAt(convertToDate(Integer.parseInt(environmentConfig.jwtExpirationInMinutes())))
             .sign(algorithm)
     }
 
@@ -36,9 +36,9 @@ class JWTServiceImpl : JWTService {
         try {
             val claims = mutableMapOf<String, String>()
 
-            val algorithm = Algorithm.HMAC256(EnvironmentConfig.jwtSecret())
+            val algorithm = Algorithm.HMAC256(environmentConfig.jwtSecret())
             val verifier = JWT.require(algorithm)
-                .withIssuer(EnvironmentConfig.issuer())
+                .withIssuer(environmentConfig.issuer())
                 .build()
 
             val decodedJWT = verifier.verify(token)

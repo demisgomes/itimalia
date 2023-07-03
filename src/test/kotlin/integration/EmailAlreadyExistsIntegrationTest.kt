@@ -1,6 +1,8 @@
 package integration
 
 import com.abrigo.itimalia.application.config.DatabaseConfig
+import com.abrigo.itimalia.application.config.EnvironmentConfig
+import com.abrigo.itimalia.application.config.ItimaliaDotenv
 import com.abrigo.itimalia.application.web.ItimaliaApplication
 import com.abrigo.itimalia.commons.koin.*
 import com.abrigo.itimalia.domain.entities.user.LoggedUser
@@ -9,30 +11,46 @@ import com.abrigo.itimalia.domain.exceptions.ApiError
 import com.abrigo.itimalia.domain.exceptions.ErrorResponse
 import com.abrigo.itimalia.factories.UserFactory
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.javalin.Javalin
 import io.javalin.testtools.JavalinTest
 import org.joda.time.DateTime
 import org.junit.*
 import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext
+import org.koin.dsl.module
 import org.koin.test.KoinTest
 import org.testcontainers.containers.PostgreSQLContainer
-import uk.org.webcompere.systemstubs.rules.EnvironmentVariablesRule
 import kotlin.test.assertEquals
 
-
-val itimaliaApplication = ItimaliaApplication()
-
-class DatabaseIntegrationTest: KoinTest {
-    @get:Rule
-    var environmentVariablesRule = EnvironmentVariablesRule()
+class EmailAlreadyExistsIntegrationTest: KoinTest {
 
     private val objectMapper: ObjectMapper by inject()
 
-    private val app = itimaliaApplication.app
+    private val app = configApp()
 
-    @Before
-    fun startRoutes() {
-        environmentVariablesRule.set("ISSUER", "Itimalia").set("JWT_SECRET", "fabulous_password")
+    private fun configApp(): Javalin {
+        startKoin()
+        return ItimaliaApplication().app
+    }
+
+    private fun startKoin() {
+        GlobalContext.startKoin {
+            modules(
+                serviceModule,
+                controllerModule,
+                configModule,
+                JWTModule,
+                accessManagerModule,
+                repositoryModule,
+                imageModule,
+                passwordModule,
+                validationModule,
+                module {
+                    single { ItimaliaDotenv("variables.test.env").build() }
+                    single { EnvironmentConfig(get()) }
+                }
+            )
+        }
     }
 
     companion object {
@@ -43,20 +61,10 @@ class DatabaseIntegrationTest: KoinTest {
         @JvmStatic
         @BeforeClass
         fun startApp(){
-            GlobalContext.startKoin {
-                modules(
-                    serviceModule,
-                    controllerModule,
-                    configModule,
-                    JWTModule,
-                    accessManagerModule,
-                    repositoryModule,
-                    imageModule,
-                    passwordModule,
-                    validationModule
-                )
-            }
+            initDB()
+        }
 
+        private fun initDB() {
             postgreSQLContainer.start()
             Thread.sleep(2000)
 
@@ -73,7 +81,7 @@ class DatabaseIntegrationTest: KoinTest {
 
 
     @Test
-    fun `integration - given a valid admin login, when register a new user should return 200`() = JavalinTest.test(app) { server, client ->
+    fun `integration - given two users in database, should return 400 when update or create user with existing emails`() = JavalinTest.test(app) { _, client ->
         val addedFirstUserResponse = client.post("/users", UserFactory.sampleNewRequest(birthDate = DateTime(1999, 1, 1, 1, 1)))//{
 
         val addedFirstUser = objectMapper.readValue(

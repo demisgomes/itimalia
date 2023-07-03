@@ -89,10 +89,10 @@ dependencies {
     // BCrypt
     implementation 'at.favre.lib:bcrypt:0.9.0'
 
-    //TESTS
+    //dotenv
+    implementation 'io.github.cdimascio:dotenv-kotlin:6.4.1'
 
-    //system stubs
-    testImplementation 'uk.org.webcompere:system-stubs-junit4:1.1.0'
+    //TESTS
 
     // H2
     testImplementation group: 'com.h2database', name: 'h2', version: '1.4.199'

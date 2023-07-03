@@ -1,13 +1,15 @@
 package com.abrigo.itimalia.application.config
 
-object EnvironmentConfig {
+import io.github.cdimascio.dotenv.Dotenv
+
+class EnvironmentConfig(private val dotenv: Dotenv) {
 
     fun jdbcUrl(): String {
         return getenv("JDBC_URL", "jdbc:h2:mem:test;MODE=MySQL;")
     }
 
     private fun getenv(env: String, defaultValue: String): String {
-        return System.getenv(env) ?: defaultValue
+        return dotenv[env] ?: defaultValue
     }
 
     fun databaseUsername(): String {

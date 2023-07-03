@@ -8,7 +8,8 @@ import org.jetbrains.exposed.sql.Database
 class DatabaseConfig(
     private val jdbcUrl: String,
     private val username: String,
-    private val password: String) {
+    private val password: String
+) {
 
     fun connect() {
         val hikariConfig = HikariConfig()

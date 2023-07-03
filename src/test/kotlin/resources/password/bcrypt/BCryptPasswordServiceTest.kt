@@ -1,7 +1,10 @@
 package resources.password.bcrypt
 
+import com.abrigo.itimalia.application.config.EnvironmentConfig
 import com.abrigo.itimalia.domain.services.PasswordService
 import com.abrigo.itimalia.resources.password.bcrypt.BCryptPasswordService
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
@@ -9,10 +12,12 @@ import kotlin.test.assertTrue
 
 class BCryptPasswordServiceTest {
 
-    private val passwordService: PasswordService = BCryptPasswordService()
+    private val environmentConfigMock = mockk<EnvironmentConfig>(relaxed = true)
+    private val passwordService: PasswordService = BCryptPasswordService(environmentConfigMock)
 
     @Test
     fun `when pass a password, should encode it`() {
+        every { environmentConfigMock.hashSalt() } returns "12"
         val encodedPassword = passwordService.encode("test")
         assertNotEquals("test", encodedPassword)
     }

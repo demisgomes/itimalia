@@ -1,6 +1,7 @@
 package com.abrigo.itimalia.application.web.controllers
 
 import com.abrigo.itimalia.application.config.EnvironmentConfig
+import com.abrigo.itimalia.application.config.ItimaliaDotenv
 import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.animal.Animal
 import com.abrigo.itimalia.domain.entities.animal.AnimalRequest
@@ -39,6 +40,7 @@ class AnimalControllerTest {
     private lateinit var animalController: AnimalController
     private lateinit var jwtAccessManager: JWTAccessManager
     private lateinit var userService: UserService
+    private lateinit var environmentConfig: EnvironmentConfig
     private val defaultPagination = Pagination(1, 10, null, 1, 1, OrderBy.ID, Direction.ASC)
 
     private val contextMock: Context = mockk(relaxed = true)
@@ -48,13 +50,14 @@ class AnimalControllerTest {
         animalServiceMock = mockk(relaxed = true)
         jwtAccessManager = mockk(relaxed = true)
         userService = mockk(relaxed = true)
+        environmentConfig = EnvironmentConfig(ItimaliaDotenv().build())
 
         actualDateTime = DateTime.now()
 
         newAnimalRequest = AnimalFactory.sampleNewRequest()
         expectedAnimal = AnimalFactory.sampleDTO(creationDate = actualDateTime, modificationDate = actualDateTime)
 
-        animalController = AnimalController(animalServiceMock, jwtAccessManager, userService)
+        animalController = AnimalController(animalServiceMock, jwtAccessManager, userService, environmentConfig)
     }
 
     @Test
@@ -402,7 +405,7 @@ class AnimalControllerTest {
 
     @Test(expected = ValidationException::class)
     fun `when request all animals with limit higher than MAX_LIMIT, should call validation exception`() {
-        every { contextMock.queryParam("limit") } returns (EnvironmentConfig.maxPageLimit().toInt() + 1).toString()
+        every { contextMock.queryParam("limit") } returns (environmentConfig.maxPageLimit().toInt() + 1).toString()
 
         animalController.findAllAnimals(contextMock)
     }
