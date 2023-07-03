@@ -41,6 +41,7 @@ dependencies {
     //javalin
     implementation 'io.javalin:javalin:4.6.1'
     implementation 'io.javalin:javalin-openapi:4.6.1'
+    implementation 'io.javalin:javalin-bundle:4.6.1'
     implementation 'org.slf4j:slf4j-simple:1.7.36'
 
     // Jackson
@@ -58,9 +59,6 @@ dependencies {
     //JWT
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.4.1'
 
-    //test
-    testImplementation 'io.mockk:mockk:1.12.4'
-
     // Hikari
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
 
@@ -76,9 +74,6 @@ dependencies {
     //flyway
     implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.5.7'
 
-    // H2
-    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.199'
-
     // Swagger
     implementation group: 'cc.vileda', name: 'kotlin-openapi3-dsl', version: '0.20.1'
     implementation group: 'org.webjars', name: 'swagger-ui', version: '3.22.2'
@@ -93,6 +88,20 @@ dependencies {
 
     // BCrypt
     implementation 'at.favre.lib:bcrypt:0.9.0'
+
+    //TESTS
+
+    //system stubs
+    testImplementation 'uk.org.webcompere:system-stubs-junit4:1.1.0'
+
+    // H2
+    testImplementation group: 'com.h2database', name: 'h2', version: '1.4.199'
+
+    //testcontainers postgres
+    testImplementation "org.testcontainers:postgresql:1.18.3"
+
+    //test
+    testImplementation 'io.mockk:mockk:1.12.4'
 
 }
 

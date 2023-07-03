@@ -5,9 +5,12 @@ import com.zaxxer.hikari.HikariDataSource
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
 
-object DatabaseConfig {
+class DatabaseConfig(
+    private val jdbcUrl: String,
+    private val username: String,
+    private val password: String) {
 
-    fun connect(jdbcUrl: String, username: String, password: String) {
+    fun connect() {
         val hikariConfig = HikariConfig()
 
         hikariConfig.jdbcUrl = jdbcUrl
@@ -21,9 +24,9 @@ object DatabaseConfig {
 
     fun createTables() {
         val flyway = Flyway.configure().dataSource(
-            EnvironmentConfig.jdbcUrl(),
-            EnvironmentConfig.databaseUsername(),
-            EnvironmentConfig.databasePassword()
+            jdbcUrl,
+            username,
+            password
         ).locations("db/migration-postgres").load()
 
         flyway.migrate()

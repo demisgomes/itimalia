@@ -21,7 +21,7 @@ import kotlin.test.assertNotEquals
 
 class UserRepositorImplTest {
     lateinit var email: String
-    lateinit var password: String
+    private lateinit var password: String
     private val userRepository = UserRepositoryImpl()
 
     @Before

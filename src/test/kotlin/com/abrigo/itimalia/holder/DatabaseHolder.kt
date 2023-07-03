@@ -16,11 +16,12 @@ object DatabaseHolder {
     ).load()
 
     init {
-        DatabaseConfig.connect(
+        DatabaseConfig(
             JDBC_URL,
             DATABASE_USERNAME,
             DATABASE_PASSWORD
-        )
+        ).connect()
+
         flyway.migrate()
     }
 

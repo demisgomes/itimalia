@@ -10,7 +10,7 @@ class EmailAlreadyExistsException : ApiException {
     constructor(cause: Throwable) : super (message = THIS_EMAIL_ALREADY_EXISTS, cause)
 
     override fun httpStatus(): Int {
-        return HttpStatus.UNAUTHORIZED_401
+        return HttpStatus.BAD_REQUEST_400
     }
 
     override fun apiError(): ApiError {
