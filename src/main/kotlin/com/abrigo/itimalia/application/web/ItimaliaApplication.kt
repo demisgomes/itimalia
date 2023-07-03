@@ -29,10 +29,10 @@ import io.javalin.apibuilder.ApiBuilder
 import io.javalin.http.BadRequestResponse
 import io.javalin.plugin.json.JavalinJackson
 import io.javalin.plugin.openapi.dsl.documented
-import org.apache.logging.log4j.LogManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext.startKoin
+import org.slf4j.LoggerFactory
 
 private const val PORT = 7000
 
@@ -47,7 +47,7 @@ class ItimaliaApplication : KoinComponent {
     private val animalImageController: AnimalImageController by inject()
 
     companion object {
-        private val logger = LogManager.getLogger()
+        private val logger = LoggerFactory.getLogger(ItimaliaApplication::class.java)
     }
 
     val app: Javalin = Javalin

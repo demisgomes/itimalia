@@ -38,19 +38,20 @@ configurations.implementation.setCanBeResolved(true)
 
 dependencies {
 
+    //versions
+    def javalinVersion = '4.6.1'
+    def exposedVersion = '0.38.1'
+
     //javalin
-    implementation 'io.javalin:javalin:4.6.1'
-    implementation 'io.javalin:javalin-openapi:4.6.1'
-    implementation 'io.javalin:javalin-bundle:4.6.1'
+    implementation 'io.javalin:javalin:' + javalinVersion
+    implementation 'io.javalin:javalin-openapi:'+ javalinVersion
+    implementation 'io.javalin:javalin-bundle:' + javalinVersion
     implementation 'org.slf4j:slf4j-simple:1.7.36'
 
     // Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.9.8'
-    
-    //log
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.3'
 
     // Koin
     implementation 'io.insert-koin:koin-core:3.2.0'
@@ -63,10 +64,10 @@ dependencies {
     implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.3.1'
 
     //Exposed
-    implementation group: 'org.jetbrains.exposed', name: 'exposed-core', version: '0.38.1'
-    implementation group: 'org.jetbrains.exposed', name: 'exposed-jodatime', version: '0.38.1'
-    implementation group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: '0.38.1'
-    implementation group: 'org.jetbrains.exposed', name: 'exposed-dao', version: '0.38.1'
+    implementation group: 'org.jetbrains.exposed', name: 'exposed-core', version: exposedVersion
+    implementation group: 'org.jetbrains.exposed', name: 'exposed-jodatime', version: exposedVersion
+    implementation group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: exposedVersion
+    implementation group: 'org.jetbrains.exposed', name: 'exposed-dao', version: exposedVersion
 
     //postgres
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.16'
