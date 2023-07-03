@@ -102,28 +102,8 @@ class ItimaliaApplication : KoinComponent {
         }
 
     fun startServer() {
-        startKoin()
-        app.start(PORT)
-
         initDB()
-    }
-
-    private fun startKoin() {
-        startKoin {
-            modules(
-                serviceModule,
-                controllerModule,
-                configModule,
-                JWTModule,
-                accessManagerModule,
-                repositoryModule,
-                imageModule,
-                passwordModule,
-                validationModule,
-                databaseModule,
-                envModule
-            )
-        }
+        app.start(PORT)
     }
 
     private fun initDB() {
@@ -135,5 +115,20 @@ class ItimaliaApplication : KoinComponent {
 }
 
 fun main() {
+    startKoin {
+        modules(
+            serviceModule,
+            controllerModule,
+            configModule,
+            JWTModule,
+            accessManagerModule,
+            repositoryModule,
+            imageModule,
+            passwordModule,
+            validationModule,
+            databaseModule,
+            envModule
+        )
+    }
     ItimaliaApplication().startServer()
 }
