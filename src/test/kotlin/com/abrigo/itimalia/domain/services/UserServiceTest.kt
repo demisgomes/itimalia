@@ -114,12 +114,14 @@ class UserServiceTest {
 
         every { jwtService.sign(newUser.email, UserRole.USER) }.returns("token_test")
 
-        every { userRepositoryMock.add(
-            newUser.copy(role = UserRole.USER, token = "token_test", password = "encodedPassword")
-        ) }.throws(EmailAlreadyExistsException())
+        every {
+            userRepositoryMock.add(
+                newUser.copy(role = UserRole.USER, token = "token_test", password = "encodedPassword")
+            )
+        }.throws(EmailAlreadyExistsException())
 
         userService.add(userRequest)
-        //then exception
+        // then exception
     }
 
     @Test

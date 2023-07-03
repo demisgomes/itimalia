@@ -19,7 +19,6 @@ class JWTServiceImplTest {
 
     @Before
     fun mockEnvironmentConfig() {
-
         every { environmentConfigMock.jwtSecret() } returns "mysecret"
         every { environmentConfigMock.issuer() } returns "Itimalia-test"
         every { environmentConfigMock.jwtExpirationInMinutes() } returns "5"

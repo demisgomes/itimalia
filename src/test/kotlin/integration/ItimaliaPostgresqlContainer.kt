@@ -4,7 +4,7 @@ import org.testcontainers.containers.PostgreSQLContainer
 
 private const val IMAGE_VERSION = "postgres:11.1"
 
-//https://www.baeldung.com/spring-boot-testcontainers-integration-test
+// https://www.baeldung.com/spring-boot-testcontainers-integration-test
 class ItimaliaPostgresqlContainer :
     PostgreSQLContainer<ItimaliaPostgresqlContainer>(IMAGE_VERSION) {
 
@@ -17,7 +17,6 @@ class ItimaliaPostgresqlContainer :
             return container
         }
     }
-
 
     override fun start() {
         super.start()

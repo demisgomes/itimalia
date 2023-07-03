@@ -9,7 +9,6 @@ import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.entities.user.toNewUser
 import com.abrigo.itimalia.domain.entities.user.toUser
 import com.abrigo.itimalia.domain.entities.user.toUserLogin
-import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedDifferentUserChangeException
 import com.abrigo.itimalia.domain.exceptions.UnauthorizedRoleChangeException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException

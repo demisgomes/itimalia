@@ -30,7 +30,7 @@ class UserRepositoryImpl : UserRepository {
     }
 
     override fun add(user: User): User {
-        try{
+        try {
             val addedUser = transaction {
                 UserEntity.new {
                     name = user.name
@@ -46,15 +46,13 @@ class UserRepositoryImpl : UserRepository {
                 }
             }
             return transaction { addedUser.toUser() }
-        }
-        catch (exception: ExposedSQLException){
+        } catch (exception: ExposedSQLException) {
             throw EmailAlreadyExistsException(exception)
         }
-
     }
 
     override fun update(id: Int, user: User): User {
-        try{
+        try {
             val result = transaction {
                 (UserMap).update({ UserMap.id eq id }) {
                     it[name] = user.name
@@ -75,10 +73,9 @@ class UserRepositoryImpl : UserRepository {
                     else -> return transaction { UserEntity[id].toUser() }
                 }
             }
-        } catch (exception: ExposedSQLException){
+        } catch (exception: ExposedSQLException) {
             throw EmailAlreadyExistsException(exception)
         }
-
     }
 
     override fun delete(id: Int) {

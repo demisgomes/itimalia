@@ -7,7 +7,7 @@ private const val THIS_EMAIL_ALREADY_EXISTS = "This email already exists"
 class EmailAlreadyExistsException : ApiException {
 
     constructor() : super(THIS_EMAIL_ALREADY_EXISTS)
-    constructor(cause: Throwable) : super (message = THIS_EMAIL_ALREADY_EXISTS, cause)
+    constructor(cause: Throwable) : super(message = THIS_EMAIL_ALREADY_EXISTS, cause)
 
     override fun httpStatus(): Int {
         return HttpStatus.BAD_REQUEST_400
