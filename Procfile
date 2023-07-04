@@ -1,1 +1,1 @@
-web: java -jar build/libs/itimalia-1.0-SNAPSHOT.jar
+web: java -jar build/libs/itimalia-1.0.0-SNAPSHOT.jar

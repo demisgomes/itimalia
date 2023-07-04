@@ -11,7 +11,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.6.21'
 }
 group 'com.abrigo'
-version '1.0-SNAPSHOT'
+version '1.0.0-SNAPSHOT'
 apply plugin : 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -139,6 +139,27 @@ tasks.koverMergedVerify {
 
 }
 
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests'
+    group = 'verification'
+
+    filter{
+        includeTestsMatching "*IT"
+        excludeTestsMatching "*Test*"
+    }
+
+}
+
+tasks.register('unitTest', Test) {
+    description = 'Runs unit tests'
+    group = 'verification'
+
+    filter{
+        excludeTestsMatching "*IT"
+        includeTestsMatching "*Test*"
+    }
+}
+
 tasks.koverMergedHtmlReport {
     excludes = excludedClasses // exclusion rules for classes
 }
@@ -147,5 +168,5 @@ tasks.koverMergedXmlReport {
     excludes = excludedClasses
 }
 
-task stage(dependsOn: ['build', 'clean'])
+tasks.register('stage') { dependsOn['build', 'clean'] }
 build.mustRunAfter clean

@@ -32,7 +32,7 @@ import org.koin.test.KoinTest
 import org.testcontainers.containers.PostgreSQLContainer
 import kotlin.test.assertEquals
 
-class EmailAlreadyExistsIntegrationTest : KoinTest {
+class EmailAlreadyExistsIT : KoinTest {
 
     private val objectMapper: ObjectMapper by inject()
 
