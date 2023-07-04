@@ -111,6 +111,8 @@ jar {
         attributes "Main-Class": mainClassName
         attributes 'Multi-Release': 'true'
     }
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     from {
         configurations.implementation.collect { it.isDirectory() ? it : zipTree(it) }
     }
