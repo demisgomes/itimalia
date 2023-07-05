@@ -1,22 +1,19 @@
-buildscript {
-    dependencies{
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
-    }
-}
 plugins {
     id "org.flywaydb.flyway" version "6.5.7"
     id "org.jlleitschuh.gradle.ktlint" version "10.3.0"
     id "org.jlleitschuh.gradle.ktlint-idea" version "10.3.0"
     id "org.jetbrains.kotlinx.kover" version "0.5.1"
     id 'org.jetbrains.kotlin.jvm' version '1.6.21'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'java'
+
 }
 group 'com.abrigo'
 version '1.0.0-SNAPSHOT'
 apply plugin : 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = "com.abrigo.itimalia.application.web.ItimaliaApplicationKt"
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 def excludedClasses = [
         "com.abrigo.itimalia.commons.koin.*",
@@ -118,11 +115,20 @@ jar {
     }
 }
 
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
+shadowJar {
+    transform(ServiceFileTransformer) {
+        path = 'META-INF/services'
+        include 'org.eclipse.jetty.http.HttpFieldPreEncoder'
+    }
+}
+
+
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 ktlint{
@@ -169,6 +175,3 @@ tasks.koverMergedHtmlReport {
 tasks.koverMergedXmlReport {
     excludes = excludedClasses
 }
-
-tasks.register('stage') { dependsOn['build', 'clean'] }
-build.mustRunAfter clean

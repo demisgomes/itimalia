@@ -6,7 +6,7 @@ RUN gradle build -x test -x integrationTest -x unitTest -x koverMergedVerify -x 
 
 # Package stage
 FROM eclipse-temurin:11-alpine
-ENV JAR_NAME=itimalia-1.0.0-SNAPSHOT.jar
+ENV JAR_NAME=itimalia-1.0.0-SNAPSHOT-all.jar
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 COPY --from=BUILD $APP_HOME .
