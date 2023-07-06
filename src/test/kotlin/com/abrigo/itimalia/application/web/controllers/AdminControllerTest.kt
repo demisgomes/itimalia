@@ -1,6 +1,5 @@
 package com.abrigo.itimalia.application.web.controllers
 
-import com.abrigo.itimalia.application.web.accessmanagers.JWTAccessManager
 import com.abrigo.itimalia.domain.entities.user.LoggedUser
 import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.User
@@ -23,20 +22,18 @@ import org.junit.Test
 import java.util.Calendar
 
 class AdminControllerTest {
-    lateinit var adminServiceMock: AdminService
-    lateinit var contextMock: Context
-    lateinit var returnedAdminUser: User
-    lateinit var spyReturnedAdminUser: User
-    lateinit var newAdminUser: NewUser
-    lateinit var newLoginUser: UserLogin
-    lateinit var jwtAccessManagerMock: JWTAccessManager
-    lateinit var actualDateTime: DateTime
+    private lateinit var adminServiceMock: AdminService
+    private lateinit var contextMock: Context
+    private lateinit var returnedAdminUser: User
+    private lateinit var spyReturnedAdminUser: User
+    private lateinit var newAdminUser: NewUser
+    private lateinit var newLoginUser: UserLogin
+    private lateinit var actualDateTime: DateTime
 
     @Before
     fun setup() {
         adminServiceMock = mockk(relaxed = true)
         contextMock = mockk(relaxed = true)
-        jwtAccessManagerMock = mockk(relaxed = true)
 
         mockkStatic(Calendar::class)
         actualDateTime = DateTime.now()
@@ -51,13 +48,11 @@ class AdminControllerTest {
 
     @Test
     fun `when add a valid user with admin permissions should return the user with status 201`() {
-        every { adminServiceMock.add(newAdminUser, UserRole.ADMIN) }.returns(spyReturnedAdminUser)
+        every { adminServiceMock.add(newAdminUser) }.returns(spyReturnedAdminUser)
 
         every { contextMock.bodyAsClass<NewUser>() }.returns(newAdminUser)
 
-        every { jwtAccessManagerMock.extractRole(contextMock) }.returns(UserRole.ADMIN)
-
-        AdminController(adminServiceMock, jwtAccessManagerMock).addAdminUser(contextMock)
+        AdminController(adminServiceMock).addAdminUser(contextMock)
 
         verify { spyReturnedAdminUser.toLoggedUser() }
 

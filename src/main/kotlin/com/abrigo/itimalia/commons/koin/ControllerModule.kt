@@ -13,7 +13,7 @@ val controllerModule = module {
             get()
         )
     }
-    single { AdminController(get(), get()) }
+    single { AdminController(get()) }
     single { AnimalController(get(), get(), get(), get()) }
     single { AnimalImageController(get(), get(), get()) }
 }

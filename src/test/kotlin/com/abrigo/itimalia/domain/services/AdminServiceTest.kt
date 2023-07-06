@@ -4,7 +4,6 @@ import com.abrigo.itimalia.domain.entities.user.NewUser
 import com.abrigo.itimalia.domain.entities.user.User
 import com.abrigo.itimalia.domain.entities.user.UserRole
 import com.abrigo.itimalia.domain.exceptions.EmailAlreadyExistsException
-import com.abrigo.itimalia.domain.exceptions.UnauthorizedAdminRoleException
 import com.abrigo.itimalia.domain.exceptions.UserNotFoundException
 import com.abrigo.itimalia.domain.jwt.JWTService
 import com.abrigo.itimalia.domain.repositories.UserRepository
@@ -16,7 +15,6 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
 import org.junit.Test
-import java.util.Optional
 import kotlin.test.assertEquals
 
 class AdminServiceTest {
@@ -55,31 +53,27 @@ class AdminServiceTest {
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
-        every { userRepositoryMock.findByEmail(newUserDTO.email) }.throws(UserNotFoundException())
-
         every { jwtService.sign(newUserDTO.email, UserRole.ADMIN) }.returns("token_test")
 
         every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test", password = "encodedPassword")) }.returns(expectedUser)
 
-        val userDTO = adminService.add(newUser, UserRole.ADMIN)
+        val userDTO = adminService.add(newUser)
 
         assertEquals(expectedUser, userDTO)
     }
 
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`() {
-        val unexpectedUserDTO = expectedUser
 
         every { DateTime.now() }.returns(actualDateTime)
 
-        every { userRepositoryMock.findByEmail(newUserDTO.email) }.returns(Optional.of(unexpectedUserDTO))
+        every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
 
-        adminService.add(newUser, UserRole.ADMIN)
-    }
+        every { jwtService.sign(newUserDTO.email, UserRole.ADMIN) }.returns("token_test")
 
-    @Test(expected = UnauthorizedAdminRoleException::class)
-    fun `when a valid user tries to register a new user but does not have admin permissions, should expect UnauthorizedAdminRoleException`() {
-        adminService.add(newUser, UserRole.USER)
+        every { userRepositoryMock.add(newUserDTO.copy(role = UserRole.ADMIN, token = "token_test", password = "encodedPassword")) }.throws(EmailAlreadyExistsException())
+
+        adminService.add(newUser)
     }
 
     @Test(expected = UserNotFoundException::class)
