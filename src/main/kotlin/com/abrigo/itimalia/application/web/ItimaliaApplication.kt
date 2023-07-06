@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.javalin.Javalin
 import io.javalin.apibuilder.ApiBuilder
 import io.javalin.http.BadRequestResponse
+import io.javalin.http.Context
 import io.javalin.plugin.json.JavalinJackson
 import io.javalin.plugin.openapi.dsl.documented
 import org.koin.core.component.KoinComponent
@@ -55,6 +56,16 @@ class ItimaliaApplication : KoinComponent {
             SwaggerConfig.registerPlugin(config)
             config.accessManager(jwtAccessManager)
             config.jsonMapper(JavalinJackson(objectMapper))
+        }
+        .before { context ->
+            run {
+                logger.info("Request: ${context.method()} - ${context.path()} from ${context.userAgent()}")
+            }
+        }.after { context ->
+            run {
+                val resultString = if (contextStatusIsError(context)) "- ${context.resultString()}" else ""
+                logger.info("Result: ${context.method()} - ${context.path()} -> ${context.res.status} $resultString")
+            }
         }
         .routes {
             ApiBuilder.path("users") {
@@ -100,6 +111,8 @@ class ItimaliaApplication : KoinComponent {
         .exception(IllegalArgumentException::class.java) { exception, ctx ->
             errorHandler.handleIllegalArgumentException(exception, ctx)
         }
+
+    private fun contextStatusIsError(context: Context) = context.status() > 299
 
     fun startServer() {
         initDB()
