@@ -2,7 +2,7 @@
 Backend application for an animal shelter
 
 <p align="center">
-<img src="https://img.shields.io/github/workflow/status/demisgomes/itimalia/Build">
+<img src="https://img.shields.io/github/actions/workflow/status/demisgomes/itimalia/build.yml?branch=master">
 <img src="https://img.shields.io/github/deployments/demisgomes/itimalia/web">
 <img src="https://img.shields.io/codecov/c/github/demisgomes/itimalia">
 </p>
