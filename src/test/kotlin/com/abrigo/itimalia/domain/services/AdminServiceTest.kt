@@ -64,7 +64,6 @@ class AdminServiceTest {
 
     @Test(expected = EmailAlreadyExistsException::class)
     fun `when a valid user request a sign up but the email already exists, should expect EmailAlreadyExistsException`() {
-
         every { DateTime.now() }.returns(actualDateTime)
 
         every { passwordServiceMock.encode("myPassword") } returns "encodedPassword"
